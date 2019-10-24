@@ -1,7 +1,7 @@
 ```bash
 # git submodule add --depth=1 -- https://github.com/rust-lang-nursery/mdBook mdBook
 
-git submodule update
+git submodule update --remote
 
 cd mdBook && cargo build && cd ..
 
