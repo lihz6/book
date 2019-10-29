@@ -219,7 +219,7 @@ functionality. Disabling <code>drop</code> isn’t usually necessary; the whole 
 <code>Drop</code> trait is that it’s taken care of automatically. Occasionally, however,
 you might want to clean up a value early. One example is when using smart
 pointers that manage locks: you might want to force the <code>drop</code> method that
-releases the lock to run so other code in the same scope can acquire the lock.
+releases the lock so that other code in the same scope can acquire the lock.
 Rust doesn’t let you call the <code>Drop</code> trait’s <code>drop</code> method manually; instead
 you have to call the <code>std::mem::drop</code> function provided by the standard library
 if you want to force a value to be dropped before the end of its scope.</p>
@@ -266,7 +266,7 @@ an argument. The function is in the prelude, so we can modify <code>main</code> 
 </span>#
 <span class="boring">impl Drop for CustomSmartPointer {
     fn drop(&amp;mut self) {
-        println!(&quot;Dropping CustomSmartPointer!&quot;);
+        println!(&quot;Dropping CustomSmartPointer with data `{}`!&quot;, self.data);
     }
 }
 </span>#

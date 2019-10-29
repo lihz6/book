@@ -158,8 +158,9 @@ to match. Patterns that can fail to match for some possible value are
 <code>Some</code>, the <code>Some(x)</code> pattern will not match.</p>
 <p>Function parameters, <code>let</code> statements, and <code>for</code> loops can only accept
 irrefutable patterns, because the program cannot do anything meaningful when
-values don’t match. The <code>if let</code> and <code>while let</code> expressions only accept
-refutable patterns, because by definition they’re intended to handle possible
+values don’t match. The <code>if let</code> and <code>while let</code> expressions accept
+refutable and irrefutable patterns, but the compiler warns against
+irrefutable patterns because by definition they’re intended to handle possible
 failure: the functionality of a conditional is in its ability to perform
 differently depending on success or failure.</p>
 <p>In general, you shouldn’t have to worry about the distinction between refutable
@@ -206,8 +207,8 @@ let some_option_value: Option&lt;i32&gt; = None;
 patterns instead of <code>let</code></span></p>
 <p>We’ve given the code an out! This code is perfectly valid, although it means we
 cannot use an irrefutable pattern without receiving an error. If we give <code>if let</code> a pattern that will always match, such as <code>x</code>, as shown in Listing 18-10,
-it will not compile.</p>
-<pre><code class="language-rust ignore does_not_compile">if let x = 5 {
+the compiler will give a warning.</p>
+<pre><code class="language-rust ignore">if let x = 5 {
     println!(&quot;{}&quot;, x);
 };
 </code></pre>
@@ -215,11 +216,15 @@ it will not compile.</p>
 with <code>if let</code></span></p>
 <p>Rust complains that it doesn’t make sense to use <code>if let</code> with an irrefutable
 pattern:</p>
-<pre><code class="language-text">error[E0162]: irrefutable if-let pattern
- --&gt; &lt;anon&gt;:2:8
+<pre><code class="language-text">warning: irrefutable if-let pattern
+ --&gt; &lt;anon&gt;:2:5
   |
-2 | if let x = 5 {
-  |        ^ irrefutable pattern
+2 | /     if let x = 5 {
+3 | |     println!(&quot;{}&quot;, x);
+4 | | };
+  | |_^
+  |
+  = note: #[warn(irrefutable_let_patterns)] on by default
 </code></pre>
 <p>For this reason, match arms must use refutable patterns, except for the last
 arm, which should match any remaining values with an irrefutable pattern. Rust
