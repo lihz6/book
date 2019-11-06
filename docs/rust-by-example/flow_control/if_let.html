@@ -242,7 +242,7 @@ fn main() {
 </code></pre></pre>
 <p>Another benefit: <code>if let</code> allows to match enum non-parameterized variants, even if the enum doesn't <code>#[derive(PartialEq)]</code>, neither we implement <code>PartialEq</code> for it. In such case, classic <code>if Foo::Bar==a</code> fails, because instances of such enum are not comparable for equality. However, <code>if let</code> works.</p>
 <p>Would you like a challenge? Fix the following example to use <code>if let</code>:</p>
-<pre><code class="language-rust editable ignore">// This enum purposely doesn't #[derive(PartialEq)],
+<pre><pre class="playpen"><code class="language-rust editable ignore mdbook-runnable">// This enum purposely doesn't #[derive(PartialEq)],
 // neither we implement PartialEq for it. That's why comparing Foo::Bar==a fails below.
 enum Foo {Bar}
 
@@ -255,7 +255,7 @@ fn main() {
         println!(&quot;a is foobar&quot;);
     }
 }
-</code></pre>
+</code></pre></pre>
 <h3><a class="header" href="#see-also" id="see-also">See also:</a></h3>
 <p><a href="../custom_types/enum.html"><code>enum</code></a>, <a href="../std/option.html"><code>Option</code></a>, and the <a href="https://github.com/rust-lang/rfcs/pull/160">RFC</a></p>
 

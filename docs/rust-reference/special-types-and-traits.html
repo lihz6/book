@@ -192,9 +192,11 @@ also used in <a href="expressions/method-call-expr.html">method resolution</a> a
 type is to be destroyed.</p>
 <h2><a class="header" href="#copy" id="copy"><code>Copy</code></a></h2>
 <p>The <a href="../std/marker/trait.Copy.html"><code>Copy</code></a> trait changes the semantics of a type implementing it. Values
-whose type implements <code>Copy</code> are copied rather than moved upon assignment.
-<code>Copy</code> cannot be implemented for types which implement <code>Drop</code>, or which have
-fields that are not <code>Copy</code>. <code>Copy</code> is implemented by the compiler for</p>
+whose type implements <code>Copy</code> are copied rather than moved upon assignment.</p>
+<p><code>Copy</code> can only be implemented for types which do not implement <code>Drop</code>, and whose fields are all <code>Copy</code>.
+For enums, this means all fields of all variants have to be <code>Copy</code>.
+For unions, this means all variants have to be <code>Copy</code>.</p>
+<p><code>Copy</code> is implemented by the compiler for</p>
 <ul>
 <li><a href="types/numeric.html">Numeric types</a></li>
 <li><code>char</code>, <code>bool</code>, and <a href="types/never.html"><code>!</code></a></li>

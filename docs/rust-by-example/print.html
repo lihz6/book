@@ -2336,7 +2336,7 @@ fn main() {
 </code></pre></pre>
 <p>Another benefit: <code>if let</code> allows to match enum non-parameterized variants, even if the enum doesn't <code>#[derive(PartialEq)]</code>, neither we implement <code>PartialEq</code> for it. In such case, classic <code>if Foo::Bar==a</code> fails, because instances of such enum are not comparable for equality. However, <code>if let</code> works.</p>
 <p>Would you like a challenge? Fix the following example to use <code>if let</code>:</p>
-<pre><code class="language-rust editable ignore">// This enum purposely doesn't #[derive(PartialEq)],
+<pre><pre class="playpen"><code class="language-rust editable ignore mdbook-runnable">// This enum purposely doesn't #[derive(PartialEq)],
 // neither we implement PartialEq for it. That's why comparing Foo::Bar==a fails below.
 enum Foo {Bar}
 
@@ -2349,7 +2349,7 @@ fn main() {
         println!(&quot;a is foobar&quot;);
     }
 }
-</code></pre>
+</code></pre></pre>
 <h3><a class="header" href="#see-also-20" id="see-also-20">See also:</a></h3>
 <p><a href="flow_control/../custom_types/enum.html"><code>enum</code></a>, <a href="flow_control/../std/option.html"><code>Option</code></a>, and the <a href="https://github.com/rust-lang/rfcs/pull/160">RFC</a></p>
 <h1><a class="header" href="#while-let" id="while-let">while let</a></h1>
@@ -3545,9 +3545,9 @@ cargo new foo
 # OR A library
 cargo new --lib foo
 </code></pre>
-<p>For the rest of this chapter, I will assume we are making a binary, rather than
+<p>For the rest of this chapter, let's assume we are making a binary, rather than
 a library, but all of the concepts are the same.</p>
-<p>After the above commands, you should see something like this:</p>
+<p>After the above commands, you should see a file hierarchy like this:</p>
 <pre><code class="language-txt">foo
 ├── Cargo.toml
 └── src
@@ -3563,19 +3563,19 @@ authors = [&quot;mark&quot;]
 
 [dependencies]
 </code></pre>
-<p>The <code>name</code> field under <code>package</code> determines the name of the project. This is
+<p>The <code>name</code> field under <code>[package]</code> determines the name of the project. This is
 used by <code>crates.io</code> if you publish the crate (more later). It is also the name
 of the output binary when you compile.</p>
 <p>The <code>version</code> field is a crate version number using <a href="http://semver.org/">Semantic
 Versioning</a>.</p>
 <p>The <code>authors</code> field is a list of authors used when publishing the crate.</p>
-<p>The <code>dependencies</code> section lets you add a dependency for your project.</p>
-<p>For example, suppose that I want my program to have a great CLI. You can find
+<p>The <code>[dependencies]</code> section lets you add dependencies for your project.</p>
+<p>For example, suppose that we want our program to have a great CLI. You can find
 lots of great packages on <a href="https://crates.io">crates.io</a> (the official Rust
 package registry). One popular choice is <a href="https://crates.io/crates/clap">clap</a>.
 As of this writing, the most recent published version of <code>clap</code> is <code>2.27.1</code>. To
 add a dependency to our program, we can simply add the following to our
-<code>Cargo.toml</code> under <code>dependencies</code>: <code>clap = &quot;2.27.1&quot;</code>.  And of course, <code>extern crate clap</code> in <code>main.rs</code>, just like normal. And that's it! You can start using
+<code>Cargo.toml</code> under <code>[dependencies]</code>: <code>clap = &quot;2.27.1&quot;</code>.  And of course, <code>extern crate clap</code> in <code>main.rs</code>, just like normal. And that's it! You can start using
 <code>clap</code> in your program.</p>
 <p><code>cargo</code> also supports <a href="https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html">other types of dependencies</a>. Here is just
 a small sampling:</p>
@@ -3675,8 +3675,8 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out
 that they don't race with each other. For example, if they all output to a
 file, you should make them write to different files.</p>
 <h1><a class="header" href="#build-scripts" id="build-scripts">Build Scripts</a></h1>
-<p>Sometimes a normal build from cargo is not enough. Perhaps your crate needs some
-pre-requisites before cargo will successfully compile, things like code
+<p>Sometimes a normal build from <code>cargo</code> is not enough. Perhaps your crate needs
+some pre-requisites before <code>cargo</code> will successfully compile, things like code
 generation, or some native code that needs to be compiled. To solve this problem
 we have build scripts that Cargo can run.</p>
 <p>To add a build script to your package it can either be specified in the
@@ -3689,15 +3689,16 @@ build = &quot;build.rs&quot;
 default.</p>
 <h2><a class="header" href="#how-to-use-a-build-script" id="how-to-use-a-build-script">How to use a build script</a></h2>
 <p>The build script is simply another Rust file that will be compiled and invoked
-prior to compiling anything else in the package. Hence it can be used to fulfil
+prior to compiling anything else in the package. Hence it can be used to fulfill
 pre-requisites of your crate.</p>
 <p>Cargo provides the script with inputs via environment variables <a href="https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts">specified
 here</a> that can be used.</p>
 <p>The script provides output via stdout. All lines printed are written to
 <code>target/debug/build/&lt;pkg&gt;/output</code>. Further, lines prefixed with <code>cargo:</code> will be
 interpreted by Cargo directly and hence can be used to define parameters for the
-packages compilation.</p>
-<p>For further specification and examples have a read of the <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">cargo specification</a>.</p>
+package's compilation.</p>
+<p>For further specification and examples have a read of the
+<a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">Cargo specification</a>.</p>
 <h1><a class="header" href="#attributes" id="attributes">Attributes</a></h1>
 <p>An attribute is metadata applied to some module, crate or item. This metadata
 can be used to/for:</p>
@@ -6735,9 +6736,7 @@ fn double_first(vec: Vec&lt;&amp;str&gt;) -&gt; Result&lt;Option&lt;i32&gt;, Par
         first.parse::&lt;i32&gt;().map(|n| 2 * n)
     });
 
-    let opt = opt.map_or(Ok(None), |r| r.map(Some))?;
-
-    Ok(opt)
+    opt.map_or(Ok(None), |r| r.map(Some))
 }
 
 fn main() {
@@ -9072,8 +9071,8 @@ fn test_add() {
 <p>Modules with common code follow the ordinary <a href="testing/../mod.html">modules</a> rules, so it's ok to
 create common module as <code>tests/common/mod.rs</code>.</p>
 <h1><a class="header" href="#development-dependencies" id="development-dependencies">Development dependencies</a></h1>
-<p>Sometimes there is a need to have a dependencies for tests (examples,
-benchmarks) only. Such dependencies are added to <code>Cargo.toml</code> in
+<p>Sometimes there is a need to have dependencies for tests (examples,
+benchmarks) only. Such dependencies are added to <code>Cargo.toml</code> in the
 <code>[dev-dependencies]</code> section. These dependencies are not propagated to other
 packages which depend on this package.</p>
 <p>One such example is using a crate that extends standard <code>assert!</code> macros.<br />

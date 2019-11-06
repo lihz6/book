@@ -146,8 +146,8 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#build-scripts" id="build-scripts">Build Scripts</a></h1>
-<p>Sometimes a normal build from cargo is not enough. Perhaps your crate needs some
-pre-requisites before cargo will successfully compile, things like code
+<p>Sometimes a normal build from <code>cargo</code> is not enough. Perhaps your crate needs
+some pre-requisites before <code>cargo</code> will successfully compile, things like code
 generation, or some native code that needs to be compiled. To solve this problem
 we have build scripts that Cargo can run.</p>
 <p>To add a build script to your package it can either be specified in the
@@ -160,15 +160,16 @@ build = &quot;build.rs&quot;
 default.</p>
 <h2><a class="header" href="#how-to-use-a-build-script" id="how-to-use-a-build-script">How to use a build script</a></h2>
 <p>The build script is simply another Rust file that will be compiled and invoked
-prior to compiling anything else in the package. Hence it can be used to fulfil
+prior to compiling anything else in the package. Hence it can be used to fulfill
 pre-requisites of your crate.</p>
 <p>Cargo provides the script with inputs via environment variables <a href="https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts">specified
 here</a> that can be used.</p>
 <p>The script provides output via stdout. All lines printed are written to
 <code>target/debug/build/&lt;pkg&gt;/output</code>. Further, lines prefixed with <code>cargo:</code> will be
 interpreted by Cargo directly and hence can be used to define parameters for the
-packages compilation.</p>
-<p>For further specification and examples have a read of the <a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">cargo specification</a>.</p>
+package's compilation.</p>
+<p>For further specification and examples have a read of the
+<a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">Cargo specification</a>.</p>
 
                     </main>
 

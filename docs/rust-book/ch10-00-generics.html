@@ -252,7 +252,7 @@ number in two different lists.</p>
 <pre><pre class="playpen"><code class="language-rust">fn largest(list: &amp;[i32]) -&gt; i32 {
     let mut largest = list[0];
 
-    for &amp;item in list.iter() {
+    for &amp;item in list {
         if item &gt; largest {
             largest = item;
         }

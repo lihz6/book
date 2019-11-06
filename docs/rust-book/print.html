@@ -8215,7 +8215,7 @@ number in two different lists.</p>
 <pre><pre class="playpen"><code class="language-rust">fn largest(list: &amp;[i32]) -&gt; i32 {
     let mut largest = list[0];
 
-    for &amp;item in list.iter() {
+    for &amp;item in list {
         if item &gt; largest {
             largest = item;
         }
@@ -20087,7 +20087,7 @@ of <code>i32</code> values rather than for a generic type <code>T</code>.</p>
 <p>This function first gets the total length of the slice. Then it asserts that
 the index given as a parameter is within the slice by checking whether it’s
 less than or equal to the length. The assertion means that if we pass an index
-that is greater than the index to split the slice at, the function will panic
+that is greater than the length to split the slice at, the function will panic
 before it attempts to use that index.</p>
 <p>Then we return two mutable slices in a tuple: one from the start of the
 original slice to the <code>mid</code> index and another from <code>mid</code> to the end of the

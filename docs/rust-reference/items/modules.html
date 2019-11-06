@@ -261,7 +261,7 @@ macros imported with <a href="../macros-by-example.html#the-macro_use-attribute"
 <a href="../crates-and-source-files.html#preludes-and-no_std">prelude</a>. These names are all made of a single identifier. These names are not
 part of the module, so for example, any name <code>name</code>, <code>self::name</code> is not a
 valid path. The names added by the <a href="../crates-and-source-files.html#preludes-and-no_std">prelude</a> can be removed by placing the
-<code>no_implicit_prelude</code> <a href="../attributes.html">attribute</a> onto the module.</p>
+<code>no_implicit_prelude</code> <a href="../attributes.html">attribute</a> onto the module or one of its ancestor modules.</p>
 <h2><a class="header" href="#attributes-on-modules" id="attributes-on-modules">Attributes on Modules</a></h2>
 <p>Modules, like all items, accept outer attributes. They also accept inner
 attributes: either after <code>{</code> for a module with a body, or at the beginning of the
