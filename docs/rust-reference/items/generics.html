@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -210,7 +210,10 @@ checked when the item is defined. It is an error for such a bound to be false.</
 types when defining the item. It is an error to have <code>Copy</code> or <code>Clone</code>as a
 bound on a mutable reference, <a href="../types/trait-object.html">trait object</a> or <a href="../types/array.html">slice</a> or <code>Sized</code> as a
 bound on a trait object or slice.</p>
-<pre><code class="language-rust ignore">struct A&lt;T&gt;
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>struct A&lt;T&gt;
 where
     T: Iterator,            // Could use A&lt;T: Iterator&gt; instead
     T::Item: Copy,
@@ -221,13 +224,15 @@ where
 {
     f: T,
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#attributes" id="attributes">Attributes</a></h2>
 <p>Generic lifetime and type parameters allow <a href="../attributes.html">attributes</a> on them. There are no
 built-in attributes that do anything in this position, although custom derive
 attributes may give meaning to it.</p>
 <p>This example shows using a custom derive attribute to modify the meaning of a
 generic parameter.</p>
+<!-- ignore: requires proc macro derive -->
 <pre><code class="language-rust ignore">// Assume that the derive for MyFlexibleClone declared `my_flexible_clone` as
 // an attribute it understands.
 #[derive(MyFlexibleClone)]

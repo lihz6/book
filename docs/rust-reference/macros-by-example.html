@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -327,6 +327,7 @@ exporting, and importing of macros is controlled largely by attributes.</p>
 path), it is first looked up in textual scoping. If this does not yield any
 results, then it is looked up in path-based scoping. If the macro's name is
 qualified with a path, then it is only looked up in path-based scoping.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">use lazy_static::lazy_static; // Path-based import.
 
 macro_rules! lazy_static { // Textual definition.
@@ -344,6 +345,7 @@ macro, the macro enters the scope after the definition (note that it can still
 be used recursively, since names are looked up from the invocation site), up
 until its surrounding scope, typically a module, is closed. This can enter child
 modules and even span across multiple files:</p>
+<!-- ignore: requires external modules -->
 <pre><code class="language-rust ignore">//// src/lib.rs
 mod has_macro {
     // m!{} // Error: m is not in scope.
@@ -433,6 +435,7 @@ by <code>#[macro_use]</code> can be used before the import statement, in case of
 conflict, the last macro imported wins. Optionally, a list of macros to import
 can be specified using the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaListIdents</em></a> syntax; this is not supported
 when <code>#[macro_use]</code> is applied to a module.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">#[macro_use(lazy_static)] // Or #[macro_use] to import all macros.
 extern crate lazy_static;
 
@@ -472,6 +475,7 @@ looked up at the macro's invocation site. This can lead to issues if a macro
 refers to an item or macro which isn't in scope at the invocation site. To
 alleviate this, the <code>$crate</code> metavariable can be used at the start of a path to
 force lookup to occur inside the crate defining the macro.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">//// Definitions in the `helper_macro` crate.
 #[macro_export]
 macro_rules! helped {

@@ -336,7 +336,7 @@ impl Worker {
                     Message::NewJob(job) =&gt; {
                         println!(&quot;Worker {} got a job; executing.&quot;, id);
 
-                        job.call_box();
+                        job();
                     },
                     Message::Terminate =&gt; {
                         println!(&quot;Worker {} was told to terminate.&quot;, id);
@@ -542,17 +542,7 @@ pub struct ThreadPool {
     sender: mpsc::Sender&lt;Message&gt;,
 }
 
-trait FnBox {
-    fn call_box(self: Box&lt;Self&gt;);
-}
-
-impl&lt;F: FnOnce()&gt; FnBox for F {
-    fn call_box(self: Box&lt;F&gt;) {
-        (*self)()
-    }
-}
-
-type Job = Box&lt;dyn FnBox + Send + 'static&gt;;
+type Job = Box&lt;dyn FnOnce() + Send + 'static&gt;;
 
 impl ThreadPool {
     /// Create a new ThreadPool.
@@ -628,7 +618,7 @@ impl Worker {
                     Message::NewJob(job) =&gt; {
                         println!(&quot;Worker {} got a job; executing.&quot;, id);
 
-                        job.call_box();
+                        job();
                     },
                     Message::Terminate =&gt; {
                         println!(&quot;Worker {} was told to terminate.&quot;, id);

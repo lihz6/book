@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -159,6 +159,14 @@
 <p>The never type <code>!</code> is a type with no values, representing the result of
 computations that never complete. Expressions of type <code>!</code> can be coerced into
 any other type.</p>
+<pre><pre class="playpen"><code class="language-rust should_panic">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>let x: ! = panic!();
+// Can be coerced into any type.
+let y: u32 = x;
+<span class="boring">}
+</code></pre></pre>
 
                     </main>
 

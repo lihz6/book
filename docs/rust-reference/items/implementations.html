@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -286,29 +286,30 @@ impl Shape for Circle {
 <span class="boring">}
 </code></pre></pre>
 <h3><a class="header" href="#trait-implementation-coherence" id="trait-implementation-coherence">Trait Implementation Coherence</a></h3>
-<p>A trait implementation is considered incoherent if either the orphan check fails
+<p>A trait implementation is considered incoherent if either the orphan rules check fails
 or there are overlapping implementation instances.</p>
 <p>Two trait implementations overlap when there is a non-empty intersection of the
 traits the implementation is for, the implementations can be instantiated with
 the same type. <!-- This is probably wrong? Source: No two implementations can
 be instantiable with the same set of types for the input type parameters. --></p>
-<p>The <code>Orphan Check</code> states that every trait implementation must meet either of
-the following conditions:</p>
-<ol>
-<li>
-<p>The trait being implemented is defined in the same crate.</p>
+<h4><a class="header" href="#orphan-rules" id="orphan-rules">Orphan rules</a></h4>
+<p>Given <code>impl&lt;P1..=Pn&gt; Trait&lt;T1..=Tn&gt; for T0</code>, an <code>impl</code> is valid only if at
+least one of the following is true:</p>
+<ul>
+<li><code>Trait</code> is a <a href="../glossary.html#local-trait">local trait</a></li>
+<li>All of
+<ul>
+<li>At least one of the types <code>T0..=Tn</code> must be a <a href="../glossary.html#local-type">local type</a>. Let <code>Ti</code> be the
+first such type.</li>
+<li>No <a href="../glossary.html#uncovered-type">uncovered type</a> parameters <code>P1..=Pn</code> may appear in <code>T0..Ti</code> (excluding
+<code>Ti</code>)</li>
+</ul>
 </li>
-<li>
-<p>At least one of either <code>Self</code> or a generic type parameter of the trait must
-meet the following grammar, where <code>C</code> is a nominal type defined
-within the containing crate:</p>
-<pre><code class="language-ignore"> T = C
-   | &amp;C
-   | &amp;mut C
-   | Box&lt;C&gt;
-</code></pre>
-</li>
-</ol>
+</ul>
+<p>Only the appearance of <em>uncovered</em> type parameters is restricted.
+Note that for the purposes of coherence, <a href="../glossary.html#fundamental-type-constructors">fundamental types</a> are
+special. The <code>T</code> in <code>Box&lt;T&gt;</code> is not considered covered, and <code>Box&lt;LocalType&gt;</code> 
+is considered local.</p>
 <h2><a class="header" href="#generic-implementations" id="generic-implementations">Generic Implementations</a></h2>
 <p>An implementation can take type and lifetime parameters, which can be used in
 the rest of the implementation. Type parameters declared for an implementation

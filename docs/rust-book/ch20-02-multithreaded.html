@@ -988,7 +988,7 @@ impl Worker {
 
                 println!(&quot;Worker {} got a job; executing.&quot;, id);
 
-                (*job)();
+                job();
             }
         });
 
@@ -1015,94 +1015,6 @@ how the <code>send</code> method returns <code>Err</code> if the receiving side 
 <p>The call to <code>recv</code> blocks, so if there is no job yet, the current thread will
 wait until a job becomes available. The <code>Mutex&lt;T&gt;</code> ensures that only one
 <code>Worker</code> thread at a time is trying to request a job.</p>
-<p>Theoretically, this code should compile. Unfortunately, the Rust compiler isn’t
-perfect yet, and we get this error:</p>
-<pre><code class="language-text">error[E0161]: cannot move a value of type std::ops::FnOnce() +
-std::marker::Send: the size of std::ops::FnOnce() + std::marker::Send cannot be
-statically determined
-  --&gt; src/lib.rs:63:17
-   |
-63 |                 (*job)();
-   |                 ^^^^^^
-</code></pre>
-<p>This error is fairly cryptic because the problem is fairly cryptic. To call a
-<code>FnOnce</code> closure that is stored in a <code>Box&lt;T&gt;</code> (which is what our <code>Job</code> type
-alias is), the closure needs to move itself <em>out</em> of the <code>Box&lt;T&gt;</code> because the
-closure takes ownership of <code>self</code> when we call it. In general, Rust doesn’t
-allow us to move a value out of a <code>Box&lt;T&gt;</code> because Rust doesn’t know how big
-the value inside the <code>Box&lt;T&gt;</code> will be: recall in Chapter 15 that we used
-<code>Box&lt;T&gt;</code> precisely because we had something of an unknown size that we wanted
-to store in a <code>Box&lt;T&gt;</code> to get a value of a known size.</p>
-<p>As you saw in Listing 17-15, we can write methods that use the syntax <code>self: Box&lt;Self&gt;</code>, which allows the method to take ownership of a <code>Self</code> value stored
-in a <code>Box&lt;T&gt;</code>. That’s exactly what we want to do here, but unfortunately Rust
-won’t let us: the part of Rust that implements behavior when a closure is
-called isn’t implemented using <code>self: Box&lt;Self&gt;</code>. So Rust doesn’t yet
-understand that it could use <code>self: Box&lt;Self&gt;</code> in this situation to take
-ownership of the closure and move the closure out of the <code>Box&lt;T&gt;</code>.</p>
-<p>Rust is still a work in progress with places where the compiler could be
-improved, but in the future, the code in Listing 20-20 should work just fine.
-People just like you are working to fix this and other issues! After you’ve
-finished this book, we would love for you to join in.</p>
-<p>But for now, let’s work around this problem using a handy trick. We can tell
-Rust explicitly that in this case we can take ownership of the value inside the
-<code>Box&lt;T&gt;</code> using <code>self: Box&lt;Self&gt;</code>; then, once we have ownership of the closure,
-we can call it. This involves defining a new trait <code>FnBox</code> with the method
-<code>call_box</code> that will use <code>self: Box&lt;Self&gt;</code> in its signature, defining <code>FnBox</code>
-for any type that implements <code>FnOnce()</code>, changing our type alias to use the new
-trait, and changing <code>Worker</code> to use the <code>call_box</code> method. These changes are
-shown in Listing 20-21.</p>
-<p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">trait FnBox {
-    fn call_box(self: Box&lt;Self&gt;);
-}
-
-impl&lt;F: FnOnce()&gt; FnBox for F {
-    fn call_box(self: Box&lt;F&gt;) {
-        (*self)()
-    }
-}
-
-type Job = Box&lt;dyn FnBox + Send + 'static&gt;;
-
-// --snip--
-
-impl Worker {
-    fn new(id: usize, receiver: Arc&lt;Mutex&lt;mpsc::Receiver&lt;Job&gt;&gt;&gt;) -&gt; Worker {
-        let thread = thread::spawn(move || {
-            loop {
-                let job = receiver.lock().unwrap().recv().unwrap();
-
-                println!(&quot;Worker {} got a job; executing.&quot;, id);
-
-                job.call_box();
-            }
-        });
-
-        Worker {
-            id,
-            thread,
-        }
-    }
-}
-</code></pre>
-<p><span class="caption">Listing 20-21: Adding a new trait <code>FnBox</code> to work around
-the current limitations of <code>Box&lt;FnOnce()&gt;</code></span></p>
-<p>First, we create a new trait named <code>FnBox</code>. This trait has the one method
-<code>call_box</code>, which is similar to the <code>call</code> methods on the other <code>Fn*</code> traits
-except that it takes <code>self: Box&lt;Self&gt;</code> to take ownership of <code>self</code> and move the
-value out of the <code>Box&lt;T&gt;</code>.</p>
-<p>Next, we implement the <code>FnBox</code> trait for any type <code>F</code> that implements the
-<code>FnOnce()</code> trait. Effectively, this means that any <code>FnOnce()</code> closures can use
-our <code>call_box</code> method. The implementation of <code>call_box</code> uses <code>(*self)()</code> to
-move the closure out of the <code>Box&lt;T&gt;</code> and call the closure.</p>
-<p>We now need our <code>Job</code> type alias to be a <code>Box</code> of anything that implements our
-new trait <code>FnBox</code>. This will allow us to use <code>call_box</code> in <code>Worker</code> when we get
-a <code>Job</code> value instead of invoking the closure directly. Implementing the
-<code>FnBox</code> trait for any <code>FnOnce()</code> closure means we don’t have to change anything
-about the actual values we’re sending down the channel. Now Rust is able to
-recognize that what we want to do is fine.</p>
-<p>This trick is very sneaky and complicated. Don’t worry if it doesn’t make
-perfect sense; someday, it will be completely unnecessary.</p>
 <p>With the implementation of this trick, our thread pool is in a working state!
 Give it a <code>cargo run</code> and make some requests:</p>
 <pre><code class="language-text">$ cargo run
@@ -1156,7 +1068,7 @@ multiple instances of the same request sequentially for caching reasons. This
 limitation is not caused by our web server.</p>
 </blockquote>
 <p>After learning about the <code>while let</code> loop in Chapter 18, you might be wondering
-why we didn’t write the worker thread code as shown in Listing 20-22.</p>
+why we didn’t write the worker thread code as shown in Listing 20-21.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
 <pre><code class="language-rust ignore not_desired_behavior">// --snip--
 
@@ -1166,7 +1078,7 @@ impl Worker {
             while let Ok(job) = receiver.lock().unwrap().recv() {
                 println!(&quot;Worker {} got a job; executing.&quot;, id);
 
-                job.call_box();
+                job();
             }
         });
 
@@ -1177,7 +1089,7 @@ impl Worker {
     }
 }
 </code></pre>
-<p><span class="caption">Listing 20-22: An alternative implementation of
+<p><span class="caption">Listing 20-21: An alternative implementation of
 <code>Worker::new</code> using <code>while let</code></span></p>
 <p>This code compiles and runs but doesn’t result in the desired threading
 behavior: a slow request will still cause other requests to wait to be
@@ -1190,12 +1102,12 @@ lock. But this implementation can also result in the lock being held longer
 than intended if we don’t think carefully about the lifetime of the
 <code>MutexGuard&lt;T&gt;</code>. Because the values in the <code>while</code> expression remain in scope
 for the duration of the block, the lock remains held for the duration of the
-call to <code>job.call_box()</code>, meaning other workers cannot receive jobs.</p>
+call to <code>job()</code>, meaning other workers cannot receive jobs.</p>
 <p>By using <code>loop</code> instead and acquiring the lock and a job within the block
 rather than outside it, the <code>MutexGuard</code> returned from the <code>lock</code> method is
 dropped as soon as the <code>let job</code> statement ends. This ensures that the lock is
 held during the call to <code>recv</code>, but it is released before the call to
-<code>job.call_box()</code>, allowing multiple requests to be serviced concurrently.</p>
+<code>job()</code>, allowing multiple requests to be serviced concurrently.</p>
 
                     </main>
 

@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -305,10 +305,10 @@ default such as:</p>
 feature. These target features are typically configured from the command line
 via flags to the compiler itself. For example to enable a static runtime you
 would execute:</p>
-<pre><code class="language-notrust">rustc -C target-feature=+crt-static foo.rs
+<pre><code class="language-bash">rustc -C target-feature=+crt-static foo.rs
 </code></pre>
 <p>whereas to link dynamically to the C runtime you would execute:</p>
-<pre><code class="language-notrust">rustc -C target-feature=-crt-static foo.rs
+<pre><code class="language-bash">rustc -C target-feature=-crt-static foo.rs
 </code></pre>
 <p>Targets which do not support switching between linkage of the C runtime will
 ignore this flag. It's recommended to inspect the resulting binary to ensure
@@ -317,16 +317,20 @@ that it's linked as you would expect after the compiler succeeds.</p>
 example, needs to be compiled differently (e.g. with <code>/MT</code> or <code>/MD</code>) depending
 on the runtime being linked. This is exported currently through the
 <a href="conditional-compilation.html#target_feature"><code>cfg</code> attribute <code>target_feature</code> option</a>:</p>
-<pre><code class="language-rust ignore">#[cfg(target_feature = &quot;crt-static&quot;)]
-fn foo() {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[cfg(target_feature = &quot;crt-static&quot;)]
+</span>fn foo() {
     println!(&quot;the C runtime should be statically linked&quot;);
 }
 
-#[cfg(not(target_feature = &quot;crt-static&quot;))]
-fn foo() {
+<span class="boring">[cfg(not(target_feature = &quot;crt-static&quot;))]
+</span>fn foo() {
     println!(&quot;the C runtime should be dynamically linked&quot;);
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Also note that Cargo build scripts can learn about this feature through
 <a href="../cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts">environment variables</a>. In a build script you can detect the linkage
 via:</p>
@@ -345,7 +349,7 @@ fn main() {
 <p>To use this feature locally, you typically will use the <code>RUSTFLAGS</code> environment
 variable to specify flags to the compiler through Cargo. For example to compile
 a statically linked binary on MSVC you would execute:</p>
-<pre><code class="language-ignore notrust">RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-pc-windows-msvc
+<pre><code class="language-bash">RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-pc-windows-msvc
 </code></pre>
 
                     </main>

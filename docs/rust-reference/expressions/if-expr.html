@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -250,6 +250,7 @@ assert_eq!(a, 3);
 <span class="boring">}
 </code></pre></pre>
 <p>An <code>if let</code> expression is equivalent to a <a href="match-expr.html"><code>match</code> expression</a> as follows:</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">if let PATS = EXPR {
     /* body */
 } else {
@@ -257,6 +258,7 @@ assert_eq!(a, 3);
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">match EXPR {
     PATS =&gt; { /* body */ },
     _ =&gt; { /* else */ },    // () if there is no else
@@ -283,6 +285,7 @@ Use of a lazy boolean operator is ambiguous with a planned feature change
 of the language (the implementation of if-let chains - see <a href="https://github.com/rust-lang/rfcs/blob/master/text/2497-if-let-chains.md#rollout-plan-and-transitioning-to-rust-2018">eRFC 2947</a>).
 When lazy boolean operator expression is desired, this can be achieved
 by using parenthesis as below:</p>
+<!-- ignore: psuedo code -->
 <pre><code class="language-rust ignore">// Before...
 if let PAT = EXPR &amp;&amp; EXPR { .. }
 

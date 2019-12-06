@@ -1633,7 +1633,7 @@ fn main() {
 generic traits for converting between types. Unlike <code>From</code>/<code>Into</code>, the
 <code>TryFrom</code>/<code>TryInto</code> traits are used for fallible conversions, and as such,
 return <a href="https://doc.rust-lang.org/std/result/enum.Result.html"><code>Result</code></a>s.</p>
-<pre><pre class="playpen"><code class="language-rust">use std::convert::TryFrom;
+<pre><pre class="playpen"><code class="language-rust editable">use std::convert::TryFrom;
 use std::convert::TryInto;
 
 <span class="boring">[derive(Debug, PartialEq)]
@@ -3474,7 +3474,7 @@ the compiler over it. In other words, modules do <em>not</em> get compiled
 individually, only crates get compiled.</p>
 <p>A crate can be compiled into a binary or into a library. By default, <code>rustc</code>
 will produce a binary from a crate. This behavior can be overridden by passing
-the <code>--crate-type</code> flag to <code>rustc</code>.</p>
+the <code>--crate-type</code> flag to <code>lib</code>.</p>
 <h1><a class="header" href="#library" id="library">Library</a></h1>
 <p>Let's create a library, and then see how to link it to another crate.</p>
 <pre><code class="language-rust ignore">pub fn public_function() {

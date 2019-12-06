@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -204,6 +204,7 @@ means that the tail expression of the block, if evaluated, ends up being
 returned to the caller. As usual, an explicit return expression within
 the body of the function will short-cut that implicit return, if reached.</p>
 <p>For example, the function above behaves as if it was written as:</p>
+<!-- ignore: example expansion -->
 <pre><code class="language-rust ignore">// argument_0 is the actual first argument passed from the caller
 let (value, _) = argument_0;
 return {
@@ -257,11 +258,13 @@ sufficient context to determine the type parameters. For example,
 <h2><a class="header" href="#extern-function-qualifier" id="extern-function-qualifier">Extern function qualifier</a></h2>
 <p>The <code>extern</code> function qualifier allows providing function <em>definitions</em> that can
 be called with a particular ABI:</p>
-<pre><code class="language-rust ignore">extern &quot;ABI&quot; fn foo() { ... }
+<p>+<!-- ignore: fake ABI --></p>
+<pre><code class="language-rust ignore">extern &quot;ABI&quot; fn foo() { /* ... */ }
 </code></pre>
 <p>These are often used in combination with <a href="external-blocks.html">external block</a> items which provide
 function <em>declarations</em> that can be used to call functions without providing
 their <em>definition</em>:</p>
+<p>+<!-- ignore: fake ABI --></p>
 <pre><code class="language-rust ignore">extern &quot;ABI&quot; {
   fn foo(); /* no body */
 }
@@ -526,6 +529,7 @@ allowed but be careful to not include these inert attributes in your final <code
 <p>For example, the following code defines an inert <code>some_inert_attribute</code> attribute that
 is not formally defined anywhere and the <code>some_proc_macro_attribute</code> procedural macro is
 responsible for detecting its presence and removing it from the output token stream.</p>
+<!-- ignore: requires proc macro -->
 <pre><code class="language-rust ignore">#[some_proc_macro_attribute]
 fn foo_oof(#[some_inert_attribute] arg: u8) {
 }

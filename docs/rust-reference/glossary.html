@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -172,6 +172,9 @@ at run time by the program. It occupies a contiguous region of memory.</p>
 items are defined in <a href="items/implementations.html">implementations</a> and declared in <a href="items/traits.html">traits</a>. Only
 functions, constants, and type aliases can be associated. Contrast to a <a href="#free-item">free
 item</a>.</p>
+<h3><a class="header" href="#blanket-implementation" id="blanket-implementation">Blanket implementation</a></h3>
+<p>Any implementation where a type appears <a href="#uncovered-type">uncovered</a>. <code>impl&lt;T&gt; Foo for T</code>, <code>impl&lt;T&gt; Bar&lt;T&gt; for T</code>, <code>impl&lt;T&gt; Bar&lt;Vec&lt;T&gt;&gt; for T</code>, and <code>impl&lt;T&gt; Bar&lt;T&gt; for Vec&lt;T&gt;</code> are considered blanket impls. However, <code>impl&lt;T&gt; Bar&lt;Vec&lt;T&gt;&gt; for Vec&lt;T&gt;</code> is not a blanket impl, as all instances of <code>T</code> which appear in this <code>impl</code>
+are covered by <code>Vec</code>.</p>
 <h3><a class="header" href="#bound" id="bound">Bound</a></h3>
 <p>Bounds are constraints on a type or trait. For example, if a bound
 is placed on the argument a function takes, types passed to that function
@@ -194,6 +197,16 @@ and functions that evaluate to a single value, with or without side-effects.</p>
 <h3><a class="header" href="#free-item" id="free-item">Free item</a></h3>
 <p>An <a href="items.html">item</a> that is not a member of an <a href="items/implementations.html">implementation</a>, such as a <em>free
 function</em> or a <em>free const</em>. Contrast to an <a href="#associated-item">associated item</a>.</p>
+<h3><a class="header" href="#fundamental-traits" id="fundamental-traits">Fundamental traits</a></h3>
+<p>A fundamental trait is one where adding an impl of it for an existing type is a breaking change. 
+The <code>Fn</code> traits and <code>Sized</code> are fundamental.</p>
+<h3><a class="header" href="#fundamental-type-constructors" id="fundamental-type-constructors">Fundamental type constructors</a></h3>
+<p>A fundamental type constructor is a type where implementing a <a href="#blanket-implementation">blanket implementation</a> over it 
+is a breaking change. <code>&amp;</code>, <code>&amp;mut</code>, <code>Box</code>, and <code>Pin</code>  are fundamental. </p>
+<p>Any time a type <code>T</code> is considered <a href="#local-type">local</a>, <code>&amp;T</code>, <code>&amp;mut T</code>, <code>Box&lt;T&gt;</code>, and <code>Pin&lt;T&gt;</code> 
+are also considered local. Fundamental type constructors cannot <a href="#uncovered-type">cover</a> other types. 
+Any time the term &quot;covered type&quot; is used, 
+the <code>T</code> in <code>&amp;T</code>, <code>&amp;mut T</code>, <code>Box&lt;T&gt;</code>, and <code>Pin&lt;T&gt;</code> is not considered covered.</p>
 <h3><a class="header" href="#inhabited" id="inhabited">Inhabited</a></h3>
 <p>A type is inhabited if it has constructors and therefore can be instantiated. An inhabited type is
 not &quot;empty&quot; in the sense that there can be values of the type. Opposite of
@@ -208,6 +221,15 @@ implementation.</p>
 <p>A variable is initialized if it has been assigned a value and hasn't since been
 moved from. All other memory locations are assumed to be uninitialized. Only
 unsafe Rust can create such a memory without initializing it.</p>
+<h3><a class="header" href="#local-trait" id="local-trait">Local trait</a></h3>
+<p>A <code>trait</code> which was defined in the current crate. A trait definition is local
+or not independent of applied type arguments. Given <code>trait Foo&lt;T, U&gt;</code>,
+<code>Foo</code> is always local, regardless of the types substituted for <code>T</code> and <code>U</code>.</p>
+<h3><a class="header" href="#local-type" id="local-type">Local type</a></h3>
+<p>A <code>struct</code>, <code>enum</code>, or <code>union</code> which was defined in the current crate.
+This is not affected by applied type arguments. <code>struct Foo</code> is considered local, but
+<code>Vec&lt;Foo&gt;</code> is not. <code>LocalType&lt;ForeignType&gt;</code> is local. Type aliases do not 
+affect locality.</p>
 <h3><a class="header" href="#nominal-types" id="nominal-types">Nominal types</a></h3>
 <p>Types that can be referred to by a path directly. Specifically <a href="items/enumerations.html">enums</a>,
 <a href="items/structs.html">structs</a>, <a href="items/unions.html">unions</a>, and <a href="types/trait-object.html">trait objects</a>.</p>
@@ -251,6 +273,10 @@ string slice type is <code>&amp;str</code>, while the mutable string slice type 
 <p>A trait is a language item that is used for describing the functionalities a type must provide.
 It allows a type to make certain promises about its behavior.</p>
 <p>Generic functions and generic structs can use traits to constrain, or bound, the types they accept.</p>
+<h3><a class="header" href="#uncovered-type" id="uncovered-type">Uncovered type</a></h3>
+<p>A type which does not appear as an argument to another type. For example,
+<code>T</code> is uncovered, but the <code>T</code> in <code>Vec&lt;T&gt;</code> is covered. This is only relevant for
+type arguments.</p>
 <h3><a class="header" href="#undefined-behavior" id="undefined-behavior">Undefined behavior</a></h3>
 <p>Compile-time or run-time behavior that is not specified. This may result in,
 but is not limited to: process termination or corruption; improper, incorrect,

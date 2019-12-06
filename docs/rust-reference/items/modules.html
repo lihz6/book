@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -219,6 +219,7 @@ influenced with the <code>path</code> attribute.</p>
 <p>For <code>path</code> attributes on modules not inside inline module blocks, the file
 path is relative to the directory the source file is located. For example, the
 following code snippet would use the paths shown based on where it is located:</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">#[path = &quot;foo.rs&quot;]
 mod c;
 </code></pre>
@@ -236,6 +237,7 @@ including the inline module components as directories. For non-mod-rs files,
 it is the same except the path starts with a directory with the name of the
 non-mod-rs module. For example, the following code snippet would use the paths
 shown based on where it is located:</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">mod inline {
     #[path = &quot;other.rs&quot;]
     mod inner;
@@ -247,6 +249,7 @@ shown based on where it is located:</p>
 </tbody></table>
 <p>An example of combining the above rules of <code>path</code> attributes on inline modules
 and nested modules within (applies to both mod-rs and non-mod-rs files):</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">#[path = &quot;thread_files&quot;]
 mod thread {
     // Load the `local_data` module from `thread_files/tls.rs` relative to

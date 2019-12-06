@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -238,10 +238,10 @@ those types of ranges supported by range patterns can be used in match arms.</p>
 <p>Every binding in each <code>|</code> separated pattern must appear in all of the patterns
 in the arm. Every binding of the same name must have the same type, and have
 the same binding mode.</p>
+<h2><a class="header" href="#match-guards" id="match-guards">Match guards</a></h2>
 <p>Match arms can accept <em>match guards</em> to further refine the
 criteria for matching a case. Pattern guards appear after the pattern and
-consist of a bool-typed expression following the <code>if</code> keyword. A pattern guard
-may refer to the variables bound within the pattern they follow.</p>
+consist of a <code>bool</code>-typed expression following the <code>if</code> keyword.</p>
 <p>When the pattern matches successfully, the pattern guard expression is executed.
 If the expression evaluates to true, the pattern is successfully matched against.
 Otherwise, the next pattern, including other matches with the <code>|</code> operator in
@@ -275,6 +275,15 @@ assert_eq!(i.get(), 2);
 <span class="boring">}
 </code></pre></pre>
 </blockquote>
+<p>A pattern guard may refer to the variables bound within the pattern they follow.
+Before evaluating the guard, a shared reference is taken to the part of the
+scrutinee the variable matches on. While evaluating the guard,
+this shared reference is then used when accessing the variable.
+Only when the guard evaluates to true is the value moved, or copied,
+from the scrutinee into the variable. This allows shared borrows to be used
+inside guards without moving out of the scrutinee in case guard fails to match.
+Moreover, by holding a shared reference while evaluating the guard,
+mutation inside guards is also prevented.</p>
 <h2><a class="header" href="#attributes-on-match-arms" id="attributes-on-match-arms">Attributes on match arms</a></h2>
 <p>Outer attributes are allowed on match arms. The only attributes that have
 meaning on match arms are <a href="../conditional-compilation.html"><code>cfg</code></a>, <a href="../attributes/codegen.html#the-cold-attribute"><code>cold</code></a>, and the <a href="../attributes/diagnostics.html#lint-check-attributes">lint check attributes</a>.</p>

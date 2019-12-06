@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -158,6 +158,7 @@ consists of only one segment, it refers to either an <a href="items.html">item</
 a local control scope. If a path has multiple segments, it always refers to an
 item.</p>
 <p>Two examples of simple paths consisting of only identifier segments:</p>
+<!-- ignore: syntax fragment -->
 <pre><code class="language-rust ignore">x;
 x::y::z;
 </code></pre>
@@ -269,10 +270,24 @@ S::f();  // Calls the inherent impl.
 and qualified paths.</p>
 <p>Although the <code>::</code> token is allowed before the generics arguments, it is not required
 because there is no ambiguity like there is in <em>PathInExpression</em>.</p>
-<pre><code class="language-rust ignore">impl ops::Index&lt;ops::Range&lt;usize&gt;&gt; for S { /*...*/ }
-fn i() -&gt; impl Iterator&lt;Item = op::Example&lt;'a&gt;&gt; { /*...*/ }
-type G = std::boxed::Box&lt;std::ops::FnOnce(isize) -&gt; isize&gt;;
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+mod ops {
+    pub struct Range&lt;T&gt; {f1: T}
+    pub trait Index&lt;T&gt; {}
+    pub struct Example&lt;'a&gt; {f1: &amp;'a i32}
+}
+struct S;
+</span>impl ops::Index&lt;ops::Range&lt;usize&gt;&gt; for S { /*...*/ }
+fn i&lt;'a&gt;() -&gt; impl Iterator&lt;Item = ops::Example&lt;'a&gt;&gt; {
+    // ...
+<span class="boring">   const EXAMPLE: Vec&lt;ops::Example&lt;'static&gt;&gt; = Vec::new();
+   EXAMPLE.into_iter()
+</span>}
+type G = std::boxed::Box&lt;dyn std::ops::FnOnce(isize) -&gt; isize&gt;;
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#path-qualifiers" id="path-qualifiers">Path qualifiers</a></h2>
 <p>Paths can be denoted with various leading qualifiers to change the meaning of
 how it is resolved.</p>

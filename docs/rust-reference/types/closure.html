@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -174,12 +174,14 @@ f(|| {
 <span class="boring">}
 </code></pre></pre>
 <p>generates a closure type roughly like the following:</p>
+<!-- ignore: simplified, requires unboxed_closures, fn_traits -->
 <pre><code class="language-rust ignore">struct Closure&lt;'a&gt; {
     s : String,
     t : &amp;'a String,
 }
 
-impl&lt;'a&gt; (FnOnce() -&gt; String) for Closure&lt;'a&gt; {
+impl&lt;'a&gt; FnOnce&lt;()&gt; for Closure&lt;'a&gt; {
+    type Output = String;
     fn call_once(self) -&gt; String {
         self.s += &amp;*self.t;
         self.s
@@ -187,6 +189,7 @@ impl&lt;'a&gt; (FnOnce() -&gt; String) for Closure&lt;'a&gt; {
 }
 </code></pre>
 <p>so that the call to <code>f</code> works as if it were:</p>
+<!-- ignore: continuation of above -->
 <pre><code class="language-rust ignore">f(Closure{s: s, t: &amp;t});
 </code></pre>
 <h2><a class="header" href="#capture-modes" id="capture-modes">Capture modes</a></h2>

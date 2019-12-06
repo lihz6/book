@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -187,8 +187,15 @@ let u = MyUnion { f1: 1 };
 <p>The expression above creates a value of type <code>MyUnion</code> and initializes the
 storage using field <code>f1</code>. The union can be accessed using the same syntax as
 struct fields:</p>
-<pre><code class="language-rust ignore">let f = u.f1;
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+union MyUnion { f1: u32, f2: f32 }
+</span>#
+<span class="boring">let u = MyUnion { f1: 1 };
+</span>let f = unsafe { u.f1 };
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#reading-and-writing-union-fields" id="reading-and-writing-union-fields">Reading and writing union fields</a></h2>
 <p>Unions have no notion of an &quot;active field&quot;. Instead, every union access just
 interprets the storage at the type of the field used for the access. Reading a
@@ -283,20 +290,25 @@ union can give write access to all its remaining fields. Borrow checking rules
 have to be adjusted to account for this fact. As a result, if one field of a
 union is borrowed, all its remaining fields are borrowed as well for the same
 lifetime.</p>
-<pre><code class="language-rust ignore">// ERROR: cannot borrow `u` (via `u.f2`) as mutable more than once at a time
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+union MyUnion { f1: u32, f2: f32 }
+</span>// ERROR: cannot borrow `u` (via `u.f2`) as mutable more than once at a time
 fn test() {
     let mut u = MyUnion { f1: 1 };
     unsafe {
         let b1 = &amp;mut u.f1;
-                      ---- first mutable borrow occurs here (via `u.f1`)
+//                    ---- first mutable borrow occurs here (via `u.f1`)
         let b2 = &amp;mut u.f2;
-                      ^^^^ second mutable borrow occurs here (via `u.f2`)
+//                    ^^^^ second mutable borrow occurs here (via `u.f2`)
         *b1 = 5;
     }
-    - first borrow ends here
+//  - first borrow ends here
     assert_eq!(unsafe { u.f1 }, 5);
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>As you could see, in many aspects (except for layouts, safety, and ownership)
 unions behave exactly like structs, largely as a consequence of inheriting
 their syntactic shape from structs. This is also true for many unmentioned

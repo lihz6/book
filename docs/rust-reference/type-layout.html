@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -309,6 +309,7 @@ is now. Then increase the current offset by the size of the field.</p>
 <p>Finally, the size of the struct is the current offset rounded up to the nearest
 multiple of the struct's alignment.</p>
 <p>Here is this algorithm described in pseudocode.</p>
+<!-- ignore: pseudocode -->
 <pre><code class="language-rust ignore">struct.alignment = struct.fields().map(|field| field.alignment).max();
 
 let current_offset = 0;

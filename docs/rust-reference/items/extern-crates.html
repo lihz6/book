@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -175,6 +175,7 @@ equal to the <a href="../identifiers.html">identifier</a> given in the <code>ext
 <p>The <code>self</code> crate may be imported which creates a binding to the current crate.
 In this case the <code>as</code> clause must be used to specify the name to bind it to.</p>
 <p>Three examples of <code>extern crate</code> declarations:</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">extern crate pcre;
 
 extern crate std; // equivalent to: extern crate std as std;
@@ -186,6 +187,7 @@ make use of them. In such case, when <code>Cargo.toml</code> doesn't specify a c
 Cargo will transparently replace <code>-</code> with <code>_</code> (Refer to <a href="https://github.com/rust-lang/rfcs/blob/master/text/0940-hyphens-considered-harmful.md">RFC 940</a> for more
 details).</p>
 <p>Here is an example:</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">// Importing the Cargo package hello-world
 extern crate hello_world; // hyphen replaced with an underscore
 </code></pre>

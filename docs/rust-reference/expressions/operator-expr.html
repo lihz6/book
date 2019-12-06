@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -405,10 +405,16 @@ functions and macros in the standard library can then use that assumption
 (although not to ensure safety). Unlike the arithmetic and logical operators
 above, these operators implicitly take shared borrows of their operands,
 evaluating them in <a href="../expressions.html#place-expressions-and-value-expressions">place expression context</a>:</p>
-<pre><code class="language-rust ignore">a == b;
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+let a = 1;
+let b = 1;
+</span>a == b;
 // is equivalent to
 ::std::cmp::PartialEq::eq(&amp;a, &amp;b);
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>This means that the operands don't have to be moved out of.</p>
 <table><thead><tr><th>Symbol</th><th>Meaning</th><th>Overloading method</th></tr></thead><tbody>
 <tr><td><code>==</code></td><td>Equal</td><td><code>std::cmp::PartialEq::eq</code></td></tr>

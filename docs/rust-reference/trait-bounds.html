@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -248,10 +248,16 @@ fn main() {
 <h2><a class="header" href="#higher-ranked-trait-bounds" id="higher-ranked-trait-bounds">Higher-ranked trait bounds</a></h2>
 <p>Type bounds may be <em>higher ranked</em> over lifetimes. These bounds specify a bound
 is true <em>for all</em> lifetimes. For example, a bound such as <code>for&lt;'a&gt; &amp;'a T: PartialEq&lt;i32&gt;</code> would require an implementation like</p>
-<pre><code class="language-rust ignore">impl&lt;'a&gt; PartialEq&lt;i32&gt; for &amp;'a T {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct T;
+</span>impl&lt;'a&gt; PartialEq&lt;i32&gt; for &amp;'a T {
     // ...
-}
-</code></pre>
+<span class="boring">   fn eq(&amp;self, other: &amp;i32) -&gt; bool {true}
+</span>}
+<span class="boring">}
+</code></pre></pre>
 <p>and could then be used to compare a <code>&amp;'a T</code> with any lifetime to an <code>i32</code>.</p>
 <p>Only a higher-ranked bound can be used here as the lifetime of the reference is
 shorter than a lifetime parameter on the function:</p>

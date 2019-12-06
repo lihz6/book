@@ -881,7 +881,7 @@ Rust 2018, the feature is stuck in limbo over how <code>size_of::&lt;MyExternTyp
 should behave.</p>
 <h1><a class="header" href="#alternative-representations" id="alternative-representations">Alternative representations</a></h1>
 <p>Rust allows you to specify alternative data layout strategies from the default.
-There's also the <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/tree/master/reference/src/representation.md">reference</a>.</p>
+There's also the <a href="https://rust-lang.github.io/unsafe-code-guidelines/layout.html">unsafe code guidelines</a> (note that it's <strong>NOT</strong> normative).</p>
 <h1><a class="header" href="#reprc" id="reprc">repr(C)</a></h1>
 <p>This is the most important <code>repr</code>. It has fairly simple intent: do what C does.
 The order, size, and alignment of fields is exactly what you would expect from C
@@ -3707,7 +3707,7 @@ killed in the name of heavy-weight OS threads. Still, on stable Rust as of 1.0
 panics can only be caught by the parent thread. This means catching a panic
 requires spinning up an entire OS thread! This unfortunately stands in conflict
 to Rust's philosophy of zero-cost abstractions.</p>
-<p>There is an unstable API called <code>catch_panic</code> that enables catching a panic
+<p>There is an API called <code>catch_panic</code> that enables catching a panic
 without spawning a thread. Still, we would encourage you to only do this
 sparingly. In particular, Rust's current unwinding implementation is heavily
 optimized for the &quot;doesn't unwind&quot; case. If a program doesn't unwind, there

@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -211,17 +211,26 @@ item's name.</p>
 <p>The <em><code>link_section</code> attribute</em> specifies the section of the object file that a
 <a href="items/functions.html">function</a> or <a href="items/static-items.html">static</a>'s content will be placed into. It uses the
 <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax to specify the section name.</p>
-<pre><code class="language-rust ignore">#[no_mangle]
-#[link_section = &quot;.example_section&quot;]
-pub static VAR1: u32 = 1;
-</code></pre>
+<!-- no_run: don't link. The format of the section name is platform-specific. -->
+<pre><pre class="playpen"><code class="language-rust no_run">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[no_mangle]
+[link_section = &quot;.example_section&quot;]
+</span>pub static VAR1: u32 = 1;
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#the-export_name-attribute" id="the-export_name-attribute">The <code>export_name</code> attribute</a></h2>
 <p>The <em><code>export_name</code> attribute</em> specifies the name of the symbol that will be
 exported on a <a href="items/functions.html">function</a> or <a href="items/static-items.html">static</a>. It uses the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax
 to specify the symbol name.</p>
-<pre><code class="language-rust ignore">#[export_name = &quot;exported_symbol_name&quot;]
-pub fn name_in_rust() { }
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[export_name = &quot;exported_symbol_name&quot;]
+</span>pub fn name_in_rust() { }
+<span class="boring">}
+</code></pre></pre>
 
                     </main>
 

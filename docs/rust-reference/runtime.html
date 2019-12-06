@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -160,7 +160,7 @@
 <code>panic_handler</code> function in the dependency graph of a binary, dylib or cdylib crate.</p>
 <p>Below is shown a <code>panic_handler</code> function that logs the panic message and then halts the
 thread.</p>
-<!-- NOTE(ignore) `mdbook test` doesn't support `no_std` code -->
+<!-- ignore: test infrastructure can't handle no_std -->
 <pre><code class="language-rust ignore">#![no_std]
 
 use core::fmt::{self, Write};
@@ -203,8 +203,12 @@ the <a href="https://msdn.microsoft.com/en-us/library/fcc1zstk.aspx">subsystem</
 <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax to specify the subsystem with a value of either
 <code>console</code> or <code>windows</code>. This attribute is ignored on non-Windows targets, and
 for non-<code>bin</code> <a href="linkage.html">crate types</a>.</p>
-<pre><code class="language-rust ignore">#![windows_subsystem = &quot;windows&quot;]
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+![windows_subsystem = &quot;windows&quot;]
+fn main() {
+}
+</code></pre></pre>
 
                     </main>
 

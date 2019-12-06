@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -235,7 +235,10 @@ an <code>isize</code> value although the compiler is allowed to use a smaller ty
 actual memory layout. The size and thus acceptable values can be changed by
 using a <a href="../type-layout.html#primitive-representations">primitive representation</a> or the <a href="../type-layout.html#the-c-representation"><code>C</code> representation</a>.</p>
 <p>It is an error when two variants share the same discriminant.</p>
-<pre><code class="language-rust ignore">enum SharedDiscriminantError {
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>enum SharedDiscriminantError {
     SharedA = 1,
     SharedB = 1
 }
@@ -245,22 +248,27 @@ enum SharedDiscriminantError2 {
     One,        // 1
     OneToo = 1  // 1 (collision with previous!)
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>It is also an error to have an unspecified discriminant where the previous
 discriminant is the maximum value for the size of the discriminant.</p>
-<pre><code class="language-rust ignore">#[repr(u8)]
-enum OverflowingDiscriminantError {
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[repr(u8)]
+</span>enum OverflowingDiscriminantError {
     Max = 255,
     MaxPlusOne // Would be 256, but that overflows the enum.
 }
 
-#[repr(u8)]
-enum OverflowingDiscriminantError2 {
+<span class="boring">[repr(u8)]
+</span>enum OverflowingDiscriminantError2 {
     MaxMinusOne = 254, // 254
     Max,               // 255
     MaxPlusOne         // Would be 256, but that overflows the enum.
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#zero-variant-enums" id="zero-variant-enums">Zero-variant Enums</a></h2>
 <p>Enums with zero variants are known as <em>zero-variant enums</em>. As they have
 no valid values, they cannot be instantiated.</p>
@@ -268,6 +276,16 @@ no valid values, they cannot be instantiated.</p>
 <span class="boring">#![allow(unused_variables)]
 fn main() {
 </span>enum ZeroVariants {}
+<span class="boring">}
+</code></pre></pre>
+<p>Zero-variant enums are equivalent to the <a href="../types/never.html">never type</a>, but they cannot be
+coerced into other types.</p>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+enum ZeroVariants {}
+</span>let x: ZeroVariants = panic!();
+let y: u32 = x; // mismatched type error
 <span class="boring">}
 </code></pre></pre>
 

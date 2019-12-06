@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -231,7 +231,7 @@ use crate::foo::baz::foobaz;    // good: foo is at the root of the crate
 
 mod foo {
 
-    mod example {
+    pub mod example {
         pub mod iter {}
     }
 
@@ -256,9 +256,14 @@ fn main() {}
 <p><strong>Edition Differences</strong>: In the 2015 edition, <code>use</code> paths also allow
 accessing items in the crate root. Using the example above, the following
 <code>use</code> paths work in 2015 but not 2018:</p>
-<pre><code class="language-rust ignore">use foo::example::iter;
+<pre><pre class="playpen"><code class="language-rust edition2015"><span class="boring">mod foo {
+    pub mod example { pub mod iter {} }
+    pub mod baz { pub fn foobaz() {} }
+}
+</span>use foo::example::iter;
 use ::foo::baz::foobaz;
-</code></pre>
+<span class="boring">fn main() {}
+</code></pre></pre>
 <p>The 2015 edition does not allow use declarations to reference the <a href="extern-crates.html#extern-prelude">extern prelude</a>.
 Thus <a href="extern-crates.html"><code>extern crate</code></a> declarations are still required in 2015 to
 reference an external crate in a use declaration. Beginning with the 2018

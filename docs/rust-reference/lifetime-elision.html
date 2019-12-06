@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -174,36 +174,58 @@ lifetime is assigned to <em>all</em> elided output lifetimes.</li>
 reference to <code>Self</code> is assigned to all elided output lifetime parameters.</li>
 </ul>
 <p>Examples:</p>
-<pre><code class="language-rust ignore">fn print(s: &amp;str);                                      // elided
-fn print(s: &amp;'_ str);                                   // also elided
-fn print&lt;'a&gt;(s: &amp;'a str);                               // expanded
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+trait T {}
+trait ToCStr {}
+struct Thing&lt;'a&gt; {f: &amp;'a i32}
+struct Command;
+</span>#
+<span class="boring">trait Example {
+</span>fn print1(s: &amp;str);                                   // elided
+fn print2(s: &amp;'_ str);                                // also elided
+fn print3&lt;'a&gt;(s: &amp;'a str);                            // expanded
 
-fn debug(lvl: usize, s: &amp;str);                          // elided
-fn debug&lt;'a&gt;(lvl: usize, s: &amp;'a str);                   // expanded
+fn debug1(lvl: usize, s: &amp;str);                       // elided
+fn debug2&lt;'a&gt;(lvl: usize, s: &amp;'a str);                // expanded
 
-fn substr(s: &amp;str, until: usize) -&gt; &amp;str;               // elided
-fn substr&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;     // expanded
+fn substr1(s: &amp;str, until: usize) -&gt; &amp;str;            // elided
+fn substr2&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;  // expanded
 
-fn get_str() -&gt; &amp;str;                                   // ILLEGAL
+fn get_mut1(&amp;mut self) -&gt; &amp;mut dyn T;                 // elided
+fn get_mut2&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut dyn T;       // expanded
 
-fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                      // ILLEGAL
+fn args1&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
+fn args2&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
 
-fn get_mut(&amp;mut self) -&gt; &amp;mut T;                        // elided
-fn get_mut&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut T;              // expanded
+fn new1(buf: &amp;mut [u8]) -&gt; Thing&lt;'_&gt;;                 // elided - preferred
+fn new2(buf: &amp;mut [u8]) -&gt; Thing;                     // elided
+fn new3&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; Thing&lt;'a&gt;;          // expanded
+<span class="boring">}
+</span>
+type FunPtr1 = fn(&amp;str) -&gt; &amp;str;                      // elided
+type FunPtr2 = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;        // expanded
 
-fn args&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
-fn args&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
+type FunTrait1 = dyn Fn(&amp;str) -&gt; &amp;str;                // elided
+type FunTrait2 = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;  // expanded
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// The following examples show situations where it is not allowed to elide the
+// lifetime parameter.
 
-fn new(buf: &amp;mut [u8]) -&gt; BufWriter&lt;'_&gt;;                // elided - preferred
-fn new(buf: &amp;mut [u8]) -&gt; BufWriter;                    // elided
-fn new&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; BufWriter&lt;'a&gt;;         // expanded
+<span class="boring">trait Example {
+</span>// Cannot infer, because there are no parameters to infer from.
+fn get_str() -&gt; &amp;str;                                 // ILLEGAL
 
-type FunPtr = fn(&amp;str) -&gt; &amp;str;                         // elided
-type FunPtr = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;           // expanded
-
-type FunTrait = dyn Fn(&amp;str) -&gt; &amp;str;                   // elided
-type FunTrait = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;     // expanded
-</code></pre>
+// Cannot infer, ambiguous if it is borrowed from the first or second parameter.
+fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                    // ILLEGAL
+<span class="boring">}
+}
+</code></pre></pre>
 <h2><a class="header" href="#default-trait-object-lifetimes" id="default-trait-object-lifetimes">Default trait object lifetimes</a></h2>
 <p>The assumed lifetime of references held by a <a href="types/trait-object.html">trait object</a> is called its
 <em>default object lifetime bound</em>. These were defined in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a> and amended in
@@ -227,47 +249,61 @@ used.</li>
 <li>If the trait has no lifetime bounds, then the lifetime is inferred in
 expressions and is <code>'static</code> outside of expressions.</li>
 </ul>
-<pre><code class="language-rust ignore">// For the following trait...
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// For the following trait...
 trait Foo { }
 
 // These two are the same as Box&lt;T&gt; has no lifetime bound on T
-Box&lt;dyn Foo&gt;
-Box&lt;dyn Foo + 'static&gt;
+type T1 = Box&lt;dyn Foo&gt;;
+type T2 = Box&lt;dyn Foo + 'static&gt;;
 
 // ...and so are these:
 impl dyn Foo {}
 impl dyn Foo + 'static {}
 
 // ...so are these, because &amp;'a T requires T: 'a
-&amp;'a dyn Foo
-&amp;'a (dyn Foo + 'a)
+type T3&lt;'a&gt; = &amp;'a dyn Foo;
+type T4&lt;'a&gt; = &amp;'a (dyn Foo + 'a);
 
 // std::cell::Ref&lt;'a, T&gt; also requires T: 'a, so these are the same
-std::cell::Ref&lt;'a, dyn Foo&gt;
-std::cell::Ref&lt;'a, dyn Foo + 'a&gt;
-
-// This is an error:
-struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt;
-TwoBounds&lt;'a, 'b, dyn Foo&gt; // Error: the lifetime bound for this object type
-                           // cannot be deduced from context
-</code></pre>
+type T5&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo&gt;;
+type T6&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo + 'a&gt;;
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// This is an example of an error.
+<span class="boring">trait Foo { }
+</span>struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt; {
+    f1: &amp;'a i32,
+    f2: &amp;'b i32,
+    f3: T,
+}
+type T7&lt;'a, 'b&gt; = TwoBounds&lt;'a, 'b, dyn Foo&gt;;
+//                                  ^^^^^^^
+// Error: the lifetime bound for this object type cannot be deduced from context
+<span class="boring">}
+</code></pre></pre>
 <p>Note that the innermost object sets the bound, so <code>&amp;'a Box&lt;dyn Foo&gt;</code> is still
 <code>&amp;'a Box&lt;dyn Foo + 'static&gt;</code>.</p>
-<pre><code class="language-rust ignore">// For the following trait...
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// For the following trait...
 trait Bar&lt;'a&gt;: 'a { }
 
 // ...these two are the same:
-Box&lt;dyn Bar&lt;'a&gt;&gt;
-Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;
+type T1&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt;&gt;;
+type T2&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;;
 
 // ...and so are these:
-impl&lt;'a&gt; dyn Foo&lt;'a&gt; {}
-impl&lt;'a&gt; dyn Foo&lt;'a&gt; + 'a {}
-
-// This is still an error:
-struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt;
-TwoBounds&lt;'a, 'b, dyn Foo&lt;'c&gt;&gt;
-</code></pre>
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; {}
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; + 'a {}
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#static-lifetime-elision" id="static-lifetime-elision"><code>'static</code> lifetime elision</a></h2>
 <p>Both <a href="items/constant-items.html">constant</a> and <a href="items/static-items.html">static</a> declarations of reference types have <em>implicit</em>
 <code>'static</code> lifetimes unless an explicit lifetime is specified. As such, the
@@ -295,16 +331,35 @@ const BITS_N_STRINGS: BitsNStrings&lt;'_&gt; = BitsNStrings {
 references, which themselves include references, the compiler will first try
 the standard elision rules. If it is unable to resolve the lifetimes by its
 usual rules, then it will error. By way of example:</p>
-<pre><code class="language-rust ignore">// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
-const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = ..
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct Foo;
+struct Bar;
+struct Baz;
+fn somefunc(a: &amp;Foo, b: &amp;Bar, c: &amp;Baz) -&gt; usize {42}
+</span>// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
+const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = |x| x;
 
 // Resolved as `Fn&lt;'a, 'b, 'c&gt;(&amp;'a Foo, &amp;'b Bar, &amp;'c Baz) -&gt; usize`.
-const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = ..
-
-// There is insufficient information to bound the return reference lifetime
+const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = &amp;somefunc;
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct Foo;
+struct Bar;
+struct Baz;
+fn somefunc&lt;'a,'b&gt;(a: &amp;'a Foo, b: &amp;'b Bar) -&gt; &amp;'a Baz {unimplemented!()}
+</span>// There is insufficient information to bound the return reference lifetime
 // relative to the argument lifetimes, so this is an error.
-const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = ..
-</code></pre>
+const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = &amp;somefunc;
+//                                            ^
+// this function's return type contains a borrowed value, but the signature
+// does not say whether it is borrowed from argument 1 or argument 2
+<span class="boring">}
+</code></pre></pre>
 
                     </main>
 

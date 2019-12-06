@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -237,11 +237,13 @@ while let _ = 5 {
 </code></pre></pre>
 <p>A <code>while let</code> loop is equivalent to a <code>loop</code> expression containing a <a href="match-expr.html"><code>match</code>
 expression</a> as follows.</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: while let PATS = EXPR {
     /* loop body */
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: loop {
     match EXPR {
         PATS =&gt; { /* loop body */ },
@@ -296,11 +298,13 @@ assert_eq!(sum, 55);
 <span class="boring">}
 </code></pre></pre>
 <p>A for loop is equivalent to the following block expression.</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: for PATTERN in iter_expr {
     /* loop body */
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">{
     let result = match IntoIterator::into_iter(iter_expr) {
         mut iter =&gt; 'label: loop {

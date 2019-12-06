@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -372,12 +372,14 @@ configuration predicate.</p>
 <p>When the configuration predicate is true, this attribute expands out to the
 attributes listed after the predicate. For example, the following module will
 either be found at <code>linux.rs</code> or <code>windows.rs</code> based on the target.</p>
+<!-- ignore: `mod` needs multiple files -->
 <pre><code class="language-rust ignore">#[cfg_attr(linux, path = &quot;linux.rs&quot;)]
 #[cfg_attr(windows, path = &quot;windows.rs&quot;)]
 mod os;
 </code></pre>
 <p>Zero, one, or more attributes may be listed. Multiple attributes will each be
 expanded into separate attributes. For example:</p>
+<!-- ignore: fake attributes -->
 <pre><code class="language-rust ignore">#[cfg_attr(feature = &quot;magic&quot;, sparkles, crackles)]
 fn bewitched() {}
 

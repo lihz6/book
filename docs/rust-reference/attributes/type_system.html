@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -214,7 +214,8 @@ preserve backwards compatibility when new fields or variants are added.</p>
 with a <a href="../expressions/struct-expr.html"><em>StructExpression</em></a> (including with <a href="../expressions/struct-expr.html#functional-update-syntax">functional update syntax</a>).</li>
 <li><a href="../items/enumerations.html"><code>enum</code></a> instances can be constructed in an <a href="../expressions/enum-variant-expr.html"><em>EnumerationVariantExpression</em></a>.</li>
 </ul>
-<pre><code class="language-rust ignore(requiresmultiplecrates)">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
+<!-- ignore: requires external crates -->
+<pre><code class="language-rust ignore">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
 // annotated as `#[non_exhaustive]`.
 use upstream::{Config, Error, Message};
 
@@ -245,7 +246,8 @@ is lowered to <code>min($vis, pub(crate))</code>.</li>
 <li>When pattern matching on a non-exhaustive <a href="../items/enumerations.html"><code>enum</code></a>, matching on a variant does not
 contribute towards the exhaustiveness of the arms.</li>
 </ul>
-<pre><code class="language-rust ignore(requiresmultiplecrates)">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
+<!-- ignore: requires external crates -->
+<pre><code class="language-rust ignore">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
 // annotated as `#[non_exhaustive]`.
 use upstream::{Config, Error, Message};
 

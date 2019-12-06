@@ -121,7 +121,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -165,7 +165,7 @@ influenced the design.</li>
 </ul>
 <div class="warning">
 <p>Warning: This book is incomplete. Documenting everything takes a while. See
-the <a href="https://github.com/rust-lang-nursery/reference/issues">GitHub issues</a> for what is not documented in this book.</p>
+the <a href="https://github.com/rust-lang/reference/issues">GitHub issues</a> for what is not documented in this book.</p>
 </div>
 <h2><a class="header" href="#what-the-reference-is-not" id="what-the-reference-is-not">What <em>The Reference</em> is Not</a></h2>
 <p>This book does not serve as an introduction to the language. Background
@@ -263,7 +263,7 @@ copying, executing, and showing hidden lines in the top right corner.</p>
 <h2><a class="header" href="#contributing" id="contributing">Contributing</a></h2>
 <p>We welcome contributions of all kinds.</p>
 <p>You can contribute to this book by opening an issue or sending a pull
-request to <a href="https://github.com/rust-lang-nursery/reference/">the Rust Reference repository</a>. If this book does not answer
+request to <a href="https://github.com/rust-lang/reference/">the Rust Reference repository</a>. If this book does not answer
 your question, and you think its answer is in scope of it, please do not
 hesitate to file an issue or ask about it in the <code>#docs</code> channels on
 <a href="https://discord.gg/rust-lang">Discord</a>. Knowing what people use this book for the most helps direct our
@@ -941,7 +941,10 @@ let a: u64 = 123;                  // type u64
 <span class="boring">}
 </code></pre></pre>
 <p>Examples of invalid integer literals:</p>
-<pre><code class="language-rust ignore">// invalid suffixes
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// invalid suffixes
 
 0invalidSuffix;
 
@@ -960,7 +963,8 @@ let a: u64 = 123;                  // type u64
 
 0b_;
 0b____;
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Note that the Rust syntax considers <code>-1i8</code> as an application of the <a href="expressions/operator-expr.html#negation-operators">unary minus
 operator</a> to an integer literal <code>1i8</code>, rather than
 a single integer literal.</p>
@@ -1109,6 +1113,7 @@ consists of only one segment, it refers to either an <a href="items.html">item</
 a local control scope. If a path has multiple segments, it always refers to an
 item.</p>
 <p>Two examples of simple paths consisting of only identifier segments:</p>
+<!-- ignore: syntax fragment -->
 <pre><code class="language-rust ignore">x;
 x::y::z;
 </code></pre>
@@ -1220,10 +1225,24 @@ S::f();  // Calls the inherent impl.
 and qualified paths.</p>
 <p>Although the <code>::</code> token is allowed before the generics arguments, it is not required
 because there is no ambiguity like there is in <em>PathInExpression</em>.</p>
-<pre><code class="language-rust ignore">impl ops::Index&lt;ops::Range&lt;usize&gt;&gt; for S { /*...*/ }
-fn i() -&gt; impl Iterator&lt;Item = op::Example&lt;'a&gt;&gt; { /*...*/ }
-type G = std::boxed::Box&lt;std::ops::FnOnce(isize) -&gt; isize&gt;;
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+mod ops {
+    pub struct Range&lt;T&gt; {f1: T}
+    pub trait Index&lt;T&gt; {}
+    pub struct Example&lt;'a&gt; {f1: &amp;'a i32}
+}
+struct S;
+</span>impl ops::Index&lt;ops::Range&lt;usize&gt;&gt; for S { /*...*/ }
+fn i&lt;'a&gt;() -&gt; impl Iterator&lt;Item = ops::Example&lt;'a&gt;&gt; {
+    // ...
+<span class="boring">   const EXAMPLE: Vec&lt;ops::Example&lt;'static&gt;&gt; = Vec::new();
+   EXAMPLE.into_iter()
+</span>}
+type G = std::boxed::Box&lt;dyn std::ops::FnOnce(isize) -&gt; isize&gt;;
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#path-qualifiers" id="path-qualifiers">Path qualifiers</a></h2>
 <p>Paths can be denoted with various leading qualifiers to change the meaning of
 how it is resolved.</p>
@@ -1663,6 +1682,7 @@ exporting, and importing of macros is controlled largely by attributes.</p>
 path), it is first looked up in textual scoping. If this does not yield any
 results, then it is looked up in path-based scoping. If the macro's name is
 qualified with a path, then it is only looked up in path-based scoping.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">use lazy_static::lazy_static; // Path-based import.
 
 macro_rules! lazy_static { // Textual definition.
@@ -1680,6 +1700,7 @@ macro, the macro enters the scope after the definition (note that it can still
 be used recursively, since names are looked up from the invocation site), up
 until its surrounding scope, typically a module, is closed. This can enter child
 modules and even span across multiple files:</p>
+<!-- ignore: requires external modules -->
 <pre><code class="language-rust ignore">//// src/lib.rs
 mod has_macro {
     // m!{} // Error: m is not in scope.
@@ -1769,6 +1790,7 @@ by <code>#[macro_use]</code> can be used before the import statement, in case of
 conflict, the last macro imported wins. Optionally, a list of macros to import
 can be specified using the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaListIdents</em></a> syntax; this is not supported
 when <code>#[macro_use]</code> is applied to a module.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">#[macro_use(lazy_static)] // Or #[macro_use] to import all macros.
 extern crate lazy_static;
 
@@ -1808,6 +1830,7 @@ looked up at the macro's invocation site. This can lead to issues if a macro
 refers to an item or macro which isn't in scope at the invocation site. To
 alleviate this, the <code>$crate</code> metavariable can be used at the start of a path to
 force lookup to occur inside the crate defining the macro.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">//// Definitions in the `helper_macro` crate.
 #[macro_export]
 macro_rules! helped {
@@ -1990,7 +2013,9 @@ the macro invocation operator (<code>!</code>).</p>
 output <a href="../proc_macro/struct.TokenStream.html"><code>TokenStream</code></a> replaces the entire macro invocation.</p>
 <p>For example, the following macro definition ignores its input and outputs a
 function <code>answer</code> into its scope.</p>
-<pre><code class="language-rust ignore">extern crate proc_macro;
+<!-- ignore: test doesn't support proc-macro -->
+<pre><code class="language-rust ignore"># #![crate_type = &quot;proc-macro&quot;]
+extern crate proc_macro;
 use proc_macro::TokenStream;
 
 #[proc_macro]
@@ -1999,6 +2024,7 @@ pub fn make_answer(_item: TokenStream) -&gt; TokenStream {
 }
 </code></pre>
 <p>And then we use it a binary crate to print &quot;42&quot; to standard output.</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">extern crate proc_macro_examples;
 use proc_macro_examples::make_answer;
 
@@ -2026,7 +2052,9 @@ then appended to the <a href="items/modules.html">module</a> or <a href="express
 <a href="../proc_macro/struct.TokenStream.html"><code>TokenStream</code></a> is in.</p>
 <p>The following is an example of a derive macro. Instead of doing anything
 useful with its input, it just appends a function <code>answer</code>.</p>
-<pre><code class="language-rust ignore">extern crate proc_macro;
+<!-- ignore: test doesn't support proc-macro -->
+<pre><code class="language-rust ignore"># #![crate_type = &quot;proc-macro&quot;]
+extern crate proc_macro;
 use proc_macro::TokenStream;
 
 #[proc_macro_derive(AnswerFn)]
@@ -2035,6 +2063,7 @@ pub fn derive_answer_fn(_item: TokenStream) -&gt; TokenStream {
 }
 </code></pre>
 <p>And then using said derive macro:</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">extern crate proc_macro_examples;
 use proc_macro_examples::AnswerFn;
 
@@ -2055,7 +2084,8 @@ macro that defined them. That said, they can be seen by all macros.</p>
 the names of the helper attributes.</p>
 <p>For example, the following derive macro defines a helper attribute
 <code>helper</code>, but ultimately doesn't do anything with it.</p>
-<pre><code class="language-rust ignore"># #[crate_type=&quot;proc-macro&quot;]
+<!-- ignore: test doesn't support proc-macro -->
+<pre><code class="language-rust ignore"># #![crate_type=&quot;proc-macro&quot;]
 # extern crate proc_macro;
 # use proc_macro::TokenStream;
 
@@ -2065,11 +2095,8 @@ pub fn derive_helper_attr(_item: TokenStream) -&gt; TokenStream {
 }
 </code></pre>
 <p>And then usage on the derive macro on a struct:</p>
-<pre><code class="language-rust ignore"># #![crate_type=&quot;proc-macro&quot;]
-# extern crate proc_macro_examples;
-# use proc_macro_examples::HelperAttr;
-
-#[derive(HelperAttr)]
+<!-- ignore: requires external crates -->
+<pre><code class="language-rust ignore">#[derive(HelperAttr)]
 struct Struct {
     #[helper] field: ()
 }
@@ -2087,6 +2114,7 @@ including other <a href="attributes.html">attributes</a> on the <a href="items.h
 replaces the <a href="items.html">item</a> with an arbitrary number of <a href="items.html">items</a>.</p>
 <p>For example, this attribute macro takes the input stream and returns it as is,
 effectively being the no-op of attributes.</p>
+<!-- ignore: test doesn't support proc-macro -->
 <pre><code class="language-rust ignore"># #![crate_type = &quot;proc-macro&quot;]
 # extern crate proc_macro;
 # use proc_macro::TokenStream;
@@ -2099,6 +2127,7 @@ pub fn return_as_is(_attr: TokenStream, item: TokenStream) -&gt; TokenStream {
 <p>This following example shows the stringified <a href="../proc_macro/struct.TokenStream.html"><code>TokenStream</code>s</a> that the attribute
 macros see. The output will show in the output of the compiler. The output is
 shown in the comments after the function prefixed with &quot;out:&quot;.</p>
+<!-- ignore: test doesn't support proc-macro -->
 <pre><code class="language-rust ignore">// my-macro/src/lib.rs
 # extern crate proc_macro;
 # use proc_macro::TokenStream;
@@ -2110,6 +2139,7 @@ pub fn show_streams(attr: TokenStream, item: TokenStream) -&gt; TokenStream {
     item
 }
 </code></pre>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">// src/lib.rs
 extern crate my_macro;
 
@@ -2189,7 +2219,7 @@ may optionally begin with any number of <a href="attributes.html">attributes</a>
 that apply to the containing module, most of which influence the behavior of
 the compiler. The anonymous crate module can have additional attributes that
 apply to the crate as a whole.</p>
-<pre><pre class="playpen"><code class="language-rust no_run">
+<pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 fn main() {
 </span>// Specify the crate name.
@@ -2211,7 +2241,8 @@ to the operating system what program to use to execute this file. It serves
 essentially to treat the source file as an executable script. The shebang
 can only occur at the beginning of the file (but after the optional
 <em>UTF8BOM</em>). It is ignored by the compiler. For example:</p>
-<pre><code class="language-text ignore">#!/usr/bin/env rustx
+<!-- ignore: tests don't like shebang -->
+<pre><code class="language-rust ignore">#!/usr/bin/env rustx
 
 fn main() {
     println!(&quot;Hello!&quot;);
@@ -2258,8 +2289,12 @@ other object being linked to defines <code>main</code>.</p>
 <h2><a class="header" href="#the-crate_name-attribute" id="the-crate_name-attribute">The <code>crate_name</code> attribute</a></h2>
 <p>The <em><code>crate_name</code> <a href="attributes.html">attribute</a></em> may be applied at the crate level to specify the
 name of the crate with the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax.</p>
-<pre><code class="language-rust ignore">#![crate_name = &quot;mycrate&quot;]
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+![crate_name = &quot;mycrate&quot;]
+fn main() {
+}
+</code></pre></pre>
 <p>The crate name must not be empty, and must only contain <a href="../std/primitive.char.html#method.is_alphanumeric">Unicode alphanumeric</a>
 or <code>-</code> (U+002D) characters.</p>
 <div class="footnote-definition" id="phase-distinction"><sup class="footnote-definition-label">1</sup>
@@ -2493,12 +2528,14 @@ configuration predicate.</p>
 <p>When the configuration predicate is true, this attribute expands out to the
 attributes listed after the predicate. For example, the following module will
 either be found at <code>linux.rs</code> or <code>windows.rs</code> based on the target.</p>
+<!-- ignore: `mod` needs multiple files -->
 <pre><code class="language-rust ignore">#[cfg_attr(linux, path = &quot;linux.rs&quot;)]
 #[cfg_attr(windows, path = &quot;windows.rs&quot;)]
 mod os;
 </code></pre>
 <p>Zero, one, or more attributes may be listed. Multiple attributes will each be
 expanded into separate attributes. For example:</p>
+<!-- ignore: fake attributes -->
 <pre><code class="language-rust ignore">#[cfg_attr(feature = &quot;magic&quot;, sparkles, crackles)]
 fn bewitched() {}
 
@@ -2660,6 +2697,7 @@ influenced with the <code>path</code> attribute.</p>
 <p>For <code>path</code> attributes on modules not inside inline module blocks, the file
 path is relative to the directory the source file is located. For example, the
 following code snippet would use the paths shown based on where it is located:</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">#[path = &quot;foo.rs&quot;]
 mod c;
 </code></pre>
@@ -2677,6 +2715,7 @@ including the inline module components as directories. For non-mod-rs files,
 it is the same except the path starts with a directory with the name of the
 non-mod-rs module. For example, the following code snippet would use the paths
 shown based on where it is located:</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">mod inline {
     #[path = &quot;other.rs&quot;]
     mod inner;
@@ -2688,6 +2727,7 @@ shown based on where it is located:</p>
 </tbody></table>
 <p>An example of combining the above rules of <code>path</code> attributes on inline modules
 and nested modules within (applies to both mod-rs and non-mod-rs files):</p>
+<!-- ignore: requires external files -->
 <pre><code class="language-rust ignore">#[path = &quot;thread_files&quot;]
 mod thread {
     // Load the `local_data` module from `thread_files/tls.rs` relative to
@@ -2734,6 +2774,7 @@ equal to the <a href="items/../identifiers.html">identifier</a> given in the <co
 <p>The <code>self</code> crate may be imported which creates a binding to the current crate.
 In this case the <code>as</code> clause must be used to specify the name to bind it to.</p>
 <p>Three examples of <code>extern crate</code> declarations:</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">extern crate pcre;
 
 extern crate std; // equivalent to: extern crate std as std;
@@ -2745,6 +2786,7 @@ make use of them. In such case, when <code>Cargo.toml</code> doesn't specify a c
 Cargo will transparently replace <code>-</code> with <code>_</code> (Refer to <a href="https://github.com/rust-lang/rfcs/blob/master/text/0940-hyphens-considered-harmful.md">RFC 940</a> for more
 details).</p>
 <p>Here is an example:</p>
+<!-- ignore: requires external crates -->
 <pre><code class="language-rust ignore">// Importing the Cargo package hello-world
 extern crate hello_world; // hyphen replaced with an underscore
 </code></pre>
@@ -2873,7 +2915,7 @@ use crate::foo::baz::foobaz;    // good: foo is at the root of the crate
 
 mod foo {
 
-    mod example {
+    pub mod example {
         pub mod iter {}
     }
 
@@ -2898,9 +2940,14 @@ fn main() {}
 <p><strong>Edition Differences</strong>: In the 2015 edition, <code>use</code> paths also allow
 accessing items in the crate root. Using the example above, the following
 <code>use</code> paths work in 2015 but not 2018:</p>
-<pre><code class="language-rust ignore">use foo::example::iter;
+<pre><pre class="playpen"><code class="language-rust edition2015"><span class="boring">mod foo {
+    pub mod example { pub mod iter {} }
+    pub mod baz { pub fn foobaz() {} }
+}
+</span>use foo::example::iter;
 use ::foo::baz::foobaz;
-</code></pre>
+<span class="boring">fn main() {}
+</code></pre></pre>
 <p>The 2015 edition does not allow use declarations to reference the <a href="items/extern-crates.html#extern-prelude">extern prelude</a>.
 Thus <a href="items/extern-crates.html"><code>extern crate</code></a> declarations are still required in 2015 to
 reference an external crate in a use declaration. Beginning with the 2018
@@ -3013,6 +3060,7 @@ means that the tail expression of the block, if evaluated, ends up being
 returned to the caller. As usual, an explicit return expression within
 the body of the function will short-cut that implicit return, if reached.</p>
 <p>For example, the function above behaves as if it was written as:</p>
+<!-- ignore: example expansion -->
 <pre><code class="language-rust ignore">// argument_0 is the actual first argument passed from the caller
 let (value, _) = argument_0;
 return {
@@ -3066,11 +3114,13 @@ sufficient context to determine the type parameters. For example,
 <h2><a class="header" href="#extern-function-qualifier" id="extern-function-qualifier">Extern function qualifier</a></h2>
 <p>The <code>extern</code> function qualifier allows providing function <em>definitions</em> that can
 be called with a particular ABI:</p>
-<pre><code class="language-rust ignore">extern &quot;ABI&quot; fn foo() { ... }
+<p>+<!-- ignore: fake ABI --></p>
+<pre><code class="language-rust ignore">extern &quot;ABI&quot; fn foo() { /* ... */ }
 </code></pre>
 <p>These are often used in combination with <a href="items/external-blocks.html">external block</a> items which provide
 function <em>declarations</em> that can be used to call functions without providing
 their <em>definition</em>:</p>
+<p>+<!-- ignore: fake ABI --></p>
 <pre><code class="language-rust ignore">extern &quot;ABI&quot; {
   fn foo(); /* no body */
 }
@@ -3335,6 +3385,7 @@ allowed but be careful to not include these inert attributes in your final <code
 <p>For example, the following code defines an inert <code>some_inert_attribute</code> attribute that
 is not formally defined anywhere and the <code>some_proc_macro_attribute</code> procedural macro is
 responsible for detecting its presence and removing it from the output token stream.</p>
+<!-- ignore: requires proc macro -->
 <pre><code class="language-rust ignore">#[some_proc_macro_attribute]
 fn foo_oof(#[some_inert_attribute] arg: u8) {
 }
@@ -3526,7 +3577,10 @@ an <code>isize</code> value although the compiler is allowed to use a smaller ty
 actual memory layout. The size and thus acceptable values can be changed by
 using a <a href="items/../type-layout.html#primitive-representations">primitive representation</a> or the <a href="items/../type-layout.html#the-c-representation"><code>C</code> representation</a>.</p>
 <p>It is an error when two variants share the same discriminant.</p>
-<pre><code class="language-rust ignore">enum SharedDiscriminantError {
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>enum SharedDiscriminantError {
     SharedA = 1,
     SharedB = 1
 }
@@ -3536,22 +3590,27 @@ enum SharedDiscriminantError2 {
     One,        // 1
     OneToo = 1  // 1 (collision with previous!)
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>It is also an error to have an unspecified discriminant where the previous
 discriminant is the maximum value for the size of the discriminant.</p>
-<pre><code class="language-rust ignore">#[repr(u8)]
-enum OverflowingDiscriminantError {
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[repr(u8)]
+</span>enum OverflowingDiscriminantError {
     Max = 255,
     MaxPlusOne // Would be 256, but that overflows the enum.
 }
 
-#[repr(u8)]
-enum OverflowingDiscriminantError2 {
+<span class="boring">[repr(u8)]
+</span>enum OverflowingDiscriminantError2 {
     MaxMinusOne = 254, // 254
     Max,               // 255
     MaxPlusOne         // Would be 256, but that overflows the enum.
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#zero-variant-enums" id="zero-variant-enums">Zero-variant Enums</a></h2>
 <p>Enums with zero variants are known as <em>zero-variant enums</em>. As they have
 no valid values, they cannot be instantiated.</p>
@@ -3559,6 +3618,16 @@ no valid values, they cannot be instantiated.</p>
 <span class="boring">#![allow(unused_variables)]
 fn main() {
 </span>enum ZeroVariants {}
+<span class="boring">}
+</code></pre></pre>
+<p>Zero-variant enums are equivalent to the <a href="items/../types/never.html">never type</a>, but they cannot be
+coerced into other types.</p>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+enum ZeroVariants {}
+</span>let x: ZeroVariants = panic!();
+let y: u32 = x; // mismatched type error
 <span class="boring">}
 </code></pre></pre>
 <h1><a class="header" href="#unions" id="unions">Unions</a></h1>
@@ -3597,8 +3666,15 @@ let u = MyUnion { f1: 1 };
 <p>The expression above creates a value of type <code>MyUnion</code> and initializes the
 storage using field <code>f1</code>. The union can be accessed using the same syntax as
 struct fields:</p>
-<pre><code class="language-rust ignore">let f = u.f1;
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+union MyUnion { f1: u32, f2: f32 }
+</span>#
+<span class="boring">let u = MyUnion { f1: 1 };
+</span>let f = unsafe { u.f1 };
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#reading-and-writing-union-fields" id="reading-and-writing-union-fields">Reading and writing union fields</a></h2>
 <p>Unions have no notion of an &quot;active field&quot;. Instead, every union access just
 interprets the storage at the type of the field used for the access. Reading a
@@ -3693,20 +3769,25 @@ union can give write access to all its remaining fields. Borrow checking rules
 have to be adjusted to account for this fact. As a result, if one field of a
 union is borrowed, all its remaining fields are borrowed as well for the same
 lifetime.</p>
-<pre><code class="language-rust ignore">// ERROR: cannot borrow `u` (via `u.f2`) as mutable more than once at a time
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+union MyUnion { f1: u32, f2: f32 }
+</span>// ERROR: cannot borrow `u` (via `u.f2`) as mutable more than once at a time
 fn test() {
     let mut u = MyUnion { f1: 1 };
     unsafe {
         let b1 = &amp;mut u.f1;
-                      ---- first mutable borrow occurs here (via `u.f1`)
+//                    ---- first mutable borrow occurs here (via `u.f1`)
         let b2 = &amp;mut u.f2;
-                      ^^^^ second mutable borrow occurs here (via `u.f2`)
+//                    ^^^^ second mutable borrow occurs here (via `u.f2`)
         *b1 = 5;
     }
-    - first borrow ends here
+//  - first borrow ends here
     assert_eq!(unsafe { u.f1 }, 5);
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>As you could see, in many aspects (except for layouts, safety, and ownership)
 unions behave exactly like structs, largely as a consequence of inheriting
 their syntactic shape from structs. This is also true for many unmentioned
@@ -4194,29 +4275,30 @@ impl Shape for Circle {
 <span class="boring">}
 </code></pre></pre>
 <h3><a class="header" href="#trait-implementation-coherence" id="trait-implementation-coherence">Trait Implementation Coherence</a></h3>
-<p>A trait implementation is considered incoherent if either the orphan check fails
+<p>A trait implementation is considered incoherent if either the orphan rules check fails
 or there are overlapping implementation instances.</p>
 <p>Two trait implementations overlap when there is a non-empty intersection of the
 traits the implementation is for, the implementations can be instantiated with
 the same type. <!-- This is probably wrong? Source: No two implementations can
 be instantiable with the same set of types for the input type parameters. --></p>
-<p>The <code>Orphan Check</code> states that every trait implementation must meet either of
-the following conditions:</p>
-<ol>
-<li>
-<p>The trait being implemented is defined in the same crate.</p>
+<h4><a class="header" href="#orphan-rules" id="orphan-rules">Orphan rules</a></h4>
+<p>Given <code>impl&lt;P1..=Pn&gt; Trait&lt;T1..=Tn&gt; for T0</code>, an <code>impl</code> is valid only if at
+least one of the following is true:</p>
+<ul>
+<li><code>Trait</code> is a <a href="items/../glossary.html#local-trait">local trait</a></li>
+<li>All of
+<ul>
+<li>At least one of the types <code>T0..=Tn</code> must be a <a href="items/../glossary.html#local-type">local type</a>. Let <code>Ti</code> be the
+first such type.</li>
+<li>No <a href="items/../glossary.html#uncovered-type">uncovered type</a> parameters <code>P1..=Pn</code> may appear in <code>T0..Ti</code> (excluding
+<code>Ti</code>)</li>
+</ul>
 </li>
-<li>
-<p>At least one of either <code>Self</code> or a generic type parameter of the trait must
-meet the following grammar, where <code>C</code> is a nominal type defined
-within the containing crate:</p>
-<pre><code class="language-ignore"> T = C
-   | &amp;C
-   | &amp;mut C
-   | Box&lt;C&gt;
-</code></pre>
-</li>
-</ol>
+</ul>
+<p>Only the appearance of <em>uncovered</em> type parameters is restricted.
+Note that for the purposes of coherence, <a href="items/../glossary.html#fundamental-type-constructors">fundamental types</a> are
+special. The <code>T</code> in <code>Box&lt;T&gt;</code> is not considered covered, and <code>Box&lt;LocalType&gt;</code> 
+is considered local.</p>
 <h2><a class="header" href="#generic-implementations" id="generic-implementations">Generic Implementations</a></h2>
 <p>An implementation can take type and lifetime parameters, which can be used in
 the rest of the implementation. Type parameters declared for an implementation
@@ -4292,9 +4374,13 @@ not it's mutable.</p>
 <p>By default external blocks assume that the library they are calling uses the
 standard C ABI on the specific platform. Other ABIs may be specified using an
 <code>abi</code> string, as shown here:</p>
-<pre><code class="language-rust ignore">// Interface to the Windows API
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// Interface to the Windows API
 extern &quot;stdcall&quot; { }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>There are three ABI strings which are cross-platform, and which all compilers
 are guaranteed to support:</p>
 <ul>
@@ -4321,10 +4407,14 @@ API itself</li>
 <h2><a class="header" href="#variadic-functions" id="variadic-functions">Variadic functions</a></h2>
 <p>Functions within external blocks may be variadic by specifying <code>...</code> after one
 or more named arguments in the argument list:</p>
-<pre><code class="language-rust ignore">extern {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>extern {
     fn foo(x: i32, ...);
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#attributes-on-extern-blocks" id="attributes-on-extern-blocks">Attributes on extern blocks</a></h2>
 <p>The following <a href="items/../attributes.html">attributes</a> control the behavior of external blocks.</p>
 <h3><a class="header" href="#the-link-attribute" id="the-link-attribute">The <code>link</code> attribute</a></h3>
@@ -4345,6 +4435,7 @@ targets.</li>
 name for the items within an <code>extern</code> block when importing symbols from the
 host environment. The default module name is <code>env</code> if <code>wasm_import_module</code> is
 not specified.</p>
+<!-- ignore: requires extern linking -->
 <pre><code class="language-rust ignore">#[link(name = &quot;crypto&quot;)]
 extern {
     // …
@@ -4368,11 +4459,15 @@ block.</p>
 <p>The <code>link_name</code> attribute may be specified on declarations inside an <code>extern</code>
 block to indicate the symbol to import for the given function or static. It
 uses the <a href="items/../attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax to specify the name of the symbol.</p>
-<pre><code class="language-rust ignore">extern {
-    #[link_name = &quot;actual_symbol_name&quot;]
-    fn name_in_rust();
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>extern {
+<span class="boring">    [link_name = &quot;actual_symbol_name&quot;]
+</span>    fn name_in_rust();
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h3><a class="header" href="#attributes-on-function-parameters-1" id="attributes-on-function-parameters-1">Attributes on function parameters</a></h3>
 <p>Attributes on extern function parameters follow the same rules and
 restrictions as <a href="items/functions.html#attributes-on-function-parameters">regular function parameters</a>.</p>
@@ -4435,7 +4530,10 @@ checked when the item is defined. It is an error for such a bound to be false.</
 types when defining the item. It is an error to have <code>Copy</code> or <code>Clone</code>as a
 bound on a mutable reference, <a href="items/../types/trait-object.html">trait object</a> or <a href="items/../types/array.html">slice</a> or <code>Sized</code> as a
 bound on a trait object or slice.</p>
-<pre><code class="language-rust ignore">struct A&lt;T&gt;
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>struct A&lt;T&gt;
 where
     T: Iterator,            // Could use A&lt;T: Iterator&gt; instead
     T::Item: Copy,
@@ -4446,13 +4544,15 @@ where
 {
     f: T,
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#attributes" id="attributes">Attributes</a></h2>
 <p>Generic lifetime and type parameters allow <a href="items/../attributes.html">attributes</a> on them. There are no
 built-in attributes that do anything in this position, although custom derive
 attributes may give meaning to it.</p>
 <p>This example shows using a custom derive attribute to modify the meaning of a
 generic parameter.</p>
+<!-- ignore: requires proc macro derive -->
 <pre><code class="language-rust ignore">// Assume that the derive for MyFlexibleClone declared `my_flexible_clone` as
 // an attribute it understands.
 #[derive(MyFlexibleClone)]
@@ -4472,7 +4572,7 @@ related to Options, so should be associated.</p>
 <p>Every associated item kind comes in two varieties: definitions that contain the
 actual implementation and declarations that declare signatures for
 definitions.</p>
-<p>It is the declarations that make up the contract of traits and what it available
+<p>It is the declarations that make up the contract of traits and what is available
 on generic types.</p>
 <h2><a class="header" href="#associated-functions-and-methods" id="associated-functions-and-methods">Associated functions and methods</a></h2>
 <p><em>Associated functions</em> are <a href="items/functions.html">functions</a> associated with a type.</p>
@@ -5682,9 +5782,14 @@ assumed to exist.</p>
 enable code generation of that function for specific platform architecture
 features. It uses the <a href="attributes/../attributes.html#meta-item-attribute-syntax"><em>MetaListNameValueStr</em></a> syntax with a single key of
 <code>enable</code> whose value is a string of comma-separated feature names to enable.</p>
-<pre><code class="language-rust ignore">#[target_feature(enable = &quot;avx2&quot;)]
-unsafe fn foo_avx2() {}
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+#[cfg(target_feature = &quot;avx2&quot;)]
+[target_feature(enable = &quot;avx2&quot;)]
+</span>unsafe fn foo_avx2() {}
+<span class="boring">}
+</code></pre></pre>
 <p>Each <a href="attributes/../conditional-compilation.html#target_arch">target architecture</a> has a set of features that may be enabled. It is an
 error to specify a feature for a target architecture that the crate is not
 being compiled for.</p>
@@ -5854,7 +5959,8 @@ preserve backwards compatibility when new fields or variants are added.</p>
 with a <a href="attributes/../expressions/struct-expr.html"><em>StructExpression</em></a> (including with <a href="attributes/../expressions/struct-expr.html#functional-update-syntax">functional update syntax</a>).</li>
 <li><a href="attributes/../items/enumerations.html"><code>enum</code></a> instances can be constructed in an <a href="attributes/../expressions/enum-variant-expr.html"><em>EnumerationVariantExpression</em></a>.</li>
 </ul>
-<pre><code class="language-rust ignore(requiresmultiplecrates)">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
+<!-- ignore: requires external crates -->
+<pre><code class="language-rust ignore">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
 // annotated as `#[non_exhaustive]`.
 use upstream::{Config, Error, Message};
 
@@ -5885,7 +5991,8 @@ is lowered to <code>min($vis, pub(crate))</code>.</li>
 <li>When pattern matching on a non-exhaustive <a href="attributes/../items/enumerations.html"><code>enum</code></a>, matching on a variant does not
 contribute towards the exhaustiveness of the arms.</li>
 </ul>
-<pre><code class="language-rust ignore(requiresmultiplecrates)">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
+<!-- ignore: requires external crates -->
+<pre><code class="language-rust ignore">// `Config`, `Error`, and `Message` are types defined in an upstream crate that have been
 // annotated as `#[non_exhaustive]`.
 use upstream::{Config, Error, Message};
 
@@ -6782,10 +6889,16 @@ functions and macros in the standard library can then use that assumption
 (although not to ensure safety). Unlike the arithmetic and logical operators
 above, these operators implicitly take shared borrows of their operands,
 evaluating them in <a href="expressions/../expressions.html#place-expressions-and-value-expressions">place expression context</a>:</p>
-<pre><code class="language-rust ignore">a == b;
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+let a = 1;
+let b = 1;
+</span>a == b;
 // is equivalent to
 ::std::cmp::PartialEq::eq(&amp;a, &amp;b);
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>This means that the operands don't have to be moved out of.</p>
 <table><thead><tr><th>Symbol</th><th>Meaning</th><th>Overloading method</th></tr></thead><tbody>
 <tr><td><code>==</code></td><td>Equal</td><td><code>std::cmp::PartialEq::eq</code></td></tr>
@@ -7515,6 +7628,7 @@ method and you'll be fine.</p>
 (the latter is always a <a href="expressions/method-call-expr.html">method call expression</a>). A field expression denotes a
 field of a <a href="expressions/../items/structs.html">struct</a> or <a href="expressions/../items/unions.html">union</a>. To call a function stored in a struct,
 parentheses are needed around the field expression.</p>
+<!-- ignore: needs lots of support code -->
 <pre><code class="language-rust ignore">mystruct.myfield;
 foo().x;
 (Struct {a: 10, b: 20}).a;
@@ -7699,11 +7813,13 @@ while let _ = 5 {
 </code></pre></pre>
 <p>A <code>while let</code> loop is equivalent to a <code>loop</code> expression containing a <a href="expressions/match-expr.html"><code>match</code>
 expression</a> as follows.</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: while let PATS = EXPR {
     /* loop body */
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: loop {
     match EXPR {
         PATS =&gt; { /* loop body */ },
@@ -7758,11 +7874,13 @@ assert_eq!(sum, 55);
 <span class="boring">}
 </code></pre></pre>
 <p>A for loop is equivalent to the following block expression.</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">'label: for PATTERN in iter_expr {
     /* loop body */
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">{
     let result = match IntoIterator::into_iter(iter_expr) {
         mut iter =&gt; 'label: loop {
@@ -8040,6 +8158,7 @@ assert_eq!(a, 3);
 <span class="boring">}
 </code></pre></pre>
 <p>An <code>if let</code> expression is equivalent to a <a href="expressions/match-expr.html"><code>match</code> expression</a> as follows:</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">if let PATS = EXPR {
     /* body */
 } else {
@@ -8047,6 +8166,7 @@ assert_eq!(a, 3);
 }
 </code></pre>
 <p>is equivalent to</p>
+<!-- ignore: expansion example -->
 <pre><code class="language-rust ignore">match EXPR {
     PATS =&gt; { /* body */ },
     _ =&gt; { /* else */ },    // () if there is no else
@@ -8073,6 +8193,7 @@ Use of a lazy boolean operator is ambiguous with a planned feature change
 of the language (the implementation of if-let chains - see <a href="https://github.com/rust-lang/rfcs/blob/master/text/2497-if-let-chains.md#rollout-plan-and-transitioning-to-rust-2018">eRFC 2947</a>).
 When lazy boolean operator expression is desired, this can be achieved
 by using parenthesis as below:</p>
+<!-- ignore: psuedo code -->
 <pre><code class="language-rust ignore">// Before...
 if let PAT = EXPR &amp;&amp; EXPR { .. }
 
@@ -8172,10 +8293,10 @@ those types of ranges supported by range patterns can be used in match arms.</p>
 <p>Every binding in each <code>|</code> separated pattern must appear in all of the patterns
 in the arm. Every binding of the same name must have the same type, and have
 the same binding mode.</p>
+<h2><a class="header" href="#match-guards" id="match-guards">Match guards</a></h2>
 <p>Match arms can accept <em>match guards</em> to further refine the
 criteria for matching a case. Pattern guards appear after the pattern and
-consist of a bool-typed expression following the <code>if</code> keyword. A pattern guard
-may refer to the variables bound within the pattern they follow.</p>
+consist of a <code>bool</code>-typed expression following the <code>if</code> keyword.</p>
 <p>When the pattern matches successfully, the pattern guard expression is executed.
 If the expression evaluates to true, the pattern is successfully matched against.
 Otherwise, the next pattern, including other matches with the <code>|</code> operator in
@@ -8209,6 +8330,15 @@ assert_eq!(i.get(), 2);
 <span class="boring">}
 </code></pre></pre>
 </blockquote>
+<p>A pattern guard may refer to the variables bound within the pattern they follow.
+Before evaluating the guard, a shared reference is taken to the part of the
+scrutinee the variable matches on. While evaluating the guard,
+this shared reference is then used when accessing the variable.
+Only when the guard evaluates to true is the value moved, or copied,
+from the scrutinee into the variable. This allows shared borrows to be used
+inside guards without moving out of the scrutinee in case guard fails to match.
+Moreover, by holding a shared reference while evaluating the guard,
+mutation inside guards is also prevented.</p>
 <h2><a class="header" href="#attributes-on-match-arms" id="attributes-on-match-arms">Attributes on match arms</a></h2>
 <p>Outer attributes are allowed on match arms. The only attributes that have
 meaning on match arms are <a href="expressions/../conditional-compilation.html"><code>cfg</code></a>, <a href="expressions/../attributes/codegen.html#the-cold-attribute"><code>cold</code></a>, and the <a href="expressions/../attributes/diagnostics.html#lint-check-attributes">lint check attributes</a>.</p>
@@ -8273,6 +8403,7 @@ context, there must be some task context available.</p>
 <h2><a class="header" href="#approximate-desugaring" id="approximate-desugaring">Approximate desugaring</a></h2>
 <p>Effectively, an <code>&lt;expr&gt;.await</code> expression is roughly
 equivalent to the following (this desugaring is not normative):</p>
+<!-- ignore: example expansion -->
 <pre><code class="language-rust ignore">match /* &lt;expr&gt; */ {
     mut pinned =&gt; loop {
         let mut pin = unsafe { Pin::new_unchecked(&amp;mut pinned) };
@@ -9153,6 +9284,14 @@ instantiated through a pointer type, such as <code>&amp;str</code>.</p>
 <p>The never type <code>!</code> is a type with no values, representing the result of
 computations that never complete. Expressions of type <code>!</code> can be coerced into
 any other type.</p>
+<pre><pre class="playpen"><code class="language-rust should_panic">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>let x: ! = panic!();
+// Can be coerced into any type.
+let y: u32 = x;
+<span class="boring">}
+</code></pre></pre>
 <h1><a class="header" href="#tuple-types" id="tuple-types">Tuple types</a></h1>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -9353,12 +9492,14 @@ f(|| {
 <span class="boring">}
 </code></pre></pre>
 <p>generates a closure type roughly like the following:</p>
+<!-- ignore: simplified, requires unboxed_closures, fn_traits -->
 <pre><code class="language-rust ignore">struct Closure&lt;'a&gt; {
     s : String,
     t : &amp;'a String,
 }
 
-impl&lt;'a&gt; (FnOnce() -&gt; String) for Closure&lt;'a&gt; {
+impl&lt;'a&gt; FnOnce&lt;()&gt; for Closure&lt;'a&gt; {
+    type Output = String;
     fn call_once(self) -&gt; String {
         self.s += &amp;*self.t;
         self.s
@@ -9366,6 +9507,7 @@ impl&lt;'a&gt; (FnOnce() -&gt; String) for Closure&lt;'a&gt; {
 }
 </code></pre>
 <p>so that the call to <code>f</code> works as if it were:</p>
+<!-- ignore: continuation of above -->
 <pre><code class="language-rust ignore">f(Closure{s: s, t: &amp;t});
 </code></pre>
 <h2><a class="header" href="#capture-modes-1" id="capture-modes-1">Capture modes</a></h2>
@@ -9727,7 +9869,7 @@ fn main() {
 </code></pre></pre>
 <!--
   What else should be said here?
-  The only documentation I am aware of is https://rust-lang-nursery.github.io/rustc-guide/type-inference.html
+  The only documentation I am aware of is https://rust-lang.github.io/rustc-guide/type-inference.html
   There should be a broader discussion of type inference somewhere.
 -->
 <h1><a class="header" href="#dynamically-sized-types" id="dynamically-sized-types">Dynamically Sized Types</a></h1>
@@ -9916,6 +10058,7 @@ is now. Then increase the current offset by the size of the field.</p>
 <p>Finally, the size of the struct is the current offset rounded up to the nearest
 multiple of the struct's alignment.</p>
 <p>Here is this algorithm described in pseudocode.</p>
+<!-- ignore: pseudocode -->
 <pre><code class="language-rust ignore">struct.alignment = struct.fields().map(|field| field.alignment).max();
 
 let current_offset = 0;
@@ -10233,10 +10376,16 @@ fn main() {
 <h2><a class="header" href="#higher-ranked-trait-bounds" id="higher-ranked-trait-bounds">Higher-ranked trait bounds</a></h2>
 <p>Type bounds may be <em>higher ranked</em> over lifetimes. These bounds specify a bound
 is true <em>for all</em> lifetimes. For example, a bound such as <code>for&lt;'a&gt; &amp;'a T: PartialEq&lt;i32&gt;</code> would require an implementation like</p>
-<pre><code class="language-rust ignore">impl&lt;'a&gt; PartialEq&lt;i32&gt; for &amp;'a T {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct T;
+</span>impl&lt;'a&gt; PartialEq&lt;i32&gt; for &amp;'a T {
     // ...
-}
-</code></pre>
+<span class="boring">   fn eq(&amp;self, other: &amp;i32) -&gt; bool {true}
+</span>}
+<span class="boring">}
+</code></pre></pre>
 <p>and could then be used to compare a <code>&amp;'a T</code> with any lifetime to an <code>i32</code>.</p>
 <p>Only a higher-ranked bound can be used here as the lifetime of the reference is
 shorter than a lifetime parameter on the function:</p>
@@ -10561,36 +10710,58 @@ lifetime is assigned to <em>all</em> elided output lifetimes.</li>
 reference to <code>Self</code> is assigned to all elided output lifetime parameters.</li>
 </ul>
 <p>Examples:</p>
-<pre><code class="language-rust ignore">fn print(s: &amp;str);                                      // elided
-fn print(s: &amp;'_ str);                                   // also elided
-fn print&lt;'a&gt;(s: &amp;'a str);                               // expanded
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+trait T {}
+trait ToCStr {}
+struct Thing&lt;'a&gt; {f: &amp;'a i32}
+struct Command;
+</span>#
+<span class="boring">trait Example {
+</span>fn print1(s: &amp;str);                                   // elided
+fn print2(s: &amp;'_ str);                                // also elided
+fn print3&lt;'a&gt;(s: &amp;'a str);                            // expanded
 
-fn debug(lvl: usize, s: &amp;str);                          // elided
-fn debug&lt;'a&gt;(lvl: usize, s: &amp;'a str);                   // expanded
+fn debug1(lvl: usize, s: &amp;str);                       // elided
+fn debug2&lt;'a&gt;(lvl: usize, s: &amp;'a str);                // expanded
 
-fn substr(s: &amp;str, until: usize) -&gt; &amp;str;               // elided
-fn substr&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;     // expanded
+fn substr1(s: &amp;str, until: usize) -&gt; &amp;str;            // elided
+fn substr2&lt;'a&gt;(s: &amp;'a str, until: usize) -&gt; &amp;'a str;  // expanded
 
-fn get_str() -&gt; &amp;str;                                   // ILLEGAL
+fn get_mut1(&amp;mut self) -&gt; &amp;mut dyn T;                 // elided
+fn get_mut2&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut dyn T;       // expanded
 
-fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                      // ILLEGAL
+fn args1&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
+fn args2&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
 
-fn get_mut(&amp;mut self) -&gt; &amp;mut T;                        // elided
-fn get_mut&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut T;              // expanded
+fn new1(buf: &amp;mut [u8]) -&gt; Thing&lt;'_&gt;;                 // elided - preferred
+fn new2(buf: &amp;mut [u8]) -&gt; Thing;                     // elided
+fn new3&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; Thing&lt;'a&gt;;          // expanded
+<span class="boring">}
+</span>
+type FunPtr1 = fn(&amp;str) -&gt; &amp;str;                      // elided
+type FunPtr2 = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;        // expanded
 
-fn args&lt;T: ToCStr&gt;(&amp;mut self, args: &amp;[T]) -&gt; &amp;mut Command;                  // elided
-fn args&lt;'a, 'b, T: ToCStr&gt;(&amp;'a mut self, args: &amp;'b [T]) -&gt; &amp;'a mut Command; // expanded
+type FunTrait1 = dyn Fn(&amp;str) -&gt; &amp;str;                // elided
+type FunTrait2 = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;  // expanded
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// The following examples show situations where it is not allowed to elide the
+// lifetime parameter.
 
-fn new(buf: &amp;mut [u8]) -&gt; BufWriter&lt;'_&gt;;                // elided - preferred
-fn new(buf: &amp;mut [u8]) -&gt; BufWriter;                    // elided
-fn new&lt;'a&gt;(buf: &amp;'a mut [u8]) -&gt; BufWriter&lt;'a&gt;;         // expanded
+<span class="boring">trait Example {
+</span>// Cannot infer, because there are no parameters to infer from.
+fn get_str() -&gt; &amp;str;                                 // ILLEGAL
 
-type FunPtr = fn(&amp;str) -&gt; &amp;str;                         // elided
-type FunPtr = for&lt;'a&gt; fn(&amp;'a str) -&gt; &amp;'a str;           // expanded
-
-type FunTrait = dyn Fn(&amp;str) -&gt; &amp;str;                   // elided
-type FunTrait = dyn for&lt;'a&gt; Fn(&amp;'a str) -&gt; &amp;'a str;     // expanded
-</code></pre>
+// Cannot infer, ambiguous if it is borrowed from the first or second parameter.
+fn frob(s: &amp;str, t: &amp;str) -&gt; &amp;str;                    // ILLEGAL
+<span class="boring">}
+}
+</code></pre></pre>
 <h2><a class="header" href="#default-trait-object-lifetimes" id="default-trait-object-lifetimes">Default trait object lifetimes</a></h2>
 <p>The assumed lifetime of references held by a <a href="types/trait-object.html">trait object</a> is called its
 <em>default object lifetime bound</em>. These were defined in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a> and amended in
@@ -10614,47 +10785,61 @@ used.</li>
 <li>If the trait has no lifetime bounds, then the lifetime is inferred in
 expressions and is <code>'static</code> outside of expressions.</li>
 </ul>
-<pre><code class="language-rust ignore">// For the following trait...
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// For the following trait...
 trait Foo { }
 
 // These two are the same as Box&lt;T&gt; has no lifetime bound on T
-Box&lt;dyn Foo&gt;
-Box&lt;dyn Foo + 'static&gt;
+type T1 = Box&lt;dyn Foo&gt;;
+type T2 = Box&lt;dyn Foo + 'static&gt;;
 
 // ...and so are these:
 impl dyn Foo {}
 impl dyn Foo + 'static {}
 
 // ...so are these, because &amp;'a T requires T: 'a
-&amp;'a dyn Foo
-&amp;'a (dyn Foo + 'a)
+type T3&lt;'a&gt; = &amp;'a dyn Foo;
+type T4&lt;'a&gt; = &amp;'a (dyn Foo + 'a);
 
 // std::cell::Ref&lt;'a, T&gt; also requires T: 'a, so these are the same
-std::cell::Ref&lt;'a, dyn Foo&gt;
-std::cell::Ref&lt;'a, dyn Foo + 'a&gt;
-
-// This is an error:
-struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt;
-TwoBounds&lt;'a, 'b, dyn Foo&gt; // Error: the lifetime bound for this object type
-                           // cannot be deduced from context
-</code></pre>
+type T5&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo&gt;;
+type T6&lt;'a&gt; = std::cell::Ref&lt;'a, dyn Foo + 'a&gt;;
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// This is an example of an error.
+<span class="boring">trait Foo { }
+</span>struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt; {
+    f1: &amp;'a i32,
+    f2: &amp;'b i32,
+    f3: T,
+}
+type T7&lt;'a, 'b&gt; = TwoBounds&lt;'a, 'b, dyn Foo&gt;;
+//                                  ^^^^^^^
+// Error: the lifetime bound for this object type cannot be deduced from context
+<span class="boring">}
+</code></pre></pre>
 <p>Note that the innermost object sets the bound, so <code>&amp;'a Box&lt;dyn Foo&gt;</code> is still
 <code>&amp;'a Box&lt;dyn Foo + 'static&gt;</code>.</p>
-<pre><code class="language-rust ignore">// For the following trait...
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+</span>// For the following trait...
 trait Bar&lt;'a&gt;: 'a { }
 
 // ...these two are the same:
-Box&lt;dyn Bar&lt;'a&gt;&gt;
-Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;
+type T1&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt;&gt;;
+type T2&lt;'a&gt; = Box&lt;dyn Bar&lt;'a&gt; + 'a&gt;;
 
 // ...and so are these:
-impl&lt;'a&gt; dyn Foo&lt;'a&gt; {}
-impl&lt;'a&gt; dyn Foo&lt;'a&gt; + 'a {}
-
-// This is still an error:
-struct TwoBounds&lt;'a, 'b, T: ?Sized + 'a + 'b&gt;
-TwoBounds&lt;'a, 'b, dyn Foo&lt;'c&gt;&gt;
-</code></pre>
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; {}
+impl&lt;'a&gt; dyn Bar&lt;'a&gt; + 'a {}
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#static-lifetime-elision" id="static-lifetime-elision"><code>'static</code> lifetime elision</a></h2>
 <p>Both <a href="items/constant-items.html">constant</a> and <a href="items/static-items.html">static</a> declarations of reference types have <em>implicit</em>
 <code>'static</code> lifetimes unless an explicit lifetime is specified. As such, the
@@ -10682,16 +10867,35 @@ const BITS_N_STRINGS: BitsNStrings&lt;'_&gt; = BitsNStrings {
 references, which themselves include references, the compiler will first try
 the standard elision rules. If it is unable to resolve the lifetimes by its
 usual rules, then it will error. By way of example:</p>
-<pre><code class="language-rust ignore">// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
-const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = ..
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct Foo;
+struct Bar;
+struct Baz;
+fn somefunc(a: &amp;Foo, b: &amp;Bar, c: &amp;Baz) -&gt; usize {42}
+</span>// Resolved as `fn&lt;'a&gt;(&amp;'a str) -&gt; &amp;'a str`.
+const RESOLVED_SINGLE: fn(&amp;str) -&gt; &amp;str = |x| x;
 
 // Resolved as `Fn&lt;'a, 'b, 'c&gt;(&amp;'a Foo, &amp;'b Bar, &amp;'c Baz) -&gt; usize`.
-const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = ..
-
-// There is insufficient information to bound the return reference lifetime
+const RESOLVED_MULTIPLE: &amp;dyn Fn(&amp;Foo, &amp;Bar, &amp;Baz) -&gt; usize = &amp;somefunc;
+<span class="boring">}
+</code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+struct Foo;
+struct Bar;
+struct Baz;
+fn somefunc&lt;'a,'b&gt;(a: &amp;'a Foo, b: &amp;'b Bar) -&gt; &amp;'a Baz {unimplemented!()}
+</span>// There is insufficient information to bound the return reference lifetime
 // relative to the argument lifetimes, so this is an error.
-const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = ..
-</code></pre>
+const RESOLVED_STATIC: &amp;dyn Fn(&amp;Foo, &amp;Bar) -&gt; &amp;Baz = &amp;somefunc;
+//                                            ^
+// this function's return type contains a borrowed value, but the signature
+// does not say whether it is borrowed from argument 1 or argument 2
+<span class="boring">}
+</code></pre></pre>
 <h1><a class="header" href="#special-types-and-traits" id="special-types-and-traits">Special types and traits</a></h1>
 <p>Certain types and traits that exist in <a href="../std/index.html">the standard library</a> are known to the
 Rust compiler. This chapter documents the special features of these types and
@@ -11008,10 +11212,10 @@ default such as:</p>
 feature. These target features are typically configured from the command line
 via flags to the compiler itself. For example to enable a static runtime you
 would execute:</p>
-<pre><code class="language-notrust">rustc -C target-feature=+crt-static foo.rs
+<pre><code class="language-bash">rustc -C target-feature=+crt-static foo.rs
 </code></pre>
 <p>whereas to link dynamically to the C runtime you would execute:</p>
-<pre><code class="language-notrust">rustc -C target-feature=-crt-static foo.rs
+<pre><code class="language-bash">rustc -C target-feature=-crt-static foo.rs
 </code></pre>
 <p>Targets which do not support switching between linkage of the C runtime will
 ignore this flag. It's recommended to inspect the resulting binary to ensure
@@ -11020,16 +11224,20 @@ that it's linked as you would expect after the compiler succeeds.</p>
 example, needs to be compiled differently (e.g. with <code>/MT</code> or <code>/MD</code>) depending
 on the runtime being linked. This is exported currently through the
 <a href="conditional-compilation.html#target_feature"><code>cfg</code> attribute <code>target_feature</code> option</a>:</p>
-<pre><code class="language-rust ignore">#[cfg(target_feature = &quot;crt-static&quot;)]
-fn foo() {
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[cfg(target_feature = &quot;crt-static&quot;)]
+</span>fn foo() {
     println!(&quot;the C runtime should be statically linked&quot;);
 }
 
-#[cfg(not(target_feature = &quot;crt-static&quot;))]
-fn foo() {
+<span class="boring">[cfg(not(target_feature = &quot;crt-static&quot;))]
+</span>fn foo() {
     println!(&quot;the C runtime should be dynamically linked&quot;);
 }
-</code></pre>
+<span class="boring">}
+</code></pre></pre>
 <p>Also note that Cargo build scripts can learn about this feature through
 <a href="../cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts">environment variables</a>. In a build script you can detect the linkage
 via:</p>
@@ -11048,7 +11256,7 @@ fn main() {
 <p>To use this feature locally, you typically will use the <code>RUSTFLAGS</code> environment
 variable to specify flags to the compiler through Cargo. For example to compile
 a statically linked binary on MSVC you would execute:</p>
-<pre><code class="language-ignore notrust">RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-pc-windows-msvc
+<pre><code class="language-bash">RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-pc-windows-msvc
 </code></pre>
 <h1><a class="header" href="#unsafety" id="unsafety">Unsafety</a></h1>
 <p>Unsafe operations are those that can potentially violate the memory-safety
@@ -11329,17 +11537,26 @@ item's name.</p>
 <p>The <em><code>link_section</code> attribute</em> specifies the section of the object file that a
 <a href="items/functions.html">function</a> or <a href="items/static-items.html">static</a>'s content will be placed into. It uses the
 <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax to specify the section name.</p>
-<pre><code class="language-rust ignore">#[no_mangle]
-#[link_section = &quot;.example_section&quot;]
-pub static VAR1: u32 = 1;
-</code></pre>
+<!-- no_run: don't link. The format of the section name is platform-specific. -->
+<pre><pre class="playpen"><code class="language-rust no_run">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[no_mangle]
+[link_section = &quot;.example_section&quot;]
+</span>pub static VAR1: u32 = 1;
+<span class="boring">}
+</code></pre></pre>
 <h2><a class="header" href="#the-export_name-attribute" id="the-export_name-attribute">The <code>export_name</code> attribute</a></h2>
 <p>The <em><code>export_name</code> attribute</em> specifies the name of the symbol that will be
 exported on a <a href="items/functions.html">function</a> or <a href="items/static-items.html">static</a>. It uses the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax
 to specify the symbol name.</p>
-<pre><code class="language-rust ignore">#[export_name = &quot;exported_symbol_name&quot;]
-pub fn name_in_rust() { }
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+fn main() {
+[export_name = &quot;exported_symbol_name&quot;]
+</span>pub fn name_in_rust() { }
+<span class="boring">}
+</code></pre></pre>
 <h1><a class="header" href="#the-rust-runtime" id="the-rust-runtime">The Rust runtime</a></h1>
 <p>This section documents features that define some aspects of the Rust runtime.</p>
 <h2><a class="header" href="#the-panic_handler-attribute" id="the-panic_handler-attribute">The <code>panic_handler</code> attribute</a></h2>
@@ -11349,7 +11566,7 @@ pub fn name_in_rust() { }
 <code>panic_handler</code> function in the dependency graph of a binary, dylib or cdylib crate.</p>
 <p>Below is shown a <code>panic_handler</code> function that logs the panic message and then halts the
 thread.</p>
-<!-- NOTE(ignore) `mdbook test` doesn't support `no_std` code -->
+<!-- ignore: test infrastructure can't handle no_std -->
 <pre><code class="language-rust ignore">#![no_std]
 
 use core::fmt::{self, Write};
@@ -11392,8 +11609,12 @@ the <a href="https://msdn.microsoft.com/en-us/library/fcc1zstk.aspx">subsystem</
 <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax to specify the subsystem with a value of either
 <code>console</code> or <code>windows</code>. This attribute is ignored on non-Windows targets, and
 for non-<code>bin</code> <a href="linkage.html">crate types</a>.</p>
-<pre><code class="language-rust ignore">#![windows_subsystem = &quot;windows&quot;]
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+![windows_subsystem = &quot;windows&quot;]
+fn main() {
+}
+</code></pre></pre>
 <h1><a class="header" href="#appendices" id="appendices">Appendices</a></h1>
 <h1><a class="header" href="#appendix-macro-follow-set-ambiguity-formal-specification" id="appendix-macro-follow-set-ambiguity-formal-specification">Appendix: Macro Follow-Set Ambiguity Formal Specification</a></h1>
 <p>This page documents the formal specification of the follow rules for <a href="macros-by-example.html">Macros
@@ -11822,6 +12043,9 @@ at run time by the program. It occupies a contiguous region of memory.</p>
 items are defined in <a href="items/implementations.html">implementations</a> and declared in <a href="items/traits.html">traits</a>. Only
 functions, constants, and type aliases can be associated. Contrast to a <a href="glossary.html#free-item">free
 item</a>.</p>
+<h3><a class="header" href="#blanket-implementation" id="blanket-implementation">Blanket implementation</a></h3>
+<p>Any implementation where a type appears <a href="glossary.html#uncovered-type">uncovered</a>. <code>impl&lt;T&gt; Foo for T</code>, <code>impl&lt;T&gt; Bar&lt;T&gt; for T</code>, <code>impl&lt;T&gt; Bar&lt;Vec&lt;T&gt;&gt; for T</code>, and <code>impl&lt;T&gt; Bar&lt;T&gt; for Vec&lt;T&gt;</code> are considered blanket impls. However, <code>impl&lt;T&gt; Bar&lt;Vec&lt;T&gt;&gt; for Vec&lt;T&gt;</code> is not a blanket impl, as all instances of <code>T</code> which appear in this <code>impl</code>
+are covered by <code>Vec</code>.</p>
 <h3><a class="header" href="#bound" id="bound">Bound</a></h3>
 <p>Bounds are constraints on a type or trait. For example, if a bound
 is placed on the argument a function takes, types passed to that function
@@ -11844,6 +12068,16 @@ and functions that evaluate to a single value, with or without side-effects.</p>
 <h3><a class="header" href="#free-item" id="free-item">Free item</a></h3>
 <p>An <a href="items.html">item</a> that is not a member of an <a href="items/implementations.html">implementation</a>, such as a <em>free
 function</em> or a <em>free const</em>. Contrast to an <a href="glossary.html#associated-item">associated item</a>.</p>
+<h3><a class="header" href="#fundamental-traits" id="fundamental-traits">Fundamental traits</a></h3>
+<p>A fundamental trait is one where adding an impl of it for an existing type is a breaking change. 
+The <code>Fn</code> traits and <code>Sized</code> are fundamental.</p>
+<h3><a class="header" href="#fundamental-type-constructors" id="fundamental-type-constructors">Fundamental type constructors</a></h3>
+<p>A fundamental type constructor is a type where implementing a <a href="glossary.html#blanket-implementation">blanket implementation</a> over it 
+is a breaking change. <code>&amp;</code>, <code>&amp;mut</code>, <code>Box</code>, and <code>Pin</code>  are fundamental. </p>
+<p>Any time a type <code>T</code> is considered <a href="glossary.html#local-type">local</a>, <code>&amp;T</code>, <code>&amp;mut T</code>, <code>Box&lt;T&gt;</code>, and <code>Pin&lt;T&gt;</code> 
+are also considered local. Fundamental type constructors cannot <a href="glossary.html#uncovered-type">cover</a> other types. 
+Any time the term &quot;covered type&quot; is used, 
+the <code>T</code> in <code>&amp;T</code>, <code>&amp;mut T</code>, <code>Box&lt;T&gt;</code>, and <code>Pin&lt;T&gt;</code> is not considered covered.</p>
 <h3><a class="header" href="#inhabited" id="inhabited">Inhabited</a></h3>
 <p>A type is inhabited if it has constructors and therefore can be instantiated. An inhabited type is
 not &quot;empty&quot; in the sense that there can be values of the type. Opposite of
@@ -11858,6 +12092,15 @@ implementation.</p>
 <p>A variable is initialized if it has been assigned a value and hasn't since been
 moved from. All other memory locations are assumed to be uninitialized. Only
 unsafe Rust can create such a memory without initializing it.</p>
+<h3><a class="header" href="#local-trait" id="local-trait">Local trait</a></h3>
+<p>A <code>trait</code> which was defined in the current crate. A trait definition is local
+or not independent of applied type arguments. Given <code>trait Foo&lt;T, U&gt;</code>,
+<code>Foo</code> is always local, regardless of the types substituted for <code>T</code> and <code>U</code>.</p>
+<h3><a class="header" href="#local-type" id="local-type">Local type</a></h3>
+<p>A <code>struct</code>, <code>enum</code>, or <code>union</code> which was defined in the current crate.
+This is not affected by applied type arguments. <code>struct Foo</code> is considered local, but
+<code>Vec&lt;Foo&gt;</code> is not. <code>LocalType&lt;ForeignType&gt;</code> is local. Type aliases do not 
+affect locality.</p>
 <h3><a class="header" href="#nominal-types" id="nominal-types">Nominal types</a></h3>
 <p>Types that can be referred to by a path directly. Specifically <a href="items/enumerations.html">enums</a>,
 <a href="items/structs.html">structs</a>, <a href="items/unions.html">unions</a>, and <a href="types/trait-object.html">trait objects</a>.</p>
@@ -11901,6 +12144,10 @@ string slice type is <code>&amp;str</code>, while the mutable string slice type 
 <p>A trait is a language item that is used for describing the functionalities a type must provide.
 It allows a type to make certain promises about its behavior.</p>
 <p>Generic functions and generic structs can use traits to constrain, or bound, the types they accept.</p>
+<h3><a class="header" href="#uncovered-type" id="uncovered-type">Uncovered type</a></h3>
+<p>A type which does not appear as an argument to another type. For example,
+<code>T</code> is uncovered, but the <code>T</code> in <code>Vec&lt;T&gt;</code> is covered. This is only relevant for
+type arguments.</p>
 <h3><a class="header" href="#undefined-behavior" id="undefined-behavior">Undefined behavior</a></h3>
 <p>Compile-time or run-time behavior that is not specified. This may result in,
 but is not limited to: process termination or corruption; improper, incorrect,

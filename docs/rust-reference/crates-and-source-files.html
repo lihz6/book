@@ -119,7 +119,7 @@
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
                             
-                            <a href="https://github.com/rust-lang-nursery/reference/" title="Git repository" aria-label="Git repository">
+                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
                                 <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
@@ -201,7 +201,7 @@ may optionally begin with any number of <a href="attributes.html">attributes</a>
 that apply to the containing module, most of which influence the behavior of
 the compiler. The anonymous crate module can have additional attributes that
 apply to the crate as a whole.</p>
-<pre><pre class="playpen"><code class="language-rust no_run">
+<pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 fn main() {
 </span>// Specify the crate name.
@@ -223,7 +223,8 @@ to the operating system what program to use to execute this file. It serves
 essentially to treat the source file as an executable script. The shebang
 can only occur at the beginning of the file (but after the optional
 <em>UTF8BOM</em>). It is ignored by the compiler. For example:</p>
-<pre><code class="language-text ignore">#!/usr/bin/env rustx
+<!-- ignore: tests don't like shebang -->
+<pre><code class="language-rust ignore">#!/usr/bin/env rustx
 
 fn main() {
     println!(&quot;Hello!&quot;);
@@ -270,8 +271,12 @@ other object being linked to defines <code>main</code>.</p>
 <h2><a class="header" href="#the-crate_name-attribute" id="the-crate_name-attribute">The <code>crate_name</code> attribute</a></h2>
 <p>The <em><code>crate_name</code> <a href="attributes.html">attribute</a></em> may be applied at the crate level to specify the
 name of the crate with the <a href="attributes.html#meta-item-attribute-syntax"><em>MetaNameValueStr</em></a> syntax.</p>
-<pre><code class="language-rust ignore">#![crate_name = &quot;mycrate&quot;]
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+![crate_name = &quot;mycrate&quot;]
+fn main() {
+}
+</code></pre></pre>
 <p>The crate name must not be empty, and must only contain <a href="../std/primitive.char.html#method.is_alphanumeric">Unicode alphanumeric</a>
 or <code>-</code> (U+002D) characters.</p>
 <div class="footnote-definition" id="phase-distinction"><sup class="footnote-definition-label">1</sup>

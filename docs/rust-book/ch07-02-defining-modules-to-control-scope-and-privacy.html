@@ -173,10 +173,7 @@ organize the functions into nested modules. Create a new library named
 <code>restaurant</code> by running <code>cargo new --lib restaurant</code>; then put the code in
 Listing 7-1 into <em>src/lib.rs</em> to define some modules and function signatures.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-fn main() {
-</span>mod front_of_house {
+<pre><code class="language-rust ignore">mod front_of_house {
     mod hosting {
         fn add_to_waitlist() {}
 
@@ -191,8 +188,7 @@ fn main() {
         fn take_payment() {}
     }
 }
-<span class="boring">}
-</code></pre></pre>
+</code></pre>
 <p><span class="caption">Listing 7-1: A <code>front_of_house</code> module containing other
 modules that then contain functions</span></p>
 <p>We define a module by starting with the <code>mod</code> keyword and then specify the
