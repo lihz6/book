@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -34,7 +34,7 @@
 
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "";
@@ -62,8 +62,11 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -79,7 +82,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
                 <ol class="chapter"><li class="expanded affix "><a href="introduction.html">Introduction</a></li><li class="expanded "><a href="notation.html"><strong aria-hidden="true">1.</strong> Notation</a></li><li class="expanded "><a href="lexical-structure.html"><strong aria-hidden="true">2.</strong> Lexical structure</a></li><li><ol class="section"><li class="expanded "><a href="input-format.html"><strong aria-hidden="true">2.1.</strong> Input format</a></li><li class="expanded "><a href="keywords.html"><strong aria-hidden="true">2.2.</strong> Keywords</a></li><li class="expanded "><a href="identifiers.html"><strong aria-hidden="true">2.3.</strong> Identifiers</a></li><li class="expanded "><a href="comments.html"><strong aria-hidden="true">2.4.</strong> Comments</a></li><li class="expanded "><a href="whitespace.html"><strong aria-hidden="true">2.5.</strong> Whitespace</a></li><li class="expanded "><a href="tokens.html" class="active"><strong aria-hidden="true">2.6.</strong> Tokens</a></li><li class="expanded "><a href="paths.html"><strong aria-hidden="true">2.7.</strong> Paths</a></li></ol></li><li class="expanded "><a href="macros.html"><strong aria-hidden="true">3.</strong> Macros</a></li><li><ol class="section"><li class="expanded "><a href="macros-by-example.html"><strong aria-hidden="true">3.1.</strong> Macros By Example</a></li><li class="expanded "><a href="procedural-macros.html"><strong aria-hidden="true">3.2.</strong> Procedural Macros</a></li></ol></li><li class="expanded "><a href="crates-and-source-files.html"><strong aria-hidden="true">4.</strong> Crates and source files</a></li><li class="expanded "><a href="conditional-compilation.html"><strong aria-hidden="true">5.</strong> Conditional compilation</a></li><li class="expanded "><a href="items.html"><strong aria-hidden="true">6.</strong> Items</a></li><li><ol class="section"><li class="expanded "><a href="items/modules.html"><strong aria-hidden="true">6.1.</strong> Modules</a></li><li class="expanded "><a href="items/extern-crates.html"><strong aria-hidden="true">6.2.</strong> Extern crates</a></li><li class="expanded "><a href="items/use-declarations.html"><strong aria-hidden="true">6.3.</strong> Use declarations</a></li><li class="expanded "><a href="items/functions.html"><strong aria-hidden="true">6.4.</strong> Functions</a></li><li class="expanded "><a href="items/type-aliases.html"><strong aria-hidden="true">6.5.</strong> Type aliases</a></li><li class="expanded "><a href="items/structs.html"><strong aria-hidden="true">6.6.</strong> Structs</a></li><li class="expanded "><a href="items/enumerations.html"><strong aria-hidden="true">6.7.</strong> Enumerations</a></li><li class="expanded "><a href="items/unions.html"><strong aria-hidden="true">6.8.</strong> Unions</a></li><li class="expanded "><a href="items/constant-items.html"><strong aria-hidden="true">6.9.</strong> Constant items</a></li><li class="expanded "><a href="items/static-items.html"><strong aria-hidden="true">6.10.</strong> Static items</a></li><li class="expanded "><a href="items/traits.html"><strong aria-hidden="true">6.11.</strong> Traits</a></li><li class="expanded "><a href="items/implementations.html"><strong aria-hidden="true">6.12.</strong> Implementations</a></li><li class="expanded "><a href="items/external-blocks.html"><strong aria-hidden="true">6.13.</strong> External blocks</a></li><li class="expanded "><a href="items/generics.html"><strong aria-hidden="true">6.14.</strong> Type and lifetime parameters</a></li><li class="expanded "><a href="items/associated-items.html"><strong aria-hidden="true">6.15.</strong> Associated Items</a></li><li class="expanded "><a href="visibility-and-privacy.html"><strong aria-hidden="true">6.16.</strong> Visibility and Privacy</a></li></ol></li><li class="expanded "><a href="attributes.html"><strong aria-hidden="true">7.</strong> Attributes</a></li><li><ol class="section"><li class="expanded "><a href="attributes/testing.html"><strong aria-hidden="true">7.1.</strong> Testing</a></li><li class="expanded "><a href="attributes/derive.html"><strong aria-hidden="true">7.2.</strong> Derive</a></li><li class="expanded "><a href="attributes/diagnostics.html"><strong aria-hidden="true">7.3.</strong> Diagnostics</a></li><li class="expanded "><a href="attributes/codegen.html"><strong aria-hidden="true">7.4.</strong> Code generation</a></li><li class="expanded "><a href="attributes/limits.html"><strong aria-hidden="true">7.5.</strong> Limits</a></li><li class="expanded "><a href="attributes/type_system.html"><strong aria-hidden="true">7.6.</strong> Type System</a></li></ol></li><li class="expanded "><a href="statements-and-expressions.html"><strong aria-hidden="true">8.</strong> Statements and expressions</a></li><li><ol class="section"><li class="expanded "><a href="statements.html"><strong aria-hidden="true">8.1.</strong> Statements</a></li><li class="expanded "><a href="expressions.html"><strong aria-hidden="true">8.2.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="expressions/literal-expr.html"><strong aria-hidden="true">8.2.1.</strong> Literal expressions</a></li><li class="expanded "><a href="expressions/path-expr.html"><strong aria-hidden="true">8.2.2.</strong> Path expressions</a></li><li class="expanded "><a href="expressions/block-expr.html"><strong aria-hidden="true">8.2.3.</strong> Block expressions</a></li><li class="expanded "><a href="expressions/operator-expr.html"><strong aria-hidden="true">8.2.4.</strong> Operator expressions</a></li><li class="expanded "><a href="expressions/grouped-expr.html"><strong aria-hidden="true">8.2.5.</strong> Grouped expressions</a></li><li class="expanded "><a href="expressions/array-expr.html"><strong aria-hidden="true">8.2.6.</strong> Array and index expressions</a></li><li class="expanded "><a href="expressions/tuple-expr.html"><strong aria-hidden="true">8.2.7.</strong> Tuple and index expressions</a></li><li class="expanded "><a href="expressions/struct-expr.html"><strong aria-hidden="true">8.2.8.</strong> Struct expressions</a></li><li class="expanded "><a href="expressions/enum-variant-expr.html"><strong aria-hidden="true">8.2.9.</strong> Enum variant expressions</a></li><li class="expanded "><a href="expressions/call-expr.html"><strong aria-hidden="true">8.2.10.</strong> Call expressions</a></li><li class="expanded "><a href="expressions/method-call-expr.html"><strong aria-hidden="true">8.2.11.</strong> Method call expressions</a></li><li class="expanded "><a href="expressions/field-expr.html"><strong aria-hidden="true">8.2.12.</strong> Field access expressions</a></li><li class="expanded "><a href="expressions/closure-expr.html"><strong aria-hidden="true">8.2.13.</strong> Closure expressions</a></li><li class="expanded "><a href="expressions/loop-expr.html"><strong aria-hidden="true">8.2.14.</strong> Loop expressions</a></li><li class="expanded "><a href="expressions/range-expr.html"><strong aria-hidden="true">8.2.15.</strong> Range expressions</a></li><li class="expanded "><a href="expressions/if-expr.html"><strong aria-hidden="true">8.2.16.</strong> If and if let expressions</a></li><li class="expanded "><a href="expressions/match-expr.html"><strong aria-hidden="true">8.2.17.</strong> Match expressions</a></li><li class="expanded "><a href="expressions/return-expr.html"><strong aria-hidden="true">8.2.18.</strong> Return expressions</a></li><li class="expanded "><a href="expressions/await-expr.html"><strong aria-hidden="true">8.2.19.</strong> Await expressions</a></li></ol></li></ol></li><li class="expanded "><a href="patterns.html"><strong aria-hidden="true">9.</strong> Patterns</a></li><li class="expanded "><a href="type-system.html"><strong aria-hidden="true">10.</strong> Type system</a></li><li><ol class="section"><li class="expanded "><a href="types.html"><strong aria-hidden="true">10.1.</strong> Types</a></li><li><ol class="section"><li class="expanded "><a href="types/boolean.html"><strong aria-hidden="true">10.1.1.</strong> Boolean type</a></li><li class="expanded "><a href="types/numeric.html"><strong aria-hidden="true">10.1.2.</strong> Numeric types</a></li><li class="expanded "><a href="types/textual.html"><strong aria-hidden="true">10.1.3.</strong> Textual types</a></li><li class="expanded "><a href="types/never.html"><strong aria-hidden="true">10.1.4.</strong> Never type</a></li><li class="expanded "><a href="types/tuple.html"><strong aria-hidden="true">10.1.5.</strong> Tuple types</a></li><li class="expanded "><a href="types/array.html"><strong aria-hidden="true">10.1.6.</strong> Array types</a></li><li class="expanded "><a href="types/slice.html"><strong aria-hidden="true">10.1.7.</strong> Slice types</a></li><li class="expanded "><a href="types/struct.html"><strong aria-hidden="true">10.1.8.</strong> Struct types</a></li><li class="expanded "><a href="types/enum.html"><strong aria-hidden="true">10.1.9.</strong> Enumerated types</a></li><li class="expanded "><a href="types/union.html"><strong aria-hidden="true">10.1.10.</strong> Union types</a></li><li class="expanded "><a href="types/function-item.html"><strong aria-hidden="true">10.1.11.</strong> Function item types</a></li><li class="expanded "><a href="types/closure.html"><strong aria-hidden="true">10.1.12.</strong> Closure types</a></li><li class="expanded "><a href="types/pointer.html"><strong aria-hidden="true">10.1.13.</strong> Pointer types</a></li><li class="expanded "><a href="types/function-pointer.html"><strong aria-hidden="true">10.1.14.</strong> Function pointer types</a></li><li class="expanded "><a href="types/trait-object.html"><strong aria-hidden="true">10.1.15.</strong> Trait object types</a></li><li class="expanded "><a href="types/impl-trait.html"><strong aria-hidden="true">10.1.16.</strong> Impl trait type</a></li><li class="expanded "><a href="types/parameters.html"><strong aria-hidden="true">10.1.17.</strong> Type parameters</a></li><li class="expanded "><a href="types/inferred.html"><strong aria-hidden="true">10.1.18.</strong> Inferred type</a></li></ol></li><li class="expanded "><a href="dynamically-sized-types.html"><strong aria-hidden="true">10.2.</strong> Dynamically Sized Types</a></li><li class="expanded "><a href="type-layout.html"><strong aria-hidden="true">10.3.</strong> Type layout</a></li><li class="expanded "><a href="interior-mutability.html"><strong aria-hidden="true">10.4.</strong> Interior mutability</a></li><li class="expanded "><a href="subtyping.html"><strong aria-hidden="true">10.5.</strong> Subtyping and Variance</a></li><li class="expanded "><a href="trait-bounds.html"><strong aria-hidden="true">10.6.</strong> Trait and lifetime bounds</a></li><li class="expanded "><a href="type-coercions.html"><strong aria-hidden="true">10.7.</strong> Type coercions</a></li><li class="expanded "><a href="destructors.html"><strong aria-hidden="true">10.8.</strong> Destructors</a></li><li class="expanded "><a href="lifetime-elision.html"><strong aria-hidden="true">10.9.</strong> Lifetime elision</a></li></ol></li><li class="expanded "><a href="special-types-and-traits.html"><strong aria-hidden="true">11.</strong> Special types and traits</a></li><li class="expanded "><a href="memory-model.html"><strong aria-hidden="true">12.</strong> Memory model</a></li><li><ol class="section"><li class="expanded "><a href="memory-allocation-and-lifetime.html"><strong aria-hidden="true">12.1.</strong> Memory allocation and lifetime</a></li><li class="expanded "><a href="memory-ownership.html"><strong aria-hidden="true">12.2.</strong> Memory ownership</a></li><li class="expanded "><a href="variables.html"><strong aria-hidden="true">12.3.</strong> Variables</a></li></ol></li><li class="expanded "><a href="linkage.html"><strong aria-hidden="true">13.</strong> Linkage</a></li><li class="expanded "><a href="unsafety.html"><strong aria-hidden="true">14.</strong> Unsafety</a></li><li><ol class="section"><li class="expanded "><a href="unsafe-functions.html"><strong aria-hidden="true">14.1.</strong> Unsafe functions</a></li><li class="expanded "><a href="unsafe-blocks.html"><strong aria-hidden="true">14.2.</strong> Unsafe blocks</a></li><li class="expanded "><a href="behavior-considered-undefined.html"><strong aria-hidden="true">14.3.</strong> Behavior considered undefined</a></li><li class="expanded "><a href="behavior-not-considered-unsafe.html"><strong aria-hidden="true">14.4.</strong> Behavior not considered unsafe</a></li></ol></li><li class="expanded "><a href="const_eval.html"><strong aria-hidden="true">15.</strong> Constant Evaluation</a></li><li class="expanded "><a href="abi.html"><strong aria-hidden="true">16.</strong> Application Binary Interface</a></li><li class="expanded "><a href="runtime.html"><strong aria-hidden="true">17.</strong> The Rust runtime</a></li><li class="expanded "><a href="appendices.html"><strong aria-hidden="true">18.</strong> Appendices</a></li><li><ol class="section"><li class="expanded "><a href="macro-ambiguity.html"><strong aria-hidden="true">18.1.</strong> Macro Follow-Set Ambiguity Formal Specification</a></li><li class="expanded "><a href="influences.html"><strong aria-hidden="true">18.2.</strong> Influences</a></li><li class="expanded "><a href="glossary.html"><strong aria-hidden="true">18.3.</strong> Glossary</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
@@ -226,12 +229,12 @@ and can be passed to a macro without producing an error.
 The macro itself will decide how to interpret such a token and whether to produce an error or not.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>macro_rules! blackhole { ($tt:tt) =&gt; () }
 
 blackhole!(&quot;string&quot;suffix); // OK
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>However, suffixes on literal tokens parsed as Rust code are restricted.
 Any suffixes are rejected on non-numeric literal tokens,
 and numeric literal tokens are accepted only with suffixes from the list below.</p>
@@ -250,7 +253,7 @@ CHAR_LITERAL :<br />
       <code>\x</code> OCT_DIGIT HEX_DIGIT<br />
    | <code>\n</code> | <code>\r</code> | <code>\t</code> | <code>\\</code> | <code>\0</code></p>
 <p>UNICODE_ESCAPE :<br />
-   <code>\u{</code> ( HEX_DIGIT <code>_</code><sup>\*</sup> )<sup>1..6</sup> <code>}</code></p>
+   <code>\u{</code> ( HEX_DIGIT <code>_</code><sup>*</sup> )<sup>1..6</sup> <code>}</code></p>
 </blockquote>
 <p>A <em>character literal</em> is a single Unicode character enclosed within two
 <code>U+0027</code> (single-quote) characters, with the exception of <code>U+0027</code> itself,
@@ -265,7 +268,7 @@ STRING_LITERAL :<br />
       | ASCII_ESCAPE<br />
       | UNICODE_ESCAPE<br />
       | STRING_CONTINUE<br />
-   )<sup>\*</sup> <code>&quot;</code></p>
+   )<sup>*</sup> <code>&quot;</code></p>
 <p>STRING_CONTINUE :<br />
    <code>\</code> <em>followed by</em> \n</p>
 </blockquote>
@@ -280,14 +283,14 @@ line-break, the <code>U+005C</code> character, the line-break, and all whitespac
 beginning of the next line are ignored. Thus <code>a</code> and <code>b</code> are equal:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let a = &quot;foobar&quot;;
 let b = &quot;foo\
          bar&quot;;
 
 assert_eq!(a,b);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h4><a class="header" href="#character-escapes" id="character-escapes">Character escapes</a></h4>
 <p>Some additional <em>escapes</em> are available in either character or non-raw string
 literals. An escape starts with a <code>U+005C</code> (<code>\</code>) and continues with one of the
@@ -331,7 +334,7 @@ many <code>U+0023</code> (<code>#</code>) characters as were used to start the r
 <p>Examples for string literals:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>&quot;foo&quot;; r&quot;foo&quot;;                     // foo
 &quot;\&quot;foo\&quot;&quot;; r#&quot;&quot;foo&quot;&quot;#;             // &quot;foo&quot;
 
@@ -341,7 +344,7 @@ r##&quot;foo #&quot;# bar&quot;##;                // foo #&quot;# bar
 &quot;\x52&quot;; &quot;R&quot;; r&quot;R&quot;;                 // R
 &quot;\\x52&quot;; r&quot;\x52&quot;;                  // \x52
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h3><a class="header" href="#byte-and-byte-string-literals" id="byte-and-byte-string-literals">Byte and byte string literals</a></h3>
 <h4><a class="header" href="#byte-literals" id="byte-literals">Byte literals</a></h4>
 <blockquote>
@@ -364,7 +367,7 @@ range) or a single <em>escape</em> preceded by the characters <code>U+0062</code
 <blockquote>
 <p><strong><sup>Lexer</sup></strong><br />
 BYTE_STRING_LITERAL :<br />
-   <code>b&quot;</code> ( ASCII_FOR_STRING | BYTE_ESCAPE | STRING_CONTINUE )<sup>\*</sup> <code>&quot;</code></p>
+   <code>b&quot;</code> ( ASCII_FOR_STRING | BYTE_ESCAPE | STRING_CONTINUE )<sup>*</sup> <code>&quot;</code></p>
 <p>ASCII_FOR_STRING :<br />
    <em>any ASCII (i.e 0x00 to 0x7F), except</em> <code>&quot;</code>, <code>\</code> <em>and IsolatedCR</em></p>
 </blockquote>
@@ -414,7 +417,7 @@ many <code>U+0023</code> (<code>#</code>) characters as were used to start the r
 <p>Examples for byte string literals:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>b&quot;foo&quot;; br&quot;foo&quot;;                     // foo
 b&quot;\&quot;foo\&quot;&quot;; br#&quot;&quot;foo&quot;&quot;#;             // &quot;foo&quot;
 
@@ -424,7 +427,7 @@ br##&quot;foo #&quot;# bar&quot;##;                 // foo #&quot;# bar
 b&quot;\x52&quot;; b&quot;R&quot;; br&quot;R&quot;;                // R
 b&quot;\\x52&quot;; br&quot;\x52&quot;;                  // \x52
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h3><a class="header" href="#number-literals" id="number-literals">Number literals</a></h3>
 <p>A <em>number literal</em> is either an <em>integer literal</em> or a <em>floating-point
 literal</em>. The grammar for recognizing the two kinds of literals is mixed.</p>
@@ -435,16 +438,16 @@ INTEGER_LITERAL :<br />
    ( DEC_LITERAL | BIN_LITERAL | OCT_LITERAL | HEX_LITERAL )
 INTEGER_SUFFIX<sup>?</sup></p>
 <p>DEC_LITERAL :<br />
-   DEC_DIGIT (DEC_DIGIT|<code>_</code>)<sup>\*</sup></p>
+   DEC_DIGIT (DEC_DIGIT|<code>_</code>)<sup>*</sup></p>
 <p>TUPLE_INDEX :<br />
       <code>0</code>
-   | NON_ZERO_DEC_DIGIT DEC_DIGIT<sup>\*</sup></p>
+   | NON_ZERO_DEC_DIGIT DEC_DIGIT<sup>*</sup></p>
 <p>BIN_LITERAL :<br />
-   <code>0b</code> (BIN_DIGIT|<code>_</code>)<sup>\*</sup> BIN_DIGIT (BIN_DIGIT|<code>_</code>)<sup>\*</sup></p>
+   <code>0b</code> (BIN_DIGIT|<code>_</code>)<sup>*</sup> BIN_DIGIT (BIN_DIGIT|<code>_</code>)<sup>*</sup></p>
 <p>OCT_LITERAL :<br />
-   <code>0o</code> (OCT_DIGIT|<code>_</code>)<sup>\*</sup> OCT_DIGIT (OCT_DIGIT|<code>_</code>)<sup>\*</sup></p>
+   <code>0o</code> (OCT_DIGIT|<code>_</code>)<sup>*</sup> OCT_DIGIT (OCT_DIGIT|<code>_</code>)<sup>*</sup></p>
 <p>HEX_LITERAL :<br />
-   <code>0x</code> (HEX_DIGIT|<code>_</code>)<sup>\*</sup> HEX_DIGIT (HEX_DIGIT|<code>_</code>)<sup>\*</sup></p>
+   <code>0x</code> (HEX_DIGIT|<code>_</code>)<sup>*</sup> HEX_DIGIT (HEX_DIGIT|<code>_</code>)<sup>*</sup></p>
 <p>BIN_DIGIT : [<code>0</code>-<code>1</code>]</p>
 <p>OCT_DIGIT : [<code>0</code>-<code>7</code>]</p>
 <p>DEC_DIGIT : [<code>0</code>-<code>9</code>]</p>
@@ -494,7 +497,7 @@ static type error.</p>
 <p>Examples of integer literals of various forms:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>123;                               // type i32
 123i32;                            // type i32
 123u32;                            // type u32
@@ -513,11 +516,11 @@ let a: u64 = 123;                  // type u64
 
 0usize;                            // type usize
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Examples of invalid integer literals:</p>
 <pre><pre class="playpen"><code class="language-rust compile_fail">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>// invalid suffixes
 
 0invalidSuffix;
@@ -538,7 +541,7 @@ fn main() {
 0b_;
 0b____;
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Note that the Rust syntax considers <code>-1i8</code> as an application of the <a href="expressions/operator-expr.html#negation-operators">unary minus
 operator</a> to an integer literal <code>1i8</code>, rather than
 a single integer literal.</p>
@@ -554,7 +557,7 @@ FLOAT_LITERAL :<br />
 FLOAT_EXPONENT<sup>?</sup> FLOAT_SUFFIX</p>
 <p>FLOAT_EXPONENT :<br />
    (<code>e</code>|<code>E</code>) (<code>+</code>|<code>-</code>)?
-(DEC_DIGIT|<code>_</code>)<sup>\*</sup> DEC_DIGIT (DEC_DIGIT|<code>_</code>)<sup>\*</sup></p>
+(DEC_DIGIT|<code>_</code>)<sup>*</sup> DEC_DIGIT (DEC_DIGIT|<code>_</code>)<sup>*</sup></p>
 <p>FLOAT_SUFFIX :<br />
    <code>f32</code> | <code>f64</code></p>
 </blockquote>
@@ -588,14 +591,14 @@ static type error.</p>
 <p>Examples of floating-point literals of various forms:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>123.0f64;        // type f64
 0.1f64;          // type f64
 0.1f32;          // type f32
 12E+99_f64;      // type f64
 let x: f64 = 2.; // type f64
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>This last example is different because it is not possible to use the suffix
 syntax with a floating point literal ending in a period. <code>2.f64</code> would attempt
 to call a method named <code>f64</code> on <code>2</code>.</p>
@@ -633,9 +636,9 @@ usages and meanings are defined in the linked pages.</p>
 <tr><td><code>^</code></td><td>Caret</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Bitwise and Logical XOR</a></td></tr>
 <tr><td><code>!</code></td><td>Not</td><td><a href="expressions/operator-expr.html#negation-operators">Bitwise and Logical NOT</a>, <a href="macros-by-example.html">Macro Calls</a>, <a href="attributes.html">Inner Attributes</a>, <a href="types/never.html">Never Type</a></td></tr>
 <tr><td><code>&amp;</code></td><td>And</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Bitwise and Logical AND</a>, <a href="expressions/operator-expr.html#borrow-operators">Borrow</a>, <a href="types/pointer.html">References</a>, <a href="patterns.html#reference-patterns">Reference patterns</a></td></tr>
-<tr><td><code>\|</code></td><td>Or</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Bitwise and Logical OR</a>, <a href="expressions/closure-expr.html">Closures</a>, <a href="expressions/match-expr.html">Match</a></td></tr>
+<tr><td><code>|</code></td><td>Or</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Bitwise and Logical OR</a>, <a href="expressions/closure-expr.html">Closures</a>, <a href="expressions/match-expr.html">Match</a></td></tr>
 <tr><td><code>&amp;&amp;</code></td><td>AndAnd</td><td><a href="expressions/operator-expr.html#lazy-boolean-operators">Lazy AND</a>, <a href="expressions/operator-expr.html#borrow-operators">Borrow</a>, <a href="types/pointer.html">References</a>, <a href="patterns.html#reference-patterns">Reference patterns</a></td></tr>
-<tr><td><code>\||</code></td><td>OrOr</td><td><a href="expressions/operator-expr.html#lazy-boolean-operators">Lazy OR</a>, <a href="expressions/closure-expr.html">Closures</a></td></tr>
+<tr><td><code>||</code></td><td>OrOr</td><td><a href="expressions/operator-expr.html#lazy-boolean-operators">Lazy OR</a>, <a href="expressions/closure-expr.html">Closures</a></td></tr>
 <tr><td><code>&lt;&lt;</code></td><td>Shl</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Shift Left</a>, <a href="items/generics.html">Nested Generics</a></td></tr>
 <tr><td><code>&gt;&gt;</code></td><td>Shr</td><td><a href="expressions/operator-expr.html#arithmetic-and-logical-binary-operators">Shift Right</a>, <a href="items/generics.html">Nested Generics</a></td></tr>
 <tr><td><code>+=</code></td><td>PlusEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Addition assignment</a></td></tr>
@@ -645,7 +648,7 @@ usages and meanings are defined in the linked pages.</p>
 <tr><td><code>%=</code></td><td>PercentEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Remainder assignment</a></td></tr>
 <tr><td><code>^=</code></td><td>CaretEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Bitwise XOR assignment</a></td></tr>
 <tr><td><code>&amp;=</code></td><td>AndEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Bitwise And assignment</a></td></tr>
-<tr><td><code>\|=</code></td><td>OrEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Bitwise Or assignment</a></td></tr>
+<tr><td><code>|=</code></td><td>OrEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Bitwise Or assignment</a></td></tr>
 <tr><td><code>&lt;&lt;=</code></td><td>ShlEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Shift Left assignment</a></td></tr>
 <tr><td><code>&gt;&gt;=</code></td><td>ShrEq</td><td><a href="expressions/operator-expr.html#compound-assignment-expressions">Shift Right assignment</a>, <a href="items/generics.html">Nested Generics</a></td></tr>
 <tr><td><code>=</code></td><td>Eq</td><td><a href="expressions/operator-expr.html#assignment-expressions">Assignment</a>, <a href="attributes.html">Attributes</a>, Various type definitions</td></tr>

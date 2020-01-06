@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -34,7 +34,7 @@
 
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "../";
@@ -62,8 +62,11 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -79,7 +82,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
                 <ol class="chapter"><li class="expanded affix "><a href="../introduction.html">Introduction</a></li><li class="expanded "><a href="../notation.html"><strong aria-hidden="true">1.</strong> Notation</a></li><li class="expanded "><a href="../lexical-structure.html"><strong aria-hidden="true">2.</strong> Lexical structure</a></li><li><ol class="section"><li class="expanded "><a href="../input-format.html"><strong aria-hidden="true">2.1.</strong> Input format</a></li><li class="expanded "><a href="../keywords.html"><strong aria-hidden="true">2.2.</strong> Keywords</a></li><li class="expanded "><a href="../identifiers.html"><strong aria-hidden="true">2.3.</strong> Identifiers</a></li><li class="expanded "><a href="../comments.html"><strong aria-hidden="true">2.4.</strong> Comments</a></li><li class="expanded "><a href="../whitespace.html"><strong aria-hidden="true">2.5.</strong> Whitespace</a></li><li class="expanded "><a href="../tokens.html"><strong aria-hidden="true">2.6.</strong> Tokens</a></li><li class="expanded "><a href="../paths.html"><strong aria-hidden="true">2.7.</strong> Paths</a></li></ol></li><li class="expanded "><a href="../macros.html"><strong aria-hidden="true">3.</strong> Macros</a></li><li><ol class="section"><li class="expanded "><a href="../macros-by-example.html"><strong aria-hidden="true">3.1.</strong> Macros By Example</a></li><li class="expanded "><a href="../procedural-macros.html"><strong aria-hidden="true">3.2.</strong> Procedural Macros</a></li></ol></li><li class="expanded "><a href="../crates-and-source-files.html"><strong aria-hidden="true">4.</strong> Crates and source files</a></li><li class="expanded "><a href="../conditional-compilation.html"><strong aria-hidden="true">5.</strong> Conditional compilation</a></li><li class="expanded "><a href="../items.html"><strong aria-hidden="true">6.</strong> Items</a></li><li><ol class="section"><li class="expanded "><a href="../items/modules.html"><strong aria-hidden="true">6.1.</strong> Modules</a></li><li class="expanded "><a href="../items/extern-crates.html"><strong aria-hidden="true">6.2.</strong> Extern crates</a></li><li class="expanded "><a href="../items/use-declarations.html"><strong aria-hidden="true">6.3.</strong> Use declarations</a></li><li class="expanded "><a href="../items/functions.html"><strong aria-hidden="true">6.4.</strong> Functions</a></li><li class="expanded "><a href="../items/type-aliases.html"><strong aria-hidden="true">6.5.</strong> Type aliases</a></li><li class="expanded "><a href="../items/structs.html"><strong aria-hidden="true">6.6.</strong> Structs</a></li><li class="expanded "><a href="../items/enumerations.html"><strong aria-hidden="true">6.7.</strong> Enumerations</a></li><li class="expanded "><a href="../items/unions.html"><strong aria-hidden="true">6.8.</strong> Unions</a></li><li class="expanded "><a href="../items/constant-items.html"><strong aria-hidden="true">6.9.</strong> Constant items</a></li><li class="expanded "><a href="../items/static-items.html"><strong aria-hidden="true">6.10.</strong> Static items</a></li><li class="expanded "><a href="../items/traits.html"><strong aria-hidden="true">6.11.</strong> Traits</a></li><li class="expanded "><a href="../items/implementations.html"><strong aria-hidden="true">6.12.</strong> Implementations</a></li><li class="expanded "><a href="../items/external-blocks.html"><strong aria-hidden="true">6.13.</strong> External blocks</a></li><li class="expanded "><a href="../items/generics.html"><strong aria-hidden="true">6.14.</strong> Type and lifetime parameters</a></li><li class="expanded "><a href="../items/associated-items.html"><strong aria-hidden="true">6.15.</strong> Associated Items</a></li><li class="expanded "><a href="../visibility-and-privacy.html"><strong aria-hidden="true">6.16.</strong> Visibility and Privacy</a></li></ol></li><li class="expanded "><a href="../attributes.html"><strong aria-hidden="true">7.</strong> Attributes</a></li><li><ol class="section"><li class="expanded "><a href="../attributes/testing.html"><strong aria-hidden="true">7.1.</strong> Testing</a></li><li class="expanded "><a href="../attributes/derive.html"><strong aria-hidden="true">7.2.</strong> Derive</a></li><li class="expanded "><a href="../attributes/diagnostics.html"><strong aria-hidden="true">7.3.</strong> Diagnostics</a></li><li class="expanded "><a href="../attributes/codegen.html"><strong aria-hidden="true">7.4.</strong> Code generation</a></li><li class="expanded "><a href="../attributes/limits.html"><strong aria-hidden="true">7.5.</strong> Limits</a></li><li class="expanded "><a href="../attributes/type_system.html"><strong aria-hidden="true">7.6.</strong> Type System</a></li></ol></li><li class="expanded "><a href="../statements-and-expressions.html"><strong aria-hidden="true">8.</strong> Statements and expressions</a></li><li><ol class="section"><li class="expanded "><a href="../statements.html"><strong aria-hidden="true">8.1.</strong> Statements</a></li><li class="expanded "><a href="../expressions.html"><strong aria-hidden="true">8.2.</strong> Expressions</a></li><li><ol class="section"><li class="expanded "><a href="../expressions/literal-expr.html"><strong aria-hidden="true">8.2.1.</strong> Literal expressions</a></li><li class="expanded "><a href="../expressions/path-expr.html"><strong aria-hidden="true">8.2.2.</strong> Path expressions</a></li><li class="expanded "><a href="../expressions/block-expr.html"><strong aria-hidden="true">8.2.3.</strong> Block expressions</a></li><li class="expanded "><a href="../expressions/operator-expr.html" class="active"><strong aria-hidden="true">8.2.4.</strong> Operator expressions</a></li><li class="expanded "><a href="../expressions/grouped-expr.html"><strong aria-hidden="true">8.2.5.</strong> Grouped expressions</a></li><li class="expanded "><a href="../expressions/array-expr.html"><strong aria-hidden="true">8.2.6.</strong> Array and index expressions</a></li><li class="expanded "><a href="../expressions/tuple-expr.html"><strong aria-hidden="true">8.2.7.</strong> Tuple and index expressions</a></li><li class="expanded "><a href="../expressions/struct-expr.html"><strong aria-hidden="true">8.2.8.</strong> Struct expressions</a></li><li class="expanded "><a href="../expressions/enum-variant-expr.html"><strong aria-hidden="true">8.2.9.</strong> Enum variant expressions</a></li><li class="expanded "><a href="../expressions/call-expr.html"><strong aria-hidden="true">8.2.10.</strong> Call expressions</a></li><li class="expanded "><a href="../expressions/method-call-expr.html"><strong aria-hidden="true">8.2.11.</strong> Method call expressions</a></li><li class="expanded "><a href="../expressions/field-expr.html"><strong aria-hidden="true">8.2.12.</strong> Field access expressions</a></li><li class="expanded "><a href="../expressions/closure-expr.html"><strong aria-hidden="true">8.2.13.</strong> Closure expressions</a></li><li class="expanded "><a href="../expressions/loop-expr.html"><strong aria-hidden="true">8.2.14.</strong> Loop expressions</a></li><li class="expanded "><a href="../expressions/range-expr.html"><strong aria-hidden="true">8.2.15.</strong> Range expressions</a></li><li class="expanded "><a href="../expressions/if-expr.html"><strong aria-hidden="true">8.2.16.</strong> If and if let expressions</a></li><li class="expanded "><a href="../expressions/match-expr.html"><strong aria-hidden="true">8.2.17.</strong> Match expressions</a></li><li class="expanded "><a href="../expressions/return-expr.html"><strong aria-hidden="true">8.2.18.</strong> Return expressions</a></li><li class="expanded "><a href="../expressions/await-expr.html"><strong aria-hidden="true">8.2.19.</strong> Await expressions</a></li></ol></li></ol></li><li class="expanded "><a href="../patterns.html"><strong aria-hidden="true">9.</strong> Patterns</a></li><li class="expanded "><a href="../type-system.html"><strong aria-hidden="true">10.</strong> Type system</a></li><li><ol class="section"><li class="expanded "><a href="../types.html"><strong aria-hidden="true">10.1.</strong> Types</a></li><li><ol class="section"><li class="expanded "><a href="../types/boolean.html"><strong aria-hidden="true">10.1.1.</strong> Boolean type</a></li><li class="expanded "><a href="../types/numeric.html"><strong aria-hidden="true">10.1.2.</strong> Numeric types</a></li><li class="expanded "><a href="../types/textual.html"><strong aria-hidden="true">10.1.3.</strong> Textual types</a></li><li class="expanded "><a href="../types/never.html"><strong aria-hidden="true">10.1.4.</strong> Never type</a></li><li class="expanded "><a href="../types/tuple.html"><strong aria-hidden="true">10.1.5.</strong> Tuple types</a></li><li class="expanded "><a href="../types/array.html"><strong aria-hidden="true">10.1.6.</strong> Array types</a></li><li class="expanded "><a href="../types/slice.html"><strong aria-hidden="true">10.1.7.</strong> Slice types</a></li><li class="expanded "><a href="../types/struct.html"><strong aria-hidden="true">10.1.8.</strong> Struct types</a></li><li class="expanded "><a href="../types/enum.html"><strong aria-hidden="true">10.1.9.</strong> Enumerated types</a></li><li class="expanded "><a href="../types/union.html"><strong aria-hidden="true">10.1.10.</strong> Union types</a></li><li class="expanded "><a href="../types/function-item.html"><strong aria-hidden="true">10.1.11.</strong> Function item types</a></li><li class="expanded "><a href="../types/closure.html"><strong aria-hidden="true">10.1.12.</strong> Closure types</a></li><li class="expanded "><a href="../types/pointer.html"><strong aria-hidden="true">10.1.13.</strong> Pointer types</a></li><li class="expanded "><a href="../types/function-pointer.html"><strong aria-hidden="true">10.1.14.</strong> Function pointer types</a></li><li class="expanded "><a href="../types/trait-object.html"><strong aria-hidden="true">10.1.15.</strong> Trait object types</a></li><li class="expanded "><a href="../types/impl-trait.html"><strong aria-hidden="true">10.1.16.</strong> Impl trait type</a></li><li class="expanded "><a href="../types/parameters.html"><strong aria-hidden="true">10.1.17.</strong> Type parameters</a></li><li class="expanded "><a href="../types/inferred.html"><strong aria-hidden="true">10.1.18.</strong> Inferred type</a></li></ol></li><li class="expanded "><a href="../dynamically-sized-types.html"><strong aria-hidden="true">10.2.</strong> Dynamically Sized Types</a></li><li class="expanded "><a href="../type-layout.html"><strong aria-hidden="true">10.3.</strong> Type layout</a></li><li class="expanded "><a href="../interior-mutability.html"><strong aria-hidden="true">10.4.</strong> Interior mutability</a></li><li class="expanded "><a href="../subtyping.html"><strong aria-hidden="true">10.5.</strong> Subtyping and Variance</a></li><li class="expanded "><a href="../trait-bounds.html"><strong aria-hidden="true">10.6.</strong> Trait and lifetime bounds</a></li><li class="expanded "><a href="../type-coercions.html"><strong aria-hidden="true">10.7.</strong> Type coercions</a></li><li class="expanded "><a href="../destructors.html"><strong aria-hidden="true">10.8.</strong> Destructors</a></li><li class="expanded "><a href="../lifetime-elision.html"><strong aria-hidden="true">10.9.</strong> Lifetime elision</a></li></ol></li><li class="expanded "><a href="../special-types-and-traits.html"><strong aria-hidden="true">11.</strong> Special types and traits</a></li><li class="expanded "><a href="../memory-model.html"><strong aria-hidden="true">12.</strong> Memory model</a></li><li><ol class="section"><li class="expanded "><a href="../memory-allocation-and-lifetime.html"><strong aria-hidden="true">12.1.</strong> Memory allocation and lifetime</a></li><li class="expanded "><a href="../memory-ownership.html"><strong aria-hidden="true">12.2.</strong> Memory ownership</a></li><li class="expanded "><a href="../variables.html"><strong aria-hidden="true">12.3.</strong> Variables</a></li></ol></li><li class="expanded "><a href="../linkage.html"><strong aria-hidden="true">13.</strong> Linkage</a></li><li class="expanded "><a href="../unsafety.html"><strong aria-hidden="true">14.</strong> Unsafety</a></li><li><ol class="section"><li class="expanded "><a href="../unsafe-functions.html"><strong aria-hidden="true">14.1.</strong> Unsafe functions</a></li><li class="expanded "><a href="../unsafe-blocks.html"><strong aria-hidden="true">14.2.</strong> Unsafe blocks</a></li><li class="expanded "><a href="../behavior-considered-undefined.html"><strong aria-hidden="true">14.3.</strong> Behavior considered undefined</a></li><li class="expanded "><a href="../behavior-not-considered-unsafe.html"><strong aria-hidden="true">14.4.</strong> Behavior not considered unsafe</a></li></ol></li><li class="expanded "><a href="../const_eval.html"><strong aria-hidden="true">15.</strong> Constant Evaluation</a></li><li class="expanded "><a href="../abi.html"><strong aria-hidden="true">16.</strong> Application Binary Interface</a></li><li class="expanded "><a href="../runtime.html"><strong aria-hidden="true">17.</strong> The Rust runtime</a></li><li class="expanded "><a href="../appendices.html"><strong aria-hidden="true">18.</strong> Appendices</a></li><li><ol class="section"><li class="expanded "><a href="../macro-ambiguity.html"><strong aria-hidden="true">18.1.</strong> Macro Follow-Set Ambiguity Formal Specification</a></li><li class="expanded "><a href="../influences.html"><strong aria-hidden="true">18.2.</strong> Influences</a></li><li class="expanded "><a href="../glossary.html"><strong aria-hidden="true">18.3.</strong> Glossary</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
@@ -202,7 +205,7 @@ to a <a href="../expressions.html#place-expressions-and-value-expressions">value
 <p>These operators cannot be overloaded.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>{
     // a temporary with value 7 is created that lasts for this scope.
     let shared_reference = &amp;7;
@@ -214,12 +217,12 @@ let mut array = [-2, 3, 9];
     let mutable_reference = &amp;mut array;
 }
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>Even though <code>&amp;&amp;</code> is a single token (<a href="#lazy-boolean-operators">the lazy 'and' operator</a>),
 when used in the context of borrow expressions it works as two borrows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>// same meanings:
 let a = &amp;&amp;  10;
 let a = &amp; &amp; 10;
@@ -229,7 +232,7 @@ let a = &amp;&amp;&amp;&amp;  mut 10;
 let a = &amp;&amp; &amp;&amp; mut 10;
 let a = &amp; &amp; &amp; &amp; mut 10;
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#the-dereference-operator" id="the-dereference-operator">The dereference operator</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -247,14 +250,14 @@ Dereferencing a raw pointer requires <code>unsafe</code>.</p>
 <code>*std::ops::DerefMut::deref_mut(&amp;mut x)</code> in a mutable place expression context.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let x = &amp;7;
 assert_eq!(*x, 7);
 let y = &amp;mut 9;
 *y = 11;
 assert_eq!(*y, 11);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#the-question-mark-operator" id="the-question-mark-operator">The question mark operator</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -270,8 +273,8 @@ enclosing function or closure. If applied to <code>Ok(x)</code>, then it will un
 value to evaluate to <code>x</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
-use std::num::ParseIntError;
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::num::ParseIntError;
 </span>fn try_to_parse() -&gt; Result&lt;i32, ParseIntError&gt; {
     let x: i32 = &quot;123&quot;.parse()?; // x = 123
     let y: i32 = &quot;24a&quot;.parse()?; // returns an Err() immediately
@@ -281,14 +284,14 @@ use std::num::ParseIntError;
 let res = try_to_parse();
 println!(&quot;{:?}&quot;, res);
 <span class="boring">assert!(res.is_err())
-}
-</code></pre></pre>
+</span><span class="boring">}
+</span></code></pre></pre>
 <p>When applied to values of the <code>Option&lt;T&gt;</code> type, it propagates <code>None</code>s. If the
 value is <code>None</code>, then it will return <code>None</code>. If applied to <code>Some(x)</code>, then it
 will unwrap the value to evaluate to <code>x</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>fn try_option_some() -&gt; Option&lt;u8&gt; {
     let val = Some(1)?;
     Some(val)
@@ -301,7 +304,7 @@ fn try_option_none() -&gt; Option&lt;u8&gt; {
 }
 assert_eq!(try_option_none(), None);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p><code>?</code> cannot be overloaded.</p>
 <h2><a class="header" href="#negation-operators" id="negation-operators">Negation operators</a></h2>
 <blockquote>
@@ -323,13 +326,13 @@ two's complement. The operands of all of these operators are evaluated in
 <p>Here are some example of these operators</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let x = 6;
 assert_eq!(-x, -6);
 assert_eq!(!x, -7);
 assert_eq!(true, !false);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#arithmetic-and-logical-binary-operators" id="arithmetic-and-logical-binary-operators">Arithmetic and Logical Binary Operators</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -369,7 +372,7 @@ unsigned integer types.</p>
 <p>Here are examples of these operators being used.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>assert_eq!(3 + 6, 9);
 assert_eq!(5.5 - 1.25, 4.25);
 assert_eq!(-5 * 14, -70);
@@ -381,7 +384,7 @@ assert_eq!(0b1010 ^ 0b1100, 0b110);
 assert_eq!(13 &lt;&lt; 3, 104);
 assert_eq!(-10 &gt;&gt; 2, -3);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#comparison-operators" id="comparison-operators">Comparison Operators</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -407,14 +410,14 @@ above, these operators implicitly take shared borrows of their operands,
 evaluating them in <a href="../expressions.html#place-expressions-and-value-expressions">place expression context</a>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
-let a = 1;
-let b = 1;
+</span><span class="boring">fn main() {
+</span><span class="boring">let a = 1;
+</span><span class="boring">let b = 1;
 </span>a == b;
 // is equivalent to
 ::std::cmp::PartialEq::eq(&amp;a, &amp;b);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>This means that the operands don't have to be moved out of.</p>
 <table><thead><tr><th>Symbol</th><th>Meaning</th><th>Overloading method</th></tr></thead><tbody>
 <tr><td><code>==</code></td><td>Equal</td><td><code>std::cmp::PartialEq::eq</code></td></tr>
@@ -427,7 +430,7 @@ let b = 1;
 <p>Here are examples of the comparison operators being used.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>assert!(123 == 123);
 assert!(23 != -12);
 assert!(12.5 &gt; 12.2);
@@ -435,7 +438,7 @@ assert!([1, 2, 3] &lt; [1, 3, 4]);
 assert!('A' &lt;= 'B');
 assert!(&quot;World&quot; &gt;= &quot;Hello&quot;);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#lazy-boolean-operators" id="lazy-boolean-operators">Lazy boolean operators</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -452,11 +455,11 @@ left-hand operand evaluates to <code>false</code>, and <code>&amp;&amp;</code> o
 <code>true</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let x = false || true; // true
 let y = false &amp;&amp; panic!(); // false, doesn't evaluate `panic!()`
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#type-cast-expressions" id="type-cast-expressions">Type cast expressions</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -469,16 +472,16 @@ on the right-hand side.</p>
 <p>An example of an <code>as</code> expression:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
-fn sum(values: &amp;[f64]) -&gt; f64 { 0.0 }
-fn len(values: &amp;[f64]) -&gt; i32 { 0 }
+</span><span class="boring">fn main() {
+</span><span class="boring">fn sum(values: &amp;[f64]) -&gt; f64 { 0.0 }
+</span><span class="boring">fn len(values: &amp;[f64]) -&gt; i32 { 0 }
 </span>fn average(values: &amp;[f64]) -&gt; f64 {
     let sum: f64 = sum(values);
     let size: f64 = len(values) as f64;
     sum / size
 }
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p><code>as</code> can be used to explicitly perform <a href="../type-coercions.html">coercions</a>, as
 well as the following additional casts. Here <code>*T</code> means either <code>*const T</code> or
 <code>*mut T</code>.</p>
@@ -578,12 +581,12 @@ place expression: using a value expression results in a compiler error, rather
 than promoting it to a temporary.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
-let mut x = 0;
-let y = 0;
+</span><span class="boring">fn main() {
+</span><span class="boring">let mut x = 0;
+</span><span class="boring">let y = 0;
 </span>x = y;
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <h2><a class="header" href="#compound-assignment-expressions" id="compound-assignment-expressions">Compound assignment expressions</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
@@ -609,12 +612,12 @@ is used to overload <code>+=</code>. As with <code>=</code>, <code>place_expr</c
 expression</a>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>let mut x = 10;
 x += 4;
 assert_eq!(x, 14);
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 
                     </main>
 

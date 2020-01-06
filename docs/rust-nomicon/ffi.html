@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -32,7 +32,7 @@
 
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "";
@@ -60,8 +60,11 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -77,7 +80,7 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
                 <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="meet-safe-and-unsafe.html"><strong aria-hidden="true">1.</strong> Meet Safe and Unsafe</a></li><li><ol class="section"><li class="expanded "><a href="safe-unsafe-meaning.html"><strong aria-hidden="true">1.1.</strong> How Safe and Unsafe Interact</a></li><li class="expanded "><a href="what-unsafe-does.html"><strong aria-hidden="true">1.2.</strong> What Unsafe Can Do</a></li><li class="expanded "><a href="working-with-unsafe.html"><strong aria-hidden="true">1.3.</strong> Working with Unsafe</a></li></ol></li><li class="expanded "><a href="data.html"><strong aria-hidden="true">2.</strong> Data Layout</a></li><li><ol class="section"><li class="expanded "><a href="repr-rust.html"><strong aria-hidden="true">2.1.</strong> repr(Rust)</a></li><li class="expanded "><a href="exotic-sizes.html"><strong aria-hidden="true">2.2.</strong> Exotically Sized Types</a></li><li class="expanded "><a href="other-reprs.html"><strong aria-hidden="true">2.3.</strong> Other reprs</a></li></ol></li><li class="expanded "><a href="ownership.html"><strong aria-hidden="true">3.</strong> Ownership</a></li><li><ol class="section"><li class="expanded "><a href="references.html"><strong aria-hidden="true">3.1.</strong> References</a></li><li class="expanded "><a href="aliasing.html"><strong aria-hidden="true">3.2.</strong> Aliasing</a></li><li class="expanded "><a href="lifetimes.html"><strong aria-hidden="true">3.3.</strong> Lifetimes</a></li><li class="expanded "><a href="lifetime-mismatch.html"><strong aria-hidden="true">3.4.</strong> Limits of Lifetimes</a></li><li class="expanded "><a href="lifetime-elision.html"><strong aria-hidden="true">3.5.</strong> Lifetime Elision</a></li><li class="expanded "><a href="unbounded-lifetimes.html"><strong aria-hidden="true">3.6.</strong> Unbounded Lifetimes</a></li><li class="expanded "><a href="hrtb.html"><strong aria-hidden="true">3.7.</strong> Higher-Rank Trait Bounds</a></li><li class="expanded "><a href="subtyping.html"><strong aria-hidden="true">3.8.</strong> Subtyping and Variance</a></li><li class="expanded "><a href="dropck.html"><strong aria-hidden="true">3.9.</strong> Drop Check</a></li><li class="expanded "><a href="phantom-data.html"><strong aria-hidden="true">3.10.</strong> PhantomData</a></li><li class="expanded "><a href="borrow-splitting.html"><strong aria-hidden="true">3.11.</strong> Splitting Borrows</a></li></ol></li><li class="expanded "><a href="conversions.html"><strong aria-hidden="true">4.</strong> Type Conversions</a></li><li><ol class="section"><li class="expanded "><a href="coercions.html"><strong aria-hidden="true">4.1.</strong> Coercions</a></li><li class="expanded "><a href="dot-operator.html"><strong aria-hidden="true">4.2.</strong> The Dot Operator</a></li><li class="expanded "><a href="casts.html"><strong aria-hidden="true">4.3.</strong> Casts</a></li><li class="expanded "><a href="transmutes.html"><strong aria-hidden="true">4.4.</strong> Transmutes</a></li></ol></li><li class="expanded "><a href="uninitialized.html"><strong aria-hidden="true">5.</strong> Uninitialized Memory</a></li><li><ol class="section"><li class="expanded "><a href="checked-uninit.html"><strong aria-hidden="true">5.1.</strong> Checked</a></li><li class="expanded "><a href="drop-flags.html"><strong aria-hidden="true">5.2.</strong> Drop Flags</a></li><li class="expanded "><a href="unchecked-uninit.html"><strong aria-hidden="true">5.3.</strong> Unchecked</a></li></ol></li><li class="expanded "><a href="obrm.html"><strong aria-hidden="true">6.</strong> Ownership Based Resource Management</a></li><li><ol class="section"><li class="expanded "><a href="constructors.html"><strong aria-hidden="true">6.1.</strong> Constructors</a></li><li class="expanded "><a href="destructors.html"><strong aria-hidden="true">6.2.</strong> Destructors</a></li><li class="expanded "><a href="leaking.html"><strong aria-hidden="true">6.3.</strong> Leaking</a></li></ol></li><li class="expanded "><a href="unwinding.html"><strong aria-hidden="true">7.</strong> Unwinding</a></li><li><ol class="section"><li class="expanded "><a href="exception-safety.html"><strong aria-hidden="true">7.1.</strong> Exception Safety</a></li><li class="expanded "><a href="poisoning.html"><strong aria-hidden="true">7.2.</strong> Poisoning</a></li></ol></li><li class="expanded "><a href="concurrency.html"><strong aria-hidden="true">8.</strong> Concurrency</a></li><li><ol class="section"><li class="expanded "><a href="races.html"><strong aria-hidden="true">8.1.</strong> Races</a></li><li class="expanded "><a href="send-and-sync.html"><strong aria-hidden="true">8.2.</strong> Send and Sync</a></li><li class="expanded "><a href="atomics.html"><strong aria-hidden="true">8.3.</strong> Atomics</a></li></ol></li><li class="expanded "><a href="vec.html"><strong aria-hidden="true">9.</strong> Implementing Vec</a></li><li><ol class="section"><li class="expanded "><a href="vec-layout.html"><strong aria-hidden="true">9.1.</strong> Layout</a></li><li class="expanded "><a href="vec-alloc.html"><strong aria-hidden="true">9.2.</strong> Allocating</a></li><li class="expanded "><a href="vec-push-pop.html"><strong aria-hidden="true">9.3.</strong> Push and Pop</a></li><li class="expanded "><a href="vec-dealloc.html"><strong aria-hidden="true">9.4.</strong> Deallocating</a></li><li class="expanded "><a href="vec-deref.html"><strong aria-hidden="true">9.5.</strong> Deref</a></li><li class="expanded "><a href="vec-insert-remove.html"><strong aria-hidden="true">9.6.</strong> Insert and Remove</a></li><li class="expanded "><a href="vec-into-iter.html"><strong aria-hidden="true">9.7.</strong> IntoIter</a></li><li class="expanded "><a href="vec-raw.html"><strong aria-hidden="true">9.8.</strong> RawVec</a></li><li class="expanded "><a href="vec-drain.html"><strong aria-hidden="true">9.9.</strong> Drain</a></li><li class="expanded "><a href="vec-zsts.html"><strong aria-hidden="true">9.10.</strong> Handling Zero-Sized Types</a></li><li class="expanded "><a href="vec-final.html"><strong aria-hidden="true">9.11.</strong> Final Code</a></li></ol></li><li class="expanded "><a href="arc-and-mutex.html"><strong aria-hidden="true">10.</strong> Implementing Arc and Mutex</a></li><li class="expanded "><a href="ffi.html" class="active"><strong aria-hidden="true">11.</strong> FFI</a></li><li class="expanded "><a href="beneath-std.html"><strong aria-hidden="true">12.</strong> Beneath std</a></li><li><ol class="section"><li class="expanded "><a href="panic-handler.html"><strong aria-hidden="true">12.1.</strong> #[panic_handler]</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
@@ -210,8 +213,8 @@ extern {
     fn snappy_validate_compressed_buffer(compressed: *const u8,
                                          compressed_length: size_t) -&gt; c_int;
 }
-# fn main() {}
-</code></pre>
+<span class="boring">fn main() {}
+</span></code></pre>
 <h1><a class="header" href="#creating-a-safe-interface" id="creating-a-safe-interface">Creating a safe interface</a></h1>
 <p>The raw C API needs to be wrapped to provide memory safety and make use of higher-level concepts
 like vectors. A library can choose to expose only the safe, high-level interface and hide the unsafe
@@ -220,11 +223,11 @@ internal details.</p>
 vectors as pointers to memory. Rust's vectors are guaranteed to be a contiguous block of memory. The
 length is the number of elements currently contained, and the capacity is the total size in elements of
 the allocated memory. The length is less than or equal to the capacity.</p>
-<pre><code class="language-rust ignore"># extern crate libc;
-# use libc::{c_int, size_t};
-# unsafe fn snappy_validate_compressed_buffer(_: *const u8, _: size_t) -&gt; c_int { 0 }
-# fn main() {}
-pub fn validate_compressed_buffer(src: &amp;[u8]) -&gt; bool {
+<pre><code class="language-rust ignore"><span class="boring">extern crate libc;
+</span><span class="boring">use libc::{c_int, size_t};
+</span><span class="boring">unsafe fn snappy_validate_compressed_buffer(_: *const u8, _: size_t) -&gt; c_int { 0 }
+</span><span class="boring">fn main() {}
+</span>pub fn validate_compressed_buffer(src: &amp;[u8]) -&gt; bool {
     unsafe {
         snappy_validate_compressed_buffer(src.as_ptr(), src.len() as size_t) == 0
     }
@@ -239,13 +242,13 @@ allocated to hold the output too.</p>
 required capacity to hold the compressed output. The vector can then be passed to the
 <code>snappy_compress</code> function as an output parameter. An output parameter is also passed to retrieve
 the true length after compression for setting the length.</p>
-<pre><code class="language-rust ignore"># extern crate libc;
-# use libc::{size_t, c_int};
-# unsafe fn snappy_compress(a: *const u8, b: size_t, c: *mut u8,
-#                           d: *mut size_t) -&gt; c_int { 0 }
-# unsafe fn snappy_max_compressed_length(a: size_t) -&gt; size_t { a }
-# fn main() {}
-pub fn compress(src: &amp;[u8]) -&gt; Vec&lt;u8&gt; {
+<pre><code class="language-rust ignore"><span class="boring">extern crate libc;
+</span><span class="boring">use libc::{size_t, c_int};
+</span><span class="boring">unsafe fn snappy_compress(a: *const u8, b: size_t, c: *mut u8,
+</span><span class="boring">                          d: *mut size_t) -&gt; c_int { 0 }
+</span><span class="boring">unsafe fn snappy_max_compressed_length(a: size_t) -&gt; size_t { a }
+</span><span class="boring">fn main() {}
+</span>pub fn compress(src: &amp;[u8]) -&gt; Vec&lt;u8&gt; {
     unsafe {
         let srclen = src.len() as size_t;
         let psrc = src.as_ptr();
@@ -262,17 +265,17 @@ pub fn compress(src: &amp;[u8]) -&gt; Vec&lt;u8&gt; {
 </code></pre>
 <p>Decompression is similar, because snappy stores the uncompressed size as part of the compression
 format and <code>snappy_uncompressed_length</code> will retrieve the exact buffer size required.</p>
-<pre><code class="language-rust ignore"># extern crate libc;
-# use libc::{size_t, c_int};
-# unsafe fn snappy_uncompress(compressed: *const u8,
-#                             compressed_length: size_t,
-#                             uncompressed: *mut u8,
-#                             uncompressed_length: *mut size_t) -&gt; c_int { 0 }
-# unsafe fn snappy_uncompressed_length(compressed: *const u8,
-#                                      compressed_length: size_t,
-#                                      result: *mut size_t) -&gt; c_int { 0 }
-# fn main() {}
-pub fn uncompress(src: &amp;[u8]) -&gt; Option&lt;Vec&lt;u8&gt;&gt; {
+<pre><code class="language-rust ignore"><span class="boring">extern crate libc;
+</span><span class="boring">use libc::{size_t, c_int};
+</span><span class="boring">unsafe fn snappy_uncompress(compressed: *const u8,
+</span><span class="boring">                            compressed_length: size_t,
+</span><span class="boring">                            uncompressed: *mut u8,
+</span><span class="boring">                            uncompressed_length: *mut size_t) -&gt; c_int { 0 }
+</span><span class="boring">unsafe fn snappy_uncompressed_length(compressed: *const u8,
+</span><span class="boring">                                     compressed_length: size_t,
+</span><span class="boring">                                     result: *mut size_t) -&gt; c_int { 0 }
+</span><span class="boring">fn main() {}
+</span>pub fn uncompress(src: &amp;[u8]) -&gt; Option&lt;Vec&lt;u8&gt;&gt; {
     unsafe {
         let srclen = src.len() as size_t;
         let psrc = src.as_ptr();
@@ -293,28 +296,28 @@ pub fn uncompress(src: &amp;[u8]) -&gt; Option&lt;Vec&lt;u8&gt;&gt; {
 }
 </code></pre>
 <p>Then, we can add some tests to show how to use them.</p>
-<pre><code class="language-rust ignore"># extern crate libc;
-# use libc::{c_int, size_t};
-# unsafe fn snappy_compress(input: *const u8,
-#                           input_length: size_t,
-#                           compressed: *mut u8,
-#                           compressed_length: *mut size_t)
-#                           -&gt; c_int { 0 }
-# unsafe fn snappy_uncompress(compressed: *const u8,
-#                             compressed_length: size_t,
-#                             uncompressed: *mut u8,
-#                             uncompressed_length: *mut size_t)
-#                             -&gt; c_int { 0 }
-# unsafe fn snappy_max_compressed_length(source_length: size_t) -&gt; size_t { 0 }
-# unsafe fn snappy_uncompressed_length(compressed: *const u8,
-#                                      compressed_length: size_t,
-#                                      result: *mut size_t)
-#                                      -&gt; c_int { 0 }
-# unsafe fn snappy_validate_compressed_buffer(compressed: *const u8,
-#                                             compressed_length: size_t)
-#                                             -&gt; c_int { 0 }
-# fn main() { }
-
+<pre><code class="language-rust ignore"><span class="boring">extern crate libc;
+</span><span class="boring">use libc::{c_int, size_t};
+</span><span class="boring">unsafe fn snappy_compress(input: *const u8,
+</span><span class="boring">                          input_length: size_t,
+</span><span class="boring">                          compressed: *mut u8,
+</span><span class="boring">                          compressed_length: *mut size_t)
+</span><span class="boring">                          -&gt; c_int { 0 }
+</span><span class="boring">unsafe fn snappy_uncompress(compressed: *const u8,
+</span><span class="boring">                            compressed_length: size_t,
+</span><span class="boring">                            uncompressed: *mut u8,
+</span><span class="boring">                            uncompressed_length: *mut size_t)
+</span><span class="boring">                            -&gt; c_int { 0 }
+</span><span class="boring">unsafe fn snappy_max_compressed_length(source_length: size_t) -&gt; size_t { 0 }
+</span><span class="boring">unsafe fn snappy_uncompressed_length(compressed: *const u8,
+</span><span class="boring">                                     compressed_length: size_t,
+</span><span class="boring">                                     result: *mut size_t)
+</span><span class="boring">                                     -&gt; c_int { 0 }
+</span><span class="boring">unsafe fn snappy_validate_compressed_buffer(compressed: *const u8,
+</span><span class="boring">                                            compressed_length: size_t)
+</span><span class="boring">                                            -&gt; c_int { 0 }
+</span><span class="boring">fn main() { }
+</span>
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -364,8 +367,8 @@ to the C library and afterwards be invoked from there.</p>
     println!(&quot;I'm called from C with value {0}&quot;, a);
 }
 
-<span class="boring">[link(name = &quot;extlib&quot;)]
-</span>extern {
+#[link(name = &quot;extlib&quot;)]
+extern {
    fn register_callback(cb: extern fn(i32)) -&gt; i32;
    fn trigger_callback();
 }
@@ -402,8 +405,8 @@ C library. The C library can then include the pointer to the Rust object in
 the notification. This will allow the callback to unsafely access the
 referenced Rust object.</p>
 <p>Rust code:</p>
-<pre><pre class="playpen"><code class="language-rust no_run"><span class="boring">[repr(C)]
-</span>struct RustObject {
+<pre><pre class="playpen"><code class="language-rust no_run">#[repr(C)]
+struct RustObject {
     a: i32,
     // Other members...
 }
@@ -416,8 +419,8 @@ extern &quot;C&quot; fn callback(target: *mut RustObject, a: i32) {
     }
 }
 
-<span class="boring">[link(name = &quot;extlib&quot;)]
-</span>extern {
+#[link(name = &quot;extlib&quot;)]
+extern {
    fn register_callback(target: *mut RustObject,
                         cb: extern fn(*mut RustObject, i32)) -&gt; i32;
    fn trigger_callback();
@@ -521,10 +524,10 @@ the compiler that the unsafety does not leak out of the block.</p>
 this:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
-fn main() {
+</span><span class="boring">fn main() {
 </span>unsafe fn kaboom(ptr: *const i32) -&gt; i32 { *ptr }
 <span class="boring">}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>This function can only be called from an <code>unsafe</code> block or another <code>unsafe</code> function.</p>
 <h1><a class="header" href="#accessing-foreign-globals" id="accessing-foreign-globals">Accessing foreign globals</a></h1>
 <p>Foreign APIs often export a global variable which could do something like track
@@ -580,8 +583,8 @@ conventions. Rust provides a way to tell the compiler which convention to use:</
 extern &quot;stdcall&quot; {
     fn SetEnvironmentVariableA(n: *const u8, v: *const u8) -&gt; libc::c_int;
 }
-# fn main() { }
-</code></pre>
+<span class="boring">fn main() { }
+</span></code></pre>
 <p>This applies to the entire <code>extern</code> block. The list of supported ABI constraints
 are:</p>
 <ul>
@@ -666,15 +669,15 @@ we have function pointers flying across the FFI boundary in both directions.</p>
 <pre><code class="language-rust ignore">extern crate libc;
 use libc::c_int;
 
-# #[cfg(hidden)]
-extern &quot;C&quot; {
+<span class="boring">#[cfg(hidden)]
+</span>extern &quot;C&quot; {
     /// Registers the callback.
     fn register(cb: Option&lt;extern &quot;C&quot; fn(Option&lt;extern &quot;C&quot; fn(c_int) -&gt; c_int&gt;, c_int) -&gt; c_int&gt;);
 }
-# unsafe fn register(_: Option&lt;extern &quot;C&quot; fn(Option&lt;extern &quot;C&quot; fn(c_int) -&gt; c_int&gt;,
-#                                            c_int) -&gt; c_int&gt;)
-# {}
-
+<span class="boring">unsafe fn register(_: Option&lt;extern &quot;C&quot; fn(Option&lt;extern &quot;C&quot; fn(c_int) -&gt; c_int&gt;,
+</span><span class="boring">                                           c_int) -&gt; c_int&gt;)
+</span><span class="boring">{}
+</span>
 /// This fairly useless function receives a function pointer and an integer
 /// from C, and returns the result of calling the function with the integer.
 /// In case no function is provided, it squares the integer by default.
@@ -700,12 +703,12 @@ fn main() {
 <h1><a class="header" href="#calling-rust-code-from-c" id="calling-rust-code-from-c">Calling Rust code from C</a></h1>
 <p>You may wish to compile Rust code in a way so that it can be called from C. This is
 fairly easy, but requires a few things:</p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">[no_mangle]
-</span>pub extern fn hello_rust() -&gt; *const u8 {
+<pre><pre class="playpen"><code class="language-rust">#[no_mangle]
+pub extern fn hello_rust() -&gt; *const u8 {
     &quot;Hello, world!\0&quot;.as_ptr()
 }
 <span class="boring">fn main() {}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>The <code>extern</code> makes this function adhere to the C calling convention, as
 discussed above in &quot;<a href="ffi.html#foreign-calling-conventions">Foreign Calling
 Conventions</a>&quot;. The <code>no_mangle</code>
@@ -716,8 +719,8 @@ across an FFI boundary is undefined behavior. If you’re writing code that may
 panic, you should run it in a closure with <a href="../std/panic/fn.catch_unwind.html"><code>catch_unwind</code></a>:</p>
 <pre><pre class="playpen"><code class="language-rust">use std::panic::catch_unwind;
 
-<span class="boring">[no_mangle]
-</span>pub extern fn oh_no() -&gt; i32 {
+#[no_mangle]
+pub extern fn oh_no() -&gt; i32 {
     let result = catch_unwind(|| {
         panic!(&quot;Oops!&quot;);
     });
@@ -746,8 +749,8 @@ extern &quot;C&quot; {
     pub fn foo(arg: *mut libc::c_void);
     pub fn bar(arg: *mut libc::c_void);
 }
-# fn main() {}
-</code></pre>
+<span class="boring">fn main() {}
+</span></code></pre>
 <p>This is a perfectly valid way of handling the situation. However, we can do a bit
 better. To solve this, some C libraries will instead create a <code>struct</code>, where
 the details and memory layout of the struct are private. This gives some amount
@@ -758,15 +761,15 @@ void foo(struct Foo *arg);
 void bar(struct Bar *arg);
 </code></pre>
 <p>To do this in Rust, let’s create our own opaque types:</p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">[repr(C)] pub struct Foo { _private: [u8; 0] }
-[repr(C)] pub struct Bar { _private: [u8; 0] }
-</span>
+<pre><pre class="playpen"><code class="language-rust">#[repr(C)] pub struct Foo { _private: [u8; 0] }
+#[repr(C)] pub struct Bar { _private: [u8; 0] }
+
 extern &quot;C&quot; {
     pub fn foo(arg: *mut Foo);
     pub fn bar(arg: *mut Bar);
 }
 <span class="boring">fn main() {}
-</code></pre></pre>
+</span></code></pre></pre>
 <p>By including a private field and no constructor, 
 we create an opaque type that we can't instantiate outside of this module.
 (A struct with no field could be instantiated by anyone.)
