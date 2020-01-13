@@ -186,6 +186,7 @@ akin to unchecked imports.</p>
 <p>Two kind of item <em>declarations</em> are allowed in external blocks: <a href="functions.html">functions</a> and
 <a href="static-items.html">statics</a>. Calling functions or accessing statics that are declared in external
 blocks is only allowed in an <code>unsafe</code> context.</p>
+<h2><a class="header" href="#functions" id="functions">Functions</a></h2>
 <p>Functions within external blocks are declared in the same way as other Rust
 functions, with the exception that they may not have a body and are instead
 terminated by a semicolon. Patterns are not allowed in parameters, only
@@ -197,10 +198,16 @@ the Rust ABI and the foreign ABI.</p>
 a function pointer, a function declared in an extern block has type <code>unsafe extern &quot;abi&quot; for&lt;'l1, ..., 'lm&gt; fn(A1, ..., An) -&gt; R</code>, where <code>'l1</code>, ... <code>'lm</code>
 are its lifetime parameters, <code>A1</code>, ..., <code>An</code> are the declared types of its
 parameters and <code>R</code> is the declared return type.</p>
-<p>Statics within external blocks are declared in the same way as statics outside of external blocks,
+<h2><a class="header" href="#statics" id="statics">Statics</a></h2>
+<p>Statics within external blocks are declared in the same way as <a href="static-items.html">statics</a> outside of external blocks,
 except that they do not have an expression initializing their value.
 It is <code>unsafe</code> to access a static item declared in an extern block, whether or
-not it's mutable.</p>
+not it's mutable, because there is nothing guaranteeing that the bit pattern at the static's
+memory is valid for the type it is declared with, since some arbitrary (e.g. C) code is in charge
+of initializing the static.</p>
+<p>Extern statics can be either immutable or mutable just like <a href="static-items.html">statics</a> outside of external blocks.
+An immutable static <em>must</em> be initialized before any Rust code is executed. It is not enough for
+the static to be initialized before Rust code reads from it.</p>
 <h2><a class="header" href="#abi" id="abi">ABI</a></h2>
 <p>By default external blocks assume that the library they are calling uses the
 standard C ABI on the specific platform. Other ABIs may be specified using an

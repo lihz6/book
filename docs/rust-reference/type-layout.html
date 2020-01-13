@@ -423,9 +423,11 @@ it is possible to <a href="https://github.com/rust-lang/rust/issues/27060">safel
 Like all ways to create undefined behavior in safe Rust, this is a bug.</p>
 </div>
 <h3><a class="header" href="#the-transparent-representation" id="the-transparent-representation">The <code>transparent</code> Representation</a></h3>
-<p>The <code>transparent</code> representation can only be used on <code>struct</code>s that have a
-single non-zero sized field and any number of zero-sized fields, including
-<a href="special-types-and-traits.html#phantomdatat"><code>PhantomData&lt;T&gt;</code></a>.</p>
+<p>The <code>transparent</code> representation can only be used on <code>struct</code>s that have:</p>
+<ul>
+<li>a single field with non-zero size, and</li>
+<li>any number of fields with size 0 and alignment 1 (e.g. <a href="special-types-and-traits.html#phantomdatat"><code>PhantomData&lt;T&gt;</code></a>).</li>
+</ul>
 <p>Structs with this representation have the same layout and ABI as the single
 non-zero sized field.</p>
 <p>This is different than the <code>C</code> representation because

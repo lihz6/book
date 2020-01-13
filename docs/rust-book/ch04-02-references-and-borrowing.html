@@ -345,10 +345,10 @@ the data.</p>
 through the last time that reference is used. For instance, this code will
 compile because the last usage of the immutable references occurs before the
 mutable reference is introduced:</p>
-<!-- This example is being ignored because there's a bug in rustdoc making the
-edition2018 not work. The bug is currently fixed in nightly, so when we update
-the book to >= 1.35, `ignore` can be removed from this example. -->
-<pre><code class="language-rust edition2018 ignore">let mut s = String::from(&quot;hello&quot;);
+<pre><pre class="playpen"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut s = String::from(&quot;hello&quot;);
 
 let r1 = &amp;s; // no problem
 let r2 = &amp;s; // no problem
@@ -357,7 +357,8 @@ println!(&quot;{} and {}&quot;, r1, r2);
 
 let r3 = &amp;mut s; // no problem
 println!(&quot;{}&quot;, r3);
-</code></pre>
+<span class="boring">}
+</span></code></pre></pre>
 <p>The scopes of the immutable references <code>r1</code> and <code>r2</code> end after the <code>println!</code>
 where they are last used, which is before the mutable reference <code>r3</code> is
 created. These scopes don’t overlap, so this code is allowed.</p>
