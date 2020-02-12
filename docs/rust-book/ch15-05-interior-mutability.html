@@ -223,13 +223,22 @@ you can’t borrow it mutably. For example, this code won’t compile:</p>
 }
 </code></pre>
 <p>If you tried to compile this code, you’d get the following error:</p>
-<pre><code class="language-text">error[E0596]: cannot borrow immutable local variable `x` as mutable
- --&gt; src/main.rs:3:18
+<pre><code class="language-text">$ cargo run
+   Compiling borrowing v0.1.0 (file:///projects/borrowing)
+error[E0596]: cannot borrow `x` as mutable, as it is not declared as mutable
+ --&gt; src/main.rs:3:13
   |
 2 |     let x = 5;
-  |         - consider changing this to `mut x`
+  |         - help: consider changing this to be mutable: `mut x`
 3 |     let y = &amp;mut x;
-  |                  ^ cannot borrow mutably
+  |             ^^^^^^ cannot borrow as mutable
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0596`.
+error: could not compile `borrowing`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>However, there are situations in which it would be useful for a value to mutate
 itself in its methods but appear immutable to other code. Code outside the
@@ -276,7 +285,9 @@ pub struct LimitTracker&lt;'a, T: Messenger&gt; {
 }
 
 impl&lt;'a, T&gt; LimitTracker&lt;'a, T&gt;
-    where T: Messenger {
+where
+    T: Messenger,
+{
     pub fn new(messenger: &amp;T, max: usize) -&gt; LimitTracker&lt;T&gt; {
         LimitTracker {
             messenger,
@@ -293,9 +304,11 @@ impl&lt;'a, T&gt; LimitTracker&lt;'a, T&gt;
         if percentage_of_max &gt;= 1.0 {
             self.messenger.send(&quot;Error: You are over your quota!&quot;);
         } else if percentage_of_max &gt;= 0.9 {
-             self.messenger.send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
+            self.messenger
+                .send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
         } else if percentage_of_max &gt;= 0.75 {
-            self.messenger.send(&quot;Warning: You've used up over 75% of your quota!&quot;);
+            self.messenger
+                .send(&quot;Warning: You've used up over 75% of your quota!&quot;);
         }
     }
 }
@@ -320,7 +333,46 @@ mock object, call the <code>set_value</code> method on <code>LimitTracker</code>
 the mock object has the messages we expect. Listing 15-21 shows an attempt to
 implement a mock object to do just that, but the borrow checker won’t allow it:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">#[cfg(test)]
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">pub trait Messenger {
+</span><span class="boring">    fn send(&amp;self, msg: &amp;str);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub struct LimitTracker&lt;'a, T: Messenger&gt; {
+</span><span class="boring">    messenger: &amp;'a T,
+</span><span class="boring">    value: usize,
+</span><span class="boring">    max: usize,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;'a, T&gt; LimitTracker&lt;'a, T&gt;
+</span><span class="boring">where
+</span><span class="boring">    T: Messenger,
+</span><span class="boring">{
+</span><span class="boring">    pub fn new(messenger: &amp;T, max: usize) -&gt; LimitTracker&lt;T&gt; {
+</span><span class="boring">        LimitTracker {
+</span><span class="boring">            messenger,
+</span><span class="boring">            value: 0,
+</span><span class="boring">            max,
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    pub fn set_value(&amp;mut self, value: usize) {
+</span><span class="boring">        self.value = value;
+</span><span class="boring">
+</span><span class="boring">        let percentage_of_max = self.value as f64 / self.max as f64;
+</span><span class="boring">
+</span><span class="boring">        if percentage_of_max &gt;= 1.0 {
+</span><span class="boring">            self.messenger.send(&quot;Error: You are over your quota!&quot;);
+</span><span class="boring">        } else if percentage_of_max &gt;= 0.9 {
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
+</span><span class="boring">        } else if percentage_of_max &gt;= 0.75 {
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Warning: You've used up over 75% of your quota!&quot;);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -330,7 +382,9 @@ mod tests {
 
     impl MockMessenger {
         fn new() -&gt; MockMessenger {
-            MockMessenger { sent_messages: vec![] }
+            MockMessenger {
+                sent_messages: vec![],
+            }
         }
     }
 
@@ -370,13 +424,22 @@ Then we create a new <code>LimitTracker</code> and give it a reference to the ne
 we assert that the list of messages that the <code>MockMessenger</code> is keeping track
 of should now have one message in it.</p>
 <p>However, there’s one problem with this test, as shown here:</p>
-<pre><code class="language-text">error[E0596]: cannot borrow immutable field `self.sent_messages` as mutable
-  --&gt; src/lib.rs:52:13
+<pre><code class="language-text">$ cargo test
+   Compiling limit-tracker v0.1.0 (file:///projects/limit-tracker)
+error[E0596]: cannot borrow `self.sent_messages` as mutable, as it is behind a `&amp;` reference
+  --&gt; src/lib.rs:58:13
    |
-51 |         fn send(&amp;self, message: &amp;str) {
-   |                 ----- use `&amp;mut self` here to make mutable
-52 |             self.sent_messages.push(String::from(message));
-   |             ^^^^^^^^^^^^^^^^^^ cannot mutably borrow immutable field
+57 |         fn send(&amp;self, message: &amp;str) {
+   |                 ----- help: consider changing this to be a mutable reference: `&amp;mut self`
+58 |             self.sent_messages.push(String::from(message));
+   |             ^^^^^^^^^^^^^^^^^^ `self` is a `&amp;` reference, so the data it refers to cannot be borrowed as mutable
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0596`.
+error: could not compile `limit-tracker`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>We can’t modify the <code>MockMessenger</code> to keep track of the messages, because the
 <code>send</code> method takes an immutable reference to <code>self</code>. We also can’t take the
@@ -399,7 +462,9 @@ shows what that looks like:</p>
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">impl&lt;'a, T&gt; LimitTracker&lt;'a, T&gt;
-</span><span class="boring">    where T: Messenger {
+</span><span class="boring">where
+</span><span class="boring">    T: Messenger,
+</span><span class="boring">{
 </span><span class="boring">    pub fn new(messenger: &amp;T, max: usize) -&gt; LimitTracker&lt;T&gt; {
 </span><span class="boring">        LimitTracker {
 </span><span class="boring">            messenger,
@@ -416,9 +481,11 @@ shows what that looks like:</p>
 </span><span class="boring">        if percentage_of_max &gt;= 1.0 {
 </span><span class="boring">            self.messenger.send(&quot;Error: You are over your quota!&quot;);
 </span><span class="boring">        } else if percentage_of_max &gt;= 0.9 {
-</span><span class="boring">             self.messenger.send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
 </span><span class="boring">        } else if percentage_of_max &gt;= 0.75 {
-</span><span class="boring">            self.messenger.send(&quot;Warning: You've used up over 75% of your quota!&quot;);
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Warning: You've used up over 75% of your quota!&quot;);
 </span><span class="boring">        }
 </span><span class="boring">    }
 </span><span class="boring">}
@@ -434,7 +501,9 @@ mod tests {
 
     impl MockMessenger {
         fn new() -&gt; MockMessenger {
-            MockMessenger { sent_messages: RefCell::new(vec![]) }
+            MockMessenger {
+                sent_messages: RefCell::new(vec![]),
+            }
         }
     }
 
@@ -449,12 +518,14 @@ mod tests {
         // --snip--
 <span class="boring">        let mock_messenger = MockMessenger::new();
 </span><span class="boring">        let mut limit_tracker = LimitTracker::new(&amp;mock_messenger, 100);
-</span><span class="boring">        limit_tracker.set_value(75);
+</span><span class="boring">
+</span><span class="boring">        limit_tracker.set_value(80);
 </span>
         assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
     }
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 15-22: Using <code>RefCell&lt;T&gt;</code> to mutate an inner
 value while the outer value is considered immutable</span></p>
@@ -491,16 +562,83 @@ Listing 15-22. We’re deliberately trying to create two mutable borrows active
 for the same scope to illustrate that <code>RefCell&lt;T&gt;</code> prevents us from doing this
 at runtime.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore panics">impl Messenger for MockMessenger {
-    fn send(&amp;self, message: &amp;str) {
-        let mut one_borrow = self.sent_messages.borrow_mut();
-        let mut two_borrow = self.sent_messages.borrow_mut();
+<pre><code class="language-rust ignore panics"><span class="boring">pub trait Messenger {
+</span><span class="boring">    fn send(&amp;self, msg: &amp;str);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub struct LimitTracker&lt;'a, T: Messenger&gt; {
+</span><span class="boring">    messenger: &amp;'a T,
+</span><span class="boring">    value: usize,
+</span><span class="boring">    max: usize,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;'a, T&gt; LimitTracker&lt;'a, T&gt;
+</span><span class="boring">where
+</span><span class="boring">    T: Messenger,
+</span><span class="boring">{
+</span><span class="boring">    pub fn new(messenger: &amp;T, max: usize) -&gt; LimitTracker&lt;T&gt; {
+</span><span class="boring">        LimitTracker {
+</span><span class="boring">            messenger,
+</span><span class="boring">            value: 0,
+</span><span class="boring">            max,
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    pub fn set_value(&amp;mut self, value: usize) {
+</span><span class="boring">        self.value = value;
+</span><span class="boring">
+</span><span class="boring">        let percentage_of_max = self.value as f64 / self.max as f64;
+</span><span class="boring">
+</span><span class="boring">        if percentage_of_max &gt;= 1.0 {
+</span><span class="boring">            self.messenger.send(&quot;Error: You are over your quota!&quot;);
+</span><span class="boring">        } else if percentage_of_max &gt;= 0.9 {
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Urgent warning: You've used up over 90% of your quota!&quot;);
+</span><span class="boring">        } else if percentage_of_max &gt;= 0.75 {
+</span><span class="boring">            self.messenger
+</span><span class="boring">                .send(&quot;Warning: You've used up over 75% of your quota!&quot;);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">    use std::cell::RefCell;
+</span><span class="boring">
+</span><span class="boring">    struct MockMessenger {
+</span><span class="boring">        sent_messages: RefCell&lt;Vec&lt;String&gt;&gt;,
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    impl MockMessenger {
+</span><span class="boring">        fn new() -&gt; MockMessenger {
+</span><span class="boring">            MockMessenger {
+</span><span class="boring">                sent_messages: RefCell::new(vec![]),
+</span><span class="boring">            }
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span>    impl Messenger for MockMessenger {
+        fn send(&amp;self, message: &amp;str) {
+            let mut one_borrow = self.sent_messages.borrow_mut();
+            let mut two_borrow = self.sent_messages.borrow_mut();
 
-        one_borrow.push(String::from(message));
-        two_borrow.push(String::from(message));
+            one_borrow.push(String::from(message));
+            two_borrow.push(String::from(message));
+        }
     }
-}
-</code></pre>
+<span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn it_sends_an_over_75_percent_warning_message() {
+</span><span class="boring">        let mock_messenger = MockMessenger::new();
+</span><span class="boring">        let mut limit_tracker = LimitTracker::new(&amp;mock_messenger, 100);
+</span><span class="boring">
+</span><span class="boring">        limit_tracker.set_value(80);
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 15-23: Creating two mutable references in the
 same scope to see that <code>RefCell&lt;T&gt;</code> will panic</span></p>
 <p>We create a variable <code>one_borrow</code> for the <code>RefMut&lt;T&gt;</code> smart pointer returned
@@ -508,10 +646,27 @@ from <code>borrow_mut</code>. Then we create another mutable borrow in the same 
 variable <code>two_borrow</code>. This makes two mutable references in the same scope,
 which isn’t allowed. When we run the tests for our library, the code in Listing
 15-23 will compile without any errors, but the test will fail:</p>
-<pre><code class="language-text">---- tests::it_sends_an_over_75_percent_warning_message stdout ----
-	thread 'tests::it_sends_an_over_75_percent_warning_message' panicked at
-'already borrowed: BorrowMutError', src/libcore/result.rs:906:4
-note: Run with `RUST_BACKTRACE=1` for a backtrace.
+<pre><code class="language-text">$ cargo test
+   Compiling limit-tracker v0.1.0 (file:///projects/limit-tracker)
+    Finished test [unoptimized + debuginfo] target(s) in 0.91s
+     Running target/debug/deps/limit_tracker-d1b2637139dca6ca
+
+running 1 test
+test tests::it_sends_an_over_75_percent_warning_message ... FAILED
+
+failures:
+
+---- tests::it_sends_an_over_75_percent_warning_message stdout ----
+thread 'main' panicked at 'already borrowed: BorrowMutError', src/libcore/result.rs:1188:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
+
+
+failures:
+    tests::it_sends_an_over_75_percent_warning_message
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+
+error: test failed, to rerun pass '--lib'
 </code></pre>
 <p>Notice that the code panicked with the message <code>already borrowed: BorrowMutError</code>. This is how <code>RefCell&lt;T&gt;</code> handles violations of the borrowing
 rules at runtime.</p>
@@ -544,8 +699,8 @@ enum List {
 }
 
 use crate::List::{Cons, Nil};
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 fn main() {
     let value = Rc::new(RefCell::new(5));
@@ -581,7 +736,11 @@ method returns a <code>RefMut&lt;T&gt;</code> smart pointer, and we use the dere
 on it and change the inner value.</p>
 <p>When we print <code>a</code>, <code>b</code>, and <code>c</code>, we can see that they all have the modified
 value of 15 rather than 5:</p>
-<pre><code class="language-text">a after = Cons(RefCell { value: 15 }, Nil)
+<pre><code class="language-text">$ cargo run
+   Compiling cons-list v0.1.0 (file:///projects/cons-list)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.63s
+     Running `target/debug/cons-list`
+a after = Cons(RefCell { value: 15 }, Nil)
 b after = Cons(RefCell { value: 6 }, Cons(RefCell { value: 15 }, Nil))
 c after = Cons(RefCell { value: 10 }, Cons(RefCell { value: 15 }, Nil))
 </code></pre>

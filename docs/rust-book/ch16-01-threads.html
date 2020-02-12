@@ -235,6 +235,9 @@ while the main thread prints something else</span></p>
 thread ends, whether or not it has finished running. The output from this
 program might be a little different every time, but it will look similar to the
 following:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">hi number 1 from the main thread!
 hi number 1 from the spawned thread!
 hi number 2 from the main thread!
@@ -294,6 +297,9 @@ thread represented by the handle terminates. <em>Blocking</em> a thread means th
 thread is prevented from performing work or exiting. Because we’ve put the call
 to <code>join</code> after the main thread’s <code>for</code> loop, running Listing 16-2 should
 produce output similar to this:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">hi number 1 from the main thread!
 hi number 2 from the main thread!
 hi number 1 from the spawned thread!
@@ -334,6 +340,9 @@ fn main() {
 </code></pre></pre>
 <p>The main thread will wait for the spawned thread to finish and then run its
 <code>for</code> loop, so the output won’t be interleaved anymore, as shown here:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">hi number 1 from the spawned thread!
 hi number 2 from the spawned thread!
 hi number 3 from the spawned thread!
@@ -382,8 +391,9 @@ main thread in another thread</span></p>
 environment. Because <code>thread::spawn</code> runs this closure in a new thread, we
 should be able to access <code>v</code> inside that new thread. But when we compile this
 example, we get the following error:</p>
-<pre><code class="language-text">error[E0373]: closure may outlive the current function, but it borrows `v`,
-which is owned by the current function
+<pre><code class="language-text">$ cargo run
+   Compiling threads v0.1.0 (file:///projects/threads)
+error[E0373]: closure may outlive the current function, but it borrows `v`, which is owned by the current function
  --&gt; src/main.rs:6:32
   |
 6 |     let handle = thread::spawn(|| {
@@ -391,11 +401,25 @@ which is owned by the current function
 7 |         println!(&quot;Here's a vector: {:?}&quot;, v);
   |                                           - `v` is borrowed here
   |
-help: to force the closure to take ownership of `v` (and any other referenced
-variables), use the `move` keyword
+note: function requires argument type to outlive `'static`
+ --&gt; src/main.rs:6:18
+  |
+6 |       let handle = thread::spawn(|| {
+  |  __________________^
+7 | |         println!(&quot;Here's a vector: {:?}&quot;, v);
+8 | |     });
+  | |______^
+help: to force the closure to take ownership of `v` (and any other referenced variables), use the `move` keyword
   |
 6 |     let handle = thread::spawn(move || {
   |                                ^^^^^^^
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0373`.
+error: could not compile `threads`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Rust <em>infers</em> how to capture <code>v</code>, and because <code>println!</code> only needs a reference
 to <code>v</code>, the closure tries to borrow <code>v</code>. However, there’s a problem: Rust can’t
@@ -428,8 +452,10 @@ spawned thread starts to execute, <code>v</code> is no longer valid, so a refere
 is also invalid. Oh no!</p>
 <p>To fix the compiler error in Listing 16-3, we can use the error message’s
 advice:</p>
-<pre><code class="language-text">help: to force the closure to take ownership of `v` (and any other referenced
-variables), use the `move` keyword
+<!-- manual-regeneration
+after automatic regeneration, look at listings/ch16-fearless-concurrency/listing-16-03/output.txt and copy the relevant part
+-->
+<pre><code class="language-text">help: to force the closure to take ownership of `v` (and any other referenced variables), use the `move` keyword
   |
 6 |     let handle = thread::spawn(move || {
   |                                ^^^^^^^
@@ -459,17 +485,28 @@ no; we would get a different error because what Listing 16-4 is trying to do
 isn’t allowed for a different reason. If we added <code>move</code> to the closure, we
 would move <code>v</code> into the closure’s environment, and we could no longer call
 <code>drop</code> on it in the main thread. We would get this compiler error instead:</p>
-<pre><code class="language-text">error[E0382]: use of moved value: `v`
+<pre><code class="language-text">$ cargo run
+   Compiling threads v0.1.0 (file:///projects/threads)
+error[E0382]: use of moved value: `v`
   --&gt; src/main.rs:10:10
    |
+4  |     let v = vec![1, 2, 3];
+   |         - move occurs because `v` has type `std::vec::Vec&lt;i32&gt;`, which does not implement the `Copy` trait
+5  | 
 6  |     let handle = thread::spawn(move || {
-   |                                ------- value moved (into closure) here
+   |                                ------- value moved into closure here
+7  |         println!(&quot;Here's a vector: {:?}&quot;, v);
+   |                                           - variable moved due to use in closure
 ...
 10 |     drop(v); // oh no!
    |          ^ value used here after move
-   |
-   = note: move occurs because `v` has type `std::vec::Vec&lt;i32&gt;`, which does
-   not implement the `Copy` trait
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `threads`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Rust’s ownership rules have saved us again! We got an error from the code in
 Listing 16-3 because Rust was being conservative and only borrowing <code>v</code> for the

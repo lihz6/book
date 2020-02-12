@@ -178,7 +178,8 @@ pub fn eat_at_restaurant() {
     hosting::add_to_waitlist();
     hosting::add_to_waitlist();
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-11: Bringing a module into scope with
 <code>use</code></span></p>
@@ -197,14 +198,15 @@ Listing 7-11.</p>
     }
 }
 
-use front_of_house::hosting;
+use self::front_of_house::hosting;
 
 pub fn eat_at_restaurant() {
     hosting::add_to_waitlist();
     hosting::add_to_waitlist();
     hosting::add_to_waitlist();
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-12: Bringing a module into scope with <code>use</code> and
 a relative path</span></p>
@@ -226,7 +228,8 @@ pub fn eat_at_restaurant() {
     add_to_waitlist();
     add_to_waitlist();
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-13: Bringing the <code>add_to_waitlist</code> function
 into scope with <code>use</code>, which is unidiomatic</span></p>
@@ -332,7 +335,8 @@ pub fn eat_at_restaurant() {
     hosting::add_to_waitlist();
     hosting::add_to_waitlist();
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-17: Making a name available for any code to use
 from a new scope with <code>pub use</code></span></p>
@@ -369,10 +373,26 @@ make <code>rand</code> available to our project.</p>
 we wanted to bring into scope. Recall that in the <a href="ch02-00-guessing-game-tutorial.html#generating-a-random-number">“Generating a Random
 Number”</a><!-- ignore --> section in Chapter 2, we brought the <code>Rng</code> trait
 into scope and called the <code>rand::thread_rng</code> function:</p>
-<pre><code class="language-rust ignore">use rand::Rng;
+<pre><code class="language-rust ignore"><span class="boring">use std::io;
+</span>use rand::Rng;
+
 fn main() {
-    let secret_number = rand::thread_rng().gen_range(1, 101);
-}
+<span class="boring">    println!(&quot;Guess the number!&quot;);
+</span><span class="boring">
+</span>    let secret_number = rand::thread_rng().gen_range(1, 101);
+<span class="boring">
+</span><span class="boring">    println!(&quot;The secret number is: {}&quot;, secret_number);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Please input your guess.&quot;);
+</span><span class="boring">
+</span><span class="boring">    let mut guess = String::new();
+</span><span class="boring">
+</span><span class="boring">    io::stdin()
+</span><span class="boring">        .read_line(&amp;mut guess)
+</span><span class="boring">        .expect(&quot;Failed to read line&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;You guessed: {}&quot;, guess);
+</span>}
 </code></pre>
 <p>Members of the Rust community have made many packages available at
 <a href="https://crates.io/">crates.io</a>, and pulling any of them into your package
@@ -397,26 +417,72 @@ listing each item on its own line can take up a lot of vertical space in our
 files. For example, these two <code>use</code> statements we had in the Guessing Game in
 Listing 2-4 bring items from <code>std</code> into scope:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::io;
+<pre><code class="language-rust ignore"><span class="boring">use rand::Rng;
+</span>// --snip--
 use std::cmp::Ordering;
-// ---snip---
-<span class="boring">}
-</span></code></pre></pre>
+use std::io;
+// --snip--
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    println!(&quot;Guess the number!&quot;);
+</span><span class="boring">
+</span><span class="boring">    let secret_number = rand::thread_rng().gen_range(1, 101);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;The secret number is: {}&quot;, secret_number);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Please input your guess.&quot;);
+</span><span class="boring">
+</span><span class="boring">    let mut guess = String::new();
+</span><span class="boring">
+</span><span class="boring">    io::stdin()
+</span><span class="boring">        .read_line(&amp;mut guess)
+</span><span class="boring">        .expect(&quot;Failed to read line&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;You guessed: {}&quot;, guess);
+</span><span class="boring">
+</span><span class="boring">    match guess.cmp(&amp;secret_number) {
+</span><span class="boring">        Ordering::Less =&gt; println!(&quot;Too small!&quot;),
+</span><span class="boring">        Ordering::Greater =&gt; println!(&quot;Too big!&quot;),
+</span><span class="boring">        Ordering::Equal =&gt; println!(&quot;You win!&quot;),
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p>Instead, we can use nested paths to bring the same items into scope in one
 line. We do this by specifying the common part of the path, followed by two
 colons, and then curly brackets around a list of the parts of the paths that
 differ, as shown in Listing 7-18.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
+<pre><code class="language-rust ignore"><span class="boring">use rand::Rng;
+</span>// --snip--
+use std::{cmp::Ordering, io};
+// --snip--
+<span class="boring">
 </span><span class="boring">fn main() {
-</span>use std::{cmp::Ordering, io};
-// ---snip---
-<span class="boring">}
-</span></code></pre></pre>
+</span><span class="boring">    println!(&quot;Guess the number!&quot;);
+</span><span class="boring">
+</span><span class="boring">    let secret_number = rand::thread_rng().gen_range(1, 101);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;The secret number is: {}&quot;, secret_number);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Please input your guess.&quot;);
+</span><span class="boring">
+</span><span class="boring">    let mut guess = String::new();
+</span><span class="boring">
+</span><span class="boring">    io::stdin()
+</span><span class="boring">        .read_line(&amp;mut guess)
+</span><span class="boring">        .expect(&quot;Failed to read line&quot;);
+</span><span class="boring">
+</span><span class="boring">    let guess: u32 = guess.trim().parse().expect(&quot;Please type a number!&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;You guessed: {}&quot;, guess);
+</span><span class="boring">
+</span><span class="boring">    match guess.cmp(&amp;secret_number) {
+</span><span class="boring">        Ordering::Less =&gt; println!(&quot;Too small!&quot;),
+</span><span class="boring">        Ordering::Greater =&gt; println!(&quot;Too big!&quot;),
+</span><span class="boring">        Ordering::Equal =&gt; println!(&quot;You win!&quot;),
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 7-18: Specifying a nested path to bring multiple
 items with the same prefix into scope</span></p>
 <p>In bigger programs, bringing many items into scope from the same package or

@@ -198,7 +198,7 @@ through a shared reference.</li>
 implementations have generally been rigorously manually checked, so the Safe Rust
 interfaces built on top of these implementations can be assumed to be safe.</p>
 <p>The need for all of this separation boils down a single fundamental property
-of Safe Rust:</p>
+of Safe Rust, the <em>soundness property</em>:</p>
 <p><strong>No matter what, Safe Rust can't cause Undefined Behavior.</strong></p>
 <p>The design of the safe/unsafe split means that there is an asymmetric trust
 relationship between Safe and Unsafe Rust. Safe Rust inherently has to

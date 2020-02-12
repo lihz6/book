@@ -189,25 +189,26 @@ section of Chapter 17.</p>
 <p>Along with the newtype pattern, Rust provides the ability to declare a <em>type
 alias</em> to give an existing type another name. For this we use the <code>type</code>
 keyword. For example, we can create the alias <code>Kilometers</code> to <code>i32</code> like so:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>type Kilometers = i32;
-<span class="boring">}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    type Kilometers = i32;
+<span class="boring">
+</span><span class="boring">    let x: i32 = 5;
+</span><span class="boring">    let y: Kilometers = 5;
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;x + y = {}&quot;, x + y);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>Now, the alias <code>Kilometers</code> is a <em>synonym</em> for <code>i32</code>; unlike the <code>Millimeters</code>
 and <code>Meters</code> types we created in Listing 19-15, <code>Kilometers</code> is not a separate,
 new type. Values that have the type <code>Kilometers</code> will be treated the same as
 values of type <code>i32</code>:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>type Kilometers = i32;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    type Kilometers = i32;
 
-let x: i32 = 5;
-let y: Kilometers = 5;
+    let x: i32 = 5;
+    let y: Kilometers = 5;
 
-println!(&quot;x + y = {}&quot;, x + y);
+    println!(&quot;x + y = {}&quot;, x + y);
 <span class="boring">}
 </span></code></pre></pre>
 <p>Because <code>Kilometers</code> and <code>i32</code> are the same type, we can add values of both
@@ -221,40 +222,36 @@ might have a lengthy type like this:</p>
 <p>Writing this lengthy type in function signatures and as type annotations all
 over the code can be tiresome and error prone. Imagine having a project full of
 code like that in Listing 19-24.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let f: Box&lt;dyn Fn() + Send + 'static&gt; = Box::new(|| println!(&quot;hi&quot;));
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let f: Box&lt;dyn Fn() + Send + 'static&gt; = Box::new(|| println!(&quot;hi&quot;));
 
-fn takes_long_type(f: Box&lt;dyn Fn() + Send + 'static&gt;) {
-    // --snip--
-}
+    fn takes_long_type(f: Box&lt;dyn Fn() + Send + 'static&gt;) {
+        // --snip--
+    }
 
-fn returns_long_type() -&gt; Box&lt;dyn Fn() + Send + 'static&gt; {
-    // --snip--
-<span class="boring">    Box::new(|| ())
-</span>}
+    fn returns_long_type() -&gt; Box&lt;dyn Fn() + Send + 'static&gt; {
+        // --snip--
+<span class="boring">        Box::new(|| ())
+</span>    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-24: Using a long type in many places</span></p>
 <p>A type alias makes this code more manageable by reducing the repetition. In
 Listing 19-25, we’ve introduced an alias named <code>Thunk</code> for the verbose type and
 can replace all uses of the type with the shorter alias <code>Thunk</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>type Thunk = Box&lt;dyn Fn() + Send + 'static&gt;;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    type Thunk = Box&lt;dyn Fn() + Send + 'static&gt;;
 
-let f: Thunk = Box::new(|| println!(&quot;hi&quot;));
+    let f: Thunk = Box::new(|| println!(&quot;hi&quot;));
 
-fn takes_long_type(f: Thunk) {
-    // --snip--
-}
+    fn takes_long_type(f: Thunk) {
+        // --snip--
+    }
 
-fn returns_long_type() -&gt; Thunk {
-    // --snip--
-<span class="boring">    Box::new(|| ())
-</span>}
+    fn returns_long_type() -&gt; Thunk {
+        // --snip--
+<span class="boring">        Box::new(|| ())
+</span>    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-25: Introducing a type alias <code>Thunk</code> to reduce
@@ -273,8 +270,8 @@ the <code>Write</code> trait:</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
-</span>use std::io::Error;
-use std::fmt;
+</span>use std::fmt;
+use std::io::Error;
 
 pub trait Write {
     fn write(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;usize, Error&gt;;
@@ -287,24 +284,38 @@ pub trait Write {
 </span></code></pre></pre>
 <p>The <code>Result&lt;..., Error&gt;</code> is repeated a lot. As such, <code>std::io</code> has this type of
 alias declaration:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::fmt;
+</span><span class="boring">
 </span>type Result&lt;T&gt; = std::result::Result&lt;T, std::io::Error&gt;;
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">pub trait Write {
+</span><span class="boring">    fn write(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;usize&gt;;
+</span><span class="boring">    fn flush(&amp;mut self) -&gt; Result&lt;()&gt;;
+</span><span class="boring">
+</span><span class="boring">    fn write_all(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;()&gt;;
+</span><span class="boring">    fn write_fmt(&amp;mut self, fmt: fmt::Arguments) -&gt; Result&lt;()&gt;;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p>Because this declaration is in the <code>std::io</code> module, we can use the fully
 qualified alias <code>std::io::Result&lt;T&gt;</code>—that is, a <code>Result&lt;T, E&gt;</code> with the <code>E</code>
 filled in as <code>std::io::Error</code>. The <code>Write</code> trait function signatures end up
 looking like this:</p>
-<pre><code class="language-rust ignore">pub trait Write {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::fmt;
+</span><span class="boring">
+</span><span class="boring">type Result&lt;T&gt; = std::result::Result&lt;T, std::io::Error&gt;;
+</span><span class="boring">
+</span>pub trait Write {
     fn write(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;usize&gt;;
     fn flush(&amp;mut self) -&gt; Result&lt;()&gt;;
 
     fn write_all(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;()&gt;;
-    fn write_fmt(&amp;mut self, fmt: Arguments) -&gt; Result&lt;()&gt;;
+    fn write_fmt(&amp;mut self, fmt: fmt::Arguments) -&gt; Result&lt;()&gt;;
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
 <p>The type alias helps in two ways: it makes code easier to write <em>and</em> it gives
 us a consistent interface across all of <code>std::io</code>. Because it’s an alias, it’s
 just another <code>Result&lt;T, E&gt;</code>, which means we can use any methods that work on
@@ -314,39 +325,74 @@ just another <code>Result&lt;T, E&gt;</code>, which means we can use any methods
 <em>empty type</em> because it has no values. We prefer to call it the <em>never type</em>
 because it stands in the place of the return type when a function will never
 return. Here is an example:</p>
-<pre><code class="language-rust ignore">fn bar() -&gt; ! {
+<pre><pre class="playpen"><code class="language-rust">fn bar() -&gt; ! {
     // --snip--
-}
-</code></pre>
+<span class="boring">    panic!();
+</span>}
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
 <p>This code is read as “the function <code>bar</code> returns never.” Functions that return
 never are called <em>diverging functions</em>. We can’t create values of the type <code>!</code>
 so <code>bar</code> can never possibly return.</p>
 <p>But what use is a type you can never create values for? Recall the code from
 Listing 2-5; we’ve reproduced part of it here in Listing 19-26.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
+<pre><code class="language-rust ignore"><span class="boring">use rand::Rng;
+</span><span class="boring">use std::cmp::Ordering;
+</span><span class="boring">use std::io;
+</span><span class="boring">
 </span><span class="boring">fn main() {
-</span><span class="boring">let guess = &quot;3&quot;;
-</span><span class="boring">loop {
-</span>let guess: u32 = match guess.trim().parse() {
-    Ok(num) =&gt; num,
-    Err(_) =&gt; continue,
-};
-<span class="boring">break;
+</span><span class="boring">    println!(&quot;Guess the number!&quot;);
+</span><span class="boring">
+</span><span class="boring">    let secret_number = rand::thread_rng().gen_range(1, 101);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;The secret number is: {}&quot;, secret_number);
+</span><span class="boring">
+</span><span class="boring">    loop {
+</span><span class="boring">        println!(&quot;Please input your guess.&quot;);
+</span><span class="boring">
+</span><span class="boring">        let mut guess = String::new();
+</span><span class="boring">
+</span><span class="boring">        // --snip--
+</span><span class="boring">
+</span><span class="boring">        io::stdin()
+</span><span class="boring">            .read_line(&amp;mut guess)
+</span><span class="boring">            .expect(&quot;Failed to read line&quot;);
+</span><span class="boring">
+</span>        let guess: u32 = match guess.trim().parse() {
+            Ok(num) =&gt; num,
+            Err(_) =&gt; continue,
+        };
+<span class="boring">
+</span><span class="boring">        println!(&quot;You guessed: {}&quot;, guess);
+</span><span class="boring">
+</span><span class="boring">        // --snip--
+</span><span class="boring">
+</span><span class="boring">        match guess.cmp(&amp;secret_number) {
+</span><span class="boring">            Ordering::Less =&gt; println!(&quot;Too small!&quot;),
+</span><span class="boring">            Ordering::Greater =&gt; println!(&quot;Too big!&quot;),
+</span><span class="boring">            Ordering::Equal =&gt; {
+</span><span class="boring">                println!(&quot;You win!&quot;);
+</span><span class="boring">                break;
+</span><span class="boring">            }
+</span><span class="boring">        }
+</span><span class="boring">    }
 </span><span class="boring">}
-</span><span class="boring">}
-</span></code></pre></pre>
+</span></code></pre>
 <p><span class="caption">Listing 19-26: A <code>match</code> with an arm that ends in
 <code>continue</code></span></p>
 <p>At the time, we skipped over some details in this code. In Chapter 6 in <a href="ch06-02-match.html#the-match-control-flow-operator">“The
 <code>match</code> Control Flow Operator”</a><!-- ignore
 --> section, we discussed that <code>match</code> arms must all return the same type. So,
 for example, the following code doesn’t work:</p>
-<pre><code class="language-rust ignore does_not_compile">let guess = match guess.trim().parse() {
-    Ok(_) =&gt; 5,
-    Err(_) =&gt; &quot;hello&quot;,
-}
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span><span class="boring">    let guess = &quot;3&quot;;
+</span>    let guess = match guess.trim().parse() {
+        Ok(_) =&gt; 5,
+        Err(_) =&gt; &quot;hello&quot;,
+    };
+<span class="boring">}
+</span></code></pre>
 <p>The type of <code>guess</code> in this code would have to be an integer <em>and</em> a string,
 and Rust requires that <code>guess</code> have only one type. So what does <code>continue</code>
 return? How were we allowed to return a <code>u32</code> from one arm and have another arm
@@ -363,7 +409,14 @@ back to the top of the loop, so in the <code>Err</code> case, we never assign a 
 <p>The never type is useful with the <code>panic!</code> macro as well. Remember the <code>unwrap</code>
 function that we call on <code>Option&lt;T&gt;</code> values to produce a value or panic? Here
 is its definition:</p>
-<pre><code class="language-rust ignore">impl&lt;T&gt; Option&lt;T&gt; {
+<pre><code class="language-rust ignore"><span class="boring">enum Option&lt;T&gt; {
+</span><span class="boring">    Some(T),
+</span><span class="boring">    None,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">use crate::Option::*;
+</span><span class="boring">
+</span>impl&lt;T&gt; Option&lt;T&gt; {
     pub fn unwrap(self) -&gt; T {
         match self {
             Some(val) =&gt; val,
@@ -378,12 +431,14 @@ of the overall <code>match</code> expression is <code>T</code>. This code works 
 doesn’t produce a value; it ends the program. In the <code>None</code> case, we won’t be
 returning a value from <code>unwrap</code>, so this code is valid.</p>
 <p>One final expression that has the type <code>!</code> is a <code>loop</code>:</p>
-<pre><code class="language-rust ignore">print!(&quot;forever &quot;);
+<pre><code class="language-rust ignore"><span class="boring">fn main() {
+</span>    print!(&quot;forever &quot;);
 
-loop {
-    print!(&quot;and ever &quot;);
-}
-</code></pre>
+    loop {
+        print!(&quot;and ever &quot;);
+    }
+<span class="boring">}
+</span></code></pre>
 <p>Here, the loop never ends, so <code>!</code> is the value of the expression. However, this
 wouldn’t be true if we included a <code>break</code>, because the loop would terminate
 when it got to the <code>break</code>.</p>
@@ -398,9 +453,11 @@ we’ve been using throughout the book. That’s right, not <code>&amp;str</code
 its own, is a DST. We can’t know how long the string is until runtime, meaning
 we can’t create a variable of type <code>str</code>, nor can we take an argument of type
 <code>str</code>. Consider the following code, which does not work:</p>
-<pre><code class="language-rust ignore does_not_compile">let s1: str = &quot;Hello there!&quot;;
-let s2: str = &quot;How's it going?&quot;;
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    let s1: str = &quot;Hello there!&quot;;
+    let s2: str = &quot;How's it going?&quot;;
+<span class="boring">}
+</span></code></pre>
 <p>Rust needs to know how much memory to allocate for any value of a particular
 type, and all values of a type must use the same amount of memory. If Rust
 allowed us to write this code, these two <code>str</code> values would need to take up the

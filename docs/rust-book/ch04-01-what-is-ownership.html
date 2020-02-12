@@ -178,14 +178,14 @@ a value is on the stack or the heap has more of an effect on how the language
 behaves and why you have to make certain decisions. Parts of ownership will
 be described in relation to the stack and the heap later in this chapter, so
 here is a brief explanation in preparation.</p>
-<p>Both the stack and the heap are parts of memory that are available to your code
-to use at runtime, but they are structured in different ways. The stack stores
-values in the order it gets them and removes the values in the opposite order.
-This is referred to as <em>last in, first out</em>. Think of a stack of plates: when
-you add more plates, you put them on top of the pile, and when you need a
-plate, you take one off the top. Adding or removing plates from the middle or
-bottom wouldn’t work as well! Adding data is called <em>pushing onto the stack</em>,
-and removing data is called <em>popping off the stack</em>.</p>
+<p>Both the stack and the heap are parts of memory that are available to your
+code to use at runtime, but they are structured in different ways. The stack
+stores values in the order it gets them and removes the values in the
+opposite order. This is referred to as <em>last in, first out</em>. Think of a stack
+of plates: when you add more plates, you put them on top of the pile, and
+when you need a plate, you take one off the top. Adding or removing plates
+from the middle or bottom wouldn’t work as well! Adding data is called
+<em>pushing onto the stack</em>, and removing data is called <em>popping off the stack</em>.</p>
 <p>All data stored on the stack must have a known, fixed size. Data with an
 unknown size at compile time or a size that might change must be stored on
 the heap instead. The heap is less organized: when you put data on the heap,
@@ -255,14 +255,12 @@ have a variable that looks like this:</p>
 hardcoded into the text of our program. The variable is valid from the point at
 which it’s declared until the end of the current <em>scope</em>. Listing 4-1 has
 comments annotating where the variable <code>s</code> is valid.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>{                      // s is not valid here, it’s not yet declared
-    let s = &quot;hello&quot;;   // s is valid from this point forward
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    {                      // s is not valid here, it’s not yet declared
+        let s = &quot;hello&quot;;   // s is valid from this point forward
 
-    // do stuff with s
-}                      // this scope is now over, and s is no longer valid
+        // do stuff with s
+    }                      // this scope is now over, and s is no longer valid
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 4-1: A variable and the scope in which it is
@@ -284,7 +282,7 @@ that is stored on the heap and explore how Rust knows when to clean up that
 data.</p>
 <p>We’ll use <code>String</code> as the example here and concentrate on the parts of <code>String</code>
 that relate to ownership. These aspects also apply to other complex data types,
-whether they are provided by the standard library or created by you. We’ll 
+whether they are provided by the standard library or created by you. We’ll
 discuss <code>String</code> in more depth in Chapter 8.</p>
 <p>We’ve already seen string literals, where a string value is hardcoded into our
 program. String literals are convenient, but they aren’t suitable for every
@@ -308,14 +306,12 @@ Syntax”</a><!-- ignore --> section of Chapter 5 and when we talk
 about namespacing with modules in <a href="ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html">“Paths for Referring to an Item in the
 Module Tree”</a><!-- ignore --> in Chapter 7.</p>
 <p>This kind of string <em>can</em> be mutated:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut s = String::from(&quot;hello&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut s = String::from(&quot;hello&quot;);
 
-s.push_str(&quot;, world!&quot;); // push_str() appends a literal to a String
+    s.push_str(&quot;, world!&quot;); // push_str() appends a literal to a String
 
-println!(&quot;{}&quot;, s); // This will print `hello, world!`
+    println!(&quot;{}&quot;, s); // This will print `hello, world!`
 <span class="boring">}
 </span></code></pre></pre>
 <p>So, what’s the difference here? Why can <code>String</code> be mutated but literals
@@ -349,15 +345,13 @@ We need to pair exactly one <code>allocate</code> with exactly one <code>free</c
 <p>Rust takes a different path: the memory is automatically returned once the
 variable that owns it goes out of scope. Here’s a version of our scope example
 from Listing 4-1 using a <code>String</code> instead of a string literal:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>{
-    let s = String::from(&quot;hello&quot;); // s is valid from this point forward
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    {
+        let s = String::from(&quot;hello&quot;); // s is valid from this point forward
 
-    // do stuff with s
-}                                  // this scope is now over, and s is no
-                                   // longer valid
+        // do stuff with s
+    }                                  // this scope is now over, and s is no
+                                       // longer valid
 <span class="boring">}
 </span></code></pre></pre>
 <p>There is a natural point at which we can return the memory our <code>String</code> needs
@@ -378,11 +372,9 @@ we’ve allocated on the heap. Let’s explore some of those situations now.</p>
 <h4><a class="header" href="#ways-variables-and-data-interact-move" id="ways-variables-and-data-interact-move">Ways Variables and Data Interact: Move</a></h4>
 <p>Multiple variables can interact with the same data in different ways in Rust.
 Let’s look at an example using an integer in Listing 4-2.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 5;
-let y = x;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 5;
+    let y = x;
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 4-2: Assigning the integer value of variable <code>x</code>
@@ -393,11 +385,9 @@ and <code>y</code>, and both equal <code>5</code>. This is indeed what is happen
 are simple values with a known, fixed size, and these two <code>5</code> values are pushed
 onto the stack.</p>
 <p>Now let’s look at the <code>String</code> version:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s1 = String::from(&quot;hello&quot;);
-let s2 = s1;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;hello&quot;);
+    let s2 = s1;
 <span class="boring">}
 </span></code></pre></pre>
 <p>This looks very similar to the previous code, so we might assume that the way
@@ -442,24 +432,34 @@ situation in Rust. Instead of trying to copy the allocated memory, Rust
 considers <code>s1</code> to no longer be valid and, therefore, Rust doesn’t need to free
 anything when <code>s1</code> goes out of scope. Check out what happens when you try to
 use <code>s1</code> after <code>s2</code> is created; it won’t work:</p>
-<pre><code class="language-rust ignore does_not_compile">let s1 = String::from(&quot;hello&quot;);
-let s2 = s1;
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;hello&quot;);
+    let s2 = s1;
 
-println!(&quot;{}, world!&quot;, s1);
-</code></pre>
+    println!(&quot;{}, world!&quot;, s1);
+<span class="boring">}
+</span></code></pre>
 <p>You’ll get an error like this because Rust prevents you from using the
 invalidated reference:</p>
-<pre><code class="language-text">error[E0382]: use of moved value: `s1`
+<pre><code class="language-text">$ cargo run
+   Compiling ownership v0.1.0 (file:///projects/ownership)
+error[E0382]: borrow of moved value: `s1`
  --&gt; src/main.rs:5:28
   |
+2 |     let s1 = String::from(&quot;hello&quot;);
+  |         -- move occurs because `s1` has type `std::string::String`, which does not implement the `Copy` trait
 3 |     let s2 = s1;
-  |         -- value moved here
-4 |
+  |              -- value moved here
+4 | 
 5 |     println!(&quot;{}, world!&quot;, s1);
-  |                            ^^ value used here after move
-  |
-  = note: move occurs because `s1` has type `std::string::String`, which does
-  not implement the `Copy` trait
+  |                            ^^ value borrowed here after move
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `ownership`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>If you’ve heard the terms <em>shallow copy</em> and <em>deep copy</em> while working with
 other languages, the concept of copying the pointer, length, and capacity
@@ -481,13 +481,11 @@ stack data, we can use a common method called <code>clone</code>. We’ll discus
 syntax in Chapter 5, but because methods are a common feature in many
 programming languages, you’ve probably seen them before.</p>
 <p>Here’s an example of the <code>clone</code> method in action:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s1 = String::from(&quot;hello&quot;);
-let s2 = s1.clone();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;hello&quot;);
+    let s2 = s1.clone();
 
-println!(&quot;s1 = {}, s2 = {}&quot;, s1, s2);
+    println!(&quot;s1 = {}, s2 = {}&quot;, s1, s2);
 <span class="boring">}
 </span></code></pre></pre>
 <p>This works just fine and explicitly produces the behavior shown in Figure 4-3,
@@ -498,13 +496,11 @@ different is going on.</p>
 <h4><a class="header" href="#stack-only-data-copy" id="stack-only-data-copy">Stack-Only Data: Copy</a></h4>
 <p>There’s another wrinkle we haven’t talked about yet. This code using integers,
 part of which was shown in Listing 4-2, works and is valid:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 5;
-let y = x;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 5;
+    let y = x;
 
-println!(&quot;x = {}, y = {}&quot;, x, y);
+    println!(&quot;x = {}, y = {}&quot;, x, y);
 <span class="boring">}
 </span></code></pre></pre>
 <p>But this code seems to contradict what we just learned: we don’t have a call to

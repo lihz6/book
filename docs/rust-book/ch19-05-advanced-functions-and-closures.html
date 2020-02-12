@@ -153,7 +153,7 @@
                 <div id="content" class="content">
                     <main>
                         <h2><a class="header" href="#advanced-functions-and-closures" id="advanced-functions-and-closures">Advanced Functions and Closures</a></h2>
-<p>Finally, we’ll explore some advanced features related to functions and
+<p>Next, we’ll explore some advanced features related to functions and
 closures, which include function pointers and returning closures.</p>
 <h3><a class="header" href="#function-pointers" id="function-pointers">Function Pointers</a></h3>
 <p>We’ve talked about how to pass closures to functions; you can also pass regular
@@ -199,26 +199,18 @@ accept functions as arguments, but C doesn’t have closures.</p>
 <p>As an example of where you could use either a closure defined inline or a named
 function, let’s look at a use of <code>map</code>. To use the <code>map</code> function to turn a
 vector of numbers into a vector of strings, we could use a closure, like this:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let list_of_numbers = vec![1, 2, 3];
-let list_of_strings: Vec&lt;String&gt; = list_of_numbers
-    .iter()
-    .map(|i| i.to_string())
-    .collect();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let list_of_numbers = vec![1, 2, 3];
+    let list_of_strings: Vec&lt;String&gt; =
+        list_of_numbers.iter().map(|i| i.to_string()).collect();
 <span class="boring">}
 </span></code></pre></pre>
 <p>Or we could name a function as the argument to <code>map</code> instead of the closure,
 like this:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let list_of_numbers = vec![1, 2, 3];
-let list_of_strings: Vec&lt;String&gt; = list_of_numbers
-    .iter()
-    .map(ToString::to_string)
-    .collect();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let list_of_numbers = vec![1, 2, 3];
+    let list_of_strings: Vec&lt;String&gt; =
+        list_of_numbers.iter().map(ToString::to_string).collect();
 <span class="boring">}
 </span></code></pre></pre>
 <p>Note that we must use the fully qualified syntax that we talked about earlier
@@ -233,18 +225,13 @@ implemented as functions returning an instance that’s constructed from their
 arguments. We can use these initializer functions as function pointers that
 implement the closure traits, which means we can specify the initializer
 functions as arguments for methods that take closures, like so:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>enum Status {
-    Value(u32),
-    Stop,
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    enum Status {
+        Value(u32),
+        Stop,
+    }
 
-let list_of_statuses: Vec&lt;Status&gt; =
-    (0u32..20)
-    .map(Status::Value)
-    .collect();
+    let list_of_statuses: Vec&lt;Status&gt; = (0u32..20).map(Status::Value).collect();
 <span class="boring">}
 </span></code></pre></pre>
 <p>Here we create <code>Status::Value</code> instances using each <code>u32</code> value in the range
@@ -259,22 +246,41 @@ function. But you can’t do that with closures because they don’t have a
 concrete type that is returnable; you’re not allowed to use the function
 pointer <code>fn</code> as a return type, for example.</p>
 <p>The following code tries to return a closure directly, but it won’t compile:</p>
-<pre><code class="language-rust ignore does_not_compile">fn returns_closure() -&gt; Fn(i32) -&gt; i32 {
+<pre><code class="language-rust ignore does_not_compile">fn returns_closure() -&gt; dyn Fn(i32) -&gt; i32 {
     |x| x + 1
 }
 </code></pre>
 <p>The compiler error is as follows:</p>
-<pre><code class="language-text">error[E0277]: the trait bound `std::ops::Fn(i32) -&gt; i32 + 'static:
-std::marker::Sized` is not satisfied
- --&gt;
+<pre><code class="language-text">$ cargo build
+   Compiling functions-example v0.1.0 (file:///projects/functions-example)
+error[E0277]: the size for values of type `(dyn std::ops::Fn(i32) -&gt; i32 + 'static)` cannot be known at compilation time
+ --&gt; src/lib.rs:1:25
   |
-1 | fn returns_closure() -&gt; Fn(i32) -&gt; i32 {
-  |                         ^^^^^^^^^^^^^^ `std::ops::Fn(i32) -&gt; i32 + 'static`
-  does not have a constant size known at compile-time
+1 | fn returns_closure() -&gt; dyn Fn(i32) -&gt; i32 {
+  |                         ^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
   |
-  = help: the trait `std::marker::Sized` is not implemented for
-  `std::ops::Fn(i32) -&gt; i32 + 'static`
+  = help: the trait `std::marker::Sized` is not implemented for `(dyn std::ops::Fn(i32) -&gt; i32 + 'static)`
+  = note: to learn more, visit &lt;https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait&gt;
   = note: the return type of a function must have a statically known size
+
+error[E0308]: mismatched types
+ --&gt; src/lib.rs:2:5
+  |
+1 | fn returns_closure() -&gt; dyn Fn(i32) -&gt; i32 {
+  |                         ------------------ expected `(dyn std::ops::Fn(i32) -&gt; i32 + 'static)` because of return type
+2 |     |x| x + 1
+  |     ^^^^^^^^^ expected trait `std::ops::Fn`, found closure
+  |
+  = note: expected trait object `(dyn std::ops::Fn(i32) -&gt; i32 + 'static)`
+                  found closure `[closure@src/lib.rs:2:5: 2:14]`
+
+error: aborting due to 2 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `functions-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The error references the <code>Sized</code> trait again! Rust doesn’t know how much space
 it will need to store the closure. We saw a solution to this problem earlier.

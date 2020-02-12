@@ -192,18 +192,26 @@ to the next bit of code.</p>
 <p>Try running this code; you should see the following output:</p>
 <pre><code class="language-text">$ cargo run
    Compiling branches v0.1.0 (file:///projects/branches)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31s
      Running `target/debug/branches`
 condition was true
 </code></pre>
 <p>Let’s try changing the value of <code>number</code> to a value that makes the condition
 <code>false</code> to see what happens:</p>
-<pre><code class="language-rust ignore">let number = 7;
-</code></pre>
+<pre><code class="language-rust ignore"><span class="boring">fn main() {
+</span>    let number = 7;
+<span class="boring">
+</span><span class="boring">    if number &lt; 5 {
+</span><span class="boring">        println!(&quot;condition was true&quot;);
+</span><span class="boring">    } else {
+</span><span class="boring">        println!(&quot;condition was false&quot;);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p>Run the program again, and look at the output:</p>
 <pre><code class="language-text">$ cargo run
    Compiling branches v0.1.0 (file:///projects/branches)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31s
      Running `target/debug/branches`
 condition was false
 </code></pre>
@@ -221,14 +229,20 @@ following code:</p>
 </code></pre>
 <p>The <code>if</code> condition evaluates to a value of <code>3</code> this time, and Rust throws an
 error:</p>
-<pre><code class="language-text">error[E0308]: mismatched types
+<pre><code class="language-text">$ cargo run
+   Compiling branches v0.1.0 (file:///projects/branches)
+error[E0308]: mismatched types
  --&gt; src/main.rs:4:8
   |
 4 |     if number {
-  |        ^^^^^^ expected bool, found integer
-  |
-  = note: expected type `bool`
-             found type `{integer}`
+  |        ^^^^^^ expected `bool`, found integer
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `branches`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The error indicates that Rust expected a <code>bool</code> but got an integer. Unlike
 languages such as Ruby and JavaScript, Rust will not automatically try to
@@ -268,7 +282,7 @@ expression. For example:</p>
 see the following output:</p>
 <pre><code class="language-text">$ cargo run
    Compiling branches v0.1.0 (file:///projects/branches)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31s
      Running `target/debug/branches`
 number is divisible by 3
 </code></pre>
@@ -287,11 +301,7 @@ statement, as in Listing 3-2.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
     let condition = true;
-    let number = if condition {
-        5
-    } else {
-        6
-    };
+    let number = if condition { 5 } else { 6 };
 
     println!(&quot;The value of number is: {}&quot;, number);
 }
@@ -302,7 +312,7 @@ to a variable</span></p>
 expression. Run this code to see what happens:</p>
 <pre><code class="language-text">$ cargo run
    Compiling branches v0.1.0 (file:///projects/branches)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.30 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.30s
      Running `target/debug/branches`
 The value of number is: 5
 </code></pre>
@@ -317,11 +327,7 @@ example, we’ll get an error:</p>
 <pre><code class="language-rust ignore does_not_compile">fn main() {
     let condition = true;
 
-    let number = if condition {
-        5
-    } else {
-        &quot;six&quot;
-    };
+    let number = if condition { 5 } else { &quot;six&quot; };
 
     println!(&quot;The value of number is: {}&quot;, number);
 }
@@ -329,19 +335,22 @@ example, we’ll get an error:</p>
 <p>When we try to compile this code, we’ll get an error. The <code>if</code> and <code>else</code> arms
 have value types that are incompatible, and Rust indicates exactly where to
 find the problem in the program:</p>
-<pre><code class="language-text">error[E0308]: if and else have incompatible types
- --&gt; src/main.rs:4:18
+<pre><code class="language-text">$ cargo run
+   Compiling branches v0.1.0 (file:///projects/branches)
+error[E0308]: if and else have incompatible types
+ --&gt; src/main.rs:4:44
   |
-4 |       let number = if condition {
-  |  __________________^
-5 | |         5
-6 | |     } else {
-7 | |         &quot;six&quot;
-8 | |     };
-  | |_____^ expected integer, found &amp;str
-  |
-  = note: expected type `{integer}`
-             found type `&amp;str`
+4 |     let number = if condition { 5 } else { &quot;six&quot; };
+  |                                 -          ^^^^^ expected integer, found `&amp;str`
+  |                                 |
+  |                                 expected because of this
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `branches`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The expression in the <code>if</code> block evaluates to an integer, and the expression in
 the <code>else</code> block evaluates to a string. This won’t work because variables must
@@ -373,9 +382,14 @@ like this:</p>
 until we stop the program manually. Most terminals support a keyboard shortcut,
 <span class="keystroke">ctrl-c</span>, to interrupt a program that is stuck in
 a continual loop. Give it a try:</p>
+<!-- manual-regeneration
+cd listings/ch03-common-programming-concepts/no-listing-32-loop
+cargo run
+CTRL-C
+-->
 <pre><code class="language-text">$ cargo run
    Compiling loops v0.1.0 (file:///projects/loops)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.29 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.29s
      Running `target/debug/loops`
 again!
 again!
@@ -472,7 +486,7 @@ when <code>index &lt; 5</code> is no longer true). Running this code will print 
 in the array:</p>
 <pre><code class="language-text">$ cargo run
    Compiling loops v0.1.0 (file:///projects/loops)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.32 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.32s
      Running `target/debug/loops`
 the value is: 10
 the value is: 20
@@ -504,10 +518,10 @@ using a <code>for</code> loop</span></p>
 importantly, we’ve now increased the safety of the code and eliminated the
 chance of bugs that might result from going beyond the end of the array or not
 going far enough and missing some items.</p>
-<p>For example, in the code in Listing 3-4, if you removed an item from the <code>a</code>
-array but forgot to update the condition to <code>while index &lt; 4</code>, the code would
-panic. Using the <code>for</code> loop, you wouldn’t need to remember to change any other
-code if you changed the number of values in the array.</p>
+<p>For example, in the code in Listing 3-4, if you changed the definition of the
+<code>a</code> array to have four elements but forgot to update the condition to <code>while index &lt; 4</code>, the code would panic. Using the <code>for</code> loop, you wouldn’t need to
+remember to change any other code if you changed the number of values in the
+array.</p>
 <p>The safety and conciseness of <code>for</code> loops make them the most commonly used loop
 construct in Rust. Even in situations in which you want to run some code a
 certain number of times, as in the countdown example that used a <code>while</code> loop

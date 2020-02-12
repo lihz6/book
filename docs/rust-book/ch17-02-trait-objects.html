@@ -286,7 +286,9 @@ as in Listing 17-6:</p>
 }
 
 impl&lt;T&gt; Screen&lt;T&gt;
-    where T: Draw {
+where
+    T: Draw,
+{
     pub fn run(&amp;self) {
         for component in self.components.iter() {
             component.draw();
@@ -312,11 +314,20 @@ of this book, so the <code>draw</code> method won’t have any useful implementa
 body. To imagine what the implementation might look like, a <code>Button</code> struct
 might have fields for <code>width</code>, <code>height</code>, and <code>label</code>, as shown in Listing 17-7:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">pub trait Draw {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">pub trait Draw {
 </span><span class="boring">    fn draw(&amp;self);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub struct Screen {
+</span><span class="boring">    pub components: Vec&lt;Box&lt;dyn Draw&gt;&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Screen {
+</span><span class="boring">    pub fn run(&amp;self) {
+</span><span class="boring">        for component in self.components.iter() {
+</span><span class="boring">            component.draw();
+</span><span class="boring">        }
+</span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
 </span>pub struct Button {
@@ -330,7 +341,8 @@ impl Draw for Button {
         // code to actually draw a button
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 17-7: A <code>Button</code> struct that implements the
 <code>Draw</code> trait</span></p>
@@ -360,7 +372,9 @@ impl Draw for SelectBox {
         // code to actually draw a select box
     }
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p><span class="caption">Listing 17-8: Another crate using <code>gui</code> and implementing
 the <code>Draw</code> trait on a <code>SelectBox</code> struct</span></p>
 <p>Our library’s user can now write their <code>main</code> function to create a <code>Screen</code>
@@ -369,7 +383,21 @@ by putting each in a <code>Box&lt;T&gt;</code> to become a trait object. They ca
 <code>run</code> method on the <code>Screen</code> instance, which will call <code>draw</code> on each of the
 components. Listing 17-9 shows this implementation:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">use gui::{Screen, Button};
+<pre><code class="language-rust ignore"><span class="boring">use gui::Draw;
+</span><span class="boring">
+</span><span class="boring">struct SelectBox {
+</span><span class="boring">    width: u32,
+</span><span class="boring">    height: u32,
+</span><span class="boring">    options: Vec&lt;String&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Draw for SelectBox {
+</span><span class="boring">    fn draw(&amp;self) {
+</span><span class="boring">        // code to actually draw a select box
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>use gui::{Button, Screen};
 
 fn main() {
     let screen = Screen {
@@ -380,7 +408,7 @@ fn main() {
                 options: vec![
                     String::from(&quot;Yes&quot;),
                     String::from(&quot;Maybe&quot;),
-                    String::from(&quot;No&quot;)
+                    String::from(&quot;No&quot;),
                 ],
             }),
             Box::new(Button {
@@ -422,9 +450,7 @@ with a <code>String</code> as a component:</p>
 
 fn main() {
     let screen = Screen {
-        components: vec![
-            Box::new(String::from(&quot;Hi&quot;)),
-        ],
+        components: vec![Box::new(String::from(&quot;Hi&quot;))],
     };
 
     screen.run();
@@ -433,14 +459,22 @@ fn main() {
 <p><span class="caption">Listing 17-10: Attempting to use a type that doesn’t
 implement the trait object’s trait</span></p>
 <p>We’ll get this error because <code>String</code> doesn’t implement the <code>Draw</code> trait:</p>
-<pre><code class="language-text">error[E0277]: the trait bound `std::string::String: gui::Draw` is not satisfied
-  --&gt; src/main.rs:7:13
-   |
- 7 |             Box::new(String::from(&quot;Hi&quot;)),
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait gui::Draw is not
-   implemented for `std::string::String`
-   |
-   = note: required for the cast to the object type `gui::Draw`
+<pre><code class="language-text">$ cargo run
+   Compiling gui v0.1.0 (file:///projects/gui)
+error[E0277]: the trait bound `std::string::String: gui::Draw` is not satisfied
+ --&gt; src/main.rs:5:26
+  |
+5 |         components: vec![Box::new(String::from(&quot;Hi&quot;))],
+  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `gui::Draw` is not implemented for `std::string::String`
+  |
+  = note: required for the cast to the object type `dyn gui::Draw`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `gui`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>This error lets us know that either we’re passing something to <code>Screen</code> we
 didn’t mean to pass and we should pass a different type or we should implement
@@ -511,14 +545,22 @@ implement the <code>Clone</code> trait instead of the <code>Draw</code> trait, l
 }
 </code></pre>
 <p>We would get this error:</p>
-<pre><code class="language-text">error[E0038]: the trait `std::clone::Clone` cannot be made into an object
+<pre><code class="language-text">$ cargo build
+   Compiling gui v0.1.0 (file:///projects/gui)
+error[E0038]: the trait `std::clone::Clone` cannot be made into an object
  --&gt; src/lib.rs:2:5
   |
 2 |     pub components: Vec&lt;Box&lt;dyn Clone&gt;&gt;,
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `std::clone::Clone`
-  cannot be made into an object
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `std::clone::Clone` cannot be made into an object
   |
   = note: the trait cannot require that `Self : Sized`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0038`.
+error: could not compile `gui`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>This error means you can’t use this trait as a trait object in this way. If
 you’re interested in more details on object safety, see <a href="https://github.com/rust-lang/rfcs/blob/master/text/0255-object-safety.md">Rust RFC 255</a>.</p>

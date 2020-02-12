@@ -188,8 +188,12 @@ impl Drop for CustomSmartPointer {
 }
 
 fn main() {
-    let c = CustomSmartPointer { data: String::from(&quot;my stuff&quot;) };
-    let d = CustomSmartPointer { data: String::from(&quot;other stuff&quot;) };
+    let c = CustomSmartPointer {
+        data: String::from(&quot;my stuff&quot;),
+    };
+    let d = CustomSmartPointer {
+        data: String::from(&quot;other stuff&quot;),
+    };
     println!(&quot;CustomSmartPointers created.&quot;);
 }
 </code></pre></pre>
@@ -207,7 +211,11 @@ demonstrate when Rust will call <code>drop</code>.</p>
 in the <code>drop</code> method, printing our final message. Note that we didn’t need to
 call the <code>drop</code> method explicitly.</p>
 <p>When we run this program, we’ll see the following output:</p>
-<pre><code class="language-text">CustomSmartPointers created.
+<pre><code class="language-text">$ cargo run
+   Compiling drop-example v0.1.0 (file:///projects/drop-example)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.60s
+     Running `target/debug/drop-example`
+CustomSmartPointers created.
 Dropping CustomSmartPointer with data `other stuff`!
 Dropping CustomSmartPointer with data `my stuff`!
 </code></pre>
@@ -230,8 +238,20 @@ if you want to force a value to be dropped before the end of its scope.</p>
 <code>main</code> function from Listing 15-14, as shown in Listing 15-15, we’ll get a
 compiler error:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn main() {
-    let c = CustomSmartPointer { data: String::from(&quot;some data&quot;) };
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">struct CustomSmartPointer {
+</span><span class="boring">    data: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Drop for CustomSmartPointer {
+</span><span class="boring">    fn drop(&amp;mut self) {
+</span><span class="boring">        println!(&quot;Dropping CustomSmartPointer with data `{}`!&quot;, self.data);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn main() {
+    let c = CustomSmartPointer {
+        data: String::from(&quot;some data&quot;),
+    };
     println!(&quot;CustomSmartPointer created.&quot;);
     c.drop();
     println!(&quot;CustomSmartPointer dropped before the end of main.&quot;);
@@ -240,11 +260,20 @@ compiler error:</p>
 <p><span class="caption">Listing 15-15: Attempting to call the <code>drop</code> method from
 the <code>Drop</code> trait manually to clean up early</span></p>
 <p>When we try to compile this code, we’ll get this error:</p>
-<pre><code class="language-text">error[E0040]: explicit use of destructor method
-  --&gt; src/main.rs:14:7
+<pre><code class="language-text">$ cargo run
+   Compiling drop-example v0.1.0 (file:///projects/drop-example)
+error[E0040]: explicit use of destructor method
+  --&gt; src/main.rs:16:7
    |
-14 |     c.drop();
+16 |     c.drop();
    |       ^^^^ explicit destructor calls not allowed
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0040`.
+error: could not compile `drop-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>This error message states that we’re not allowed to explicitly call <code>drop</code>. The
 error message uses the term <em>destructor</em>, which is the general programming term
@@ -274,7 +303,9 @@ an argument. The function is in the prelude, so we can modify <code>main</code> 
 </span><span class="boring">}
 </span><span class="boring">
 </span>fn main() {
-    let c = CustomSmartPointer { data: String::from(&quot;some data&quot;) };
+    let c = CustomSmartPointer {
+        data: String::from(&quot;some data&quot;),
+    };
     println!(&quot;CustomSmartPointer created.&quot;);
     drop(c);
     println!(&quot;CustomSmartPointer dropped before the end of main.&quot;);
@@ -283,7 +314,11 @@ an argument. The function is in the prelude, so we can modify <code>main</code> 
 <p><span class="caption">Listing 15-16: Calling <code>std::mem::drop</code> to explicitly
 drop a value before it goes out of scope</span></p>
 <p>Running this code will print the following:</p>
-<pre><code class="language-text">CustomSmartPointer created.
+<pre><code class="language-text">$ cargo run
+   Compiling drop-example v0.1.0 (file:///projects/drop-example)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.73s
+     Running `target/debug/drop-example`
+CustomSmartPointer created.
 Dropping CustomSmartPointer with data `some data`!
 CustomSmartPointer dropped before the end of main.
 </code></pre>

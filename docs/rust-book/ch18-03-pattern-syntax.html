@@ -159,17 +159,15 @@ want to use each one.</p>
 <h3><a class="header" href="#matching-literals" id="matching-literals">Matching Literals</a></h3>
 <p>As you saw in Chapter 6, you can match patterns against literals directly. The
 following code gives some examples:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 1;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 1;
 
-match x {
-    1 =&gt; println!(&quot;one&quot;),
-    2 =&gt; println!(&quot;two&quot;),
-    3 =&gt; println!(&quot;three&quot;),
-    _ =&gt; println!(&quot;anything&quot;),
-}
+    match x {
+        1 =&gt; println!(&quot;one&quot;),
+        2 =&gt; println!(&quot;two&quot;),
+        3 =&gt; println!(&quot;three&quot;),
+        _ =&gt; println!(&quot;anything&quot;),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code prints <code>one</code> because the value in <code>x</code> is 1. This syntax is useful
@@ -187,8 +185,8 @@ value <code>Some(5)</code> and a variable <code>y</code> with the value <code>10
 <code>println!</code> at the end, and try to figure out what the code will print before
 running this code or reading further.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">fn main() {
-    let x = Some(5);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = Some(5);
     let y = 10;
 
     match x {
@@ -198,8 +196,8 @@ running this code or reading further.</p>
     }
 
     println!(&quot;at the end: x = {:?}, y = {:?}&quot;, x, y);
-}
-</code></pre></pre>
+<span class="boring">}
+</span></code></pre></pre>
 <p><span class="caption">Listing 18-11: A <code>match</code> expression with an arm that
 introduces a shadowed variable <code>y</code></span></p>
 <p>Let’s walk through what happens when the <code>match</code> expression runs. The pattern
@@ -230,16 +228,14 @@ which means <em>or</em>. For example, the following code matches the value of <c
 against the match arms, the first of which has an <em>or</em> option, meaning if the
 value of <code>x</code> matches either of the values in that arm, that arm’s code will
 run:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 1;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 1;
 
-match x {
-    1 | 2 =&gt; println!(&quot;one or two&quot;),
-    3 =&gt; println!(&quot;three&quot;),
-    _ =&gt; println!(&quot;anything&quot;),
-}
+    match x {
+        1 | 2 =&gt; println!(&quot;one or two&quot;),
+        3 =&gt; println!(&quot;three&quot;),
+        _ =&gt; println!(&quot;anything&quot;),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code prints <code>one or two</code>.</p>
@@ -247,15 +243,13 @@ match x {
 <p>The <code>..=</code> syntax allows us to match to an inclusive range of values. In the
 following code, when a pattern matches any of the values within the range, that
 arm will execute:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 5;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 5;
 
-match x {
-    1..=5 =&gt; println!(&quot;one through five&quot;),
-    _ =&gt; println!(&quot;something else&quot;),
-}
+    match x {
+        1..=5 =&gt; println!(&quot;one through five&quot;),
+        _ =&gt; println!(&quot;something else&quot;),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>If <code>x</code> is 1, 2, 3, 4, or 5, the first arm will match. This syntax is more
@@ -267,16 +261,14 @@ number between 1 and 1,000!</p>
 compiler checks that the range isn’t empty at compile time. The only types for
 which Rust can tell if a range is empty or not are <code>char</code> and numeric values.</p>
 <p>Here is an example using ranges of <code>char</code> values:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 'c';
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 'c';
 
-match x {
-    'a'..='j' =&gt; println!(&quot;early ASCII letter&quot;),
-    'k'..='z' =&gt; println!(&quot;late ASCII letter&quot;),
-    _ =&gt; println!(&quot;something else&quot;),
-}
+    match x {
+        'a'..='j' =&gt; println!(&quot;early ASCII letter&quot;),
+        'k'..='z' =&gt; println!(&quot;late ASCII letter&quot;),
+        _ =&gt; println!(&quot;something else&quot;),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>Rust can tell that <code>c</code> is within the first pattern’s range and prints <code>early ASCII letter</code>.</p>
@@ -391,19 +383,14 @@ fn main() {
         Message::Move { x, y } =&gt; {
             println!(
                 &quot;Move in the x direction {} and in the y direction {}&quot;,
-                x,
-                y
+                x, y
             );
         }
         Message::Write(text) =&gt; println!(&quot;Text message: {}&quot;, text),
-        Message::ChangeColor(r, g, b) =&gt; {
-            println!(
-                &quot;Change the color to red {}, green {}, and blue {}&quot;,
-                r,
-                g,
-                b
-            )
-        }
+        Message::ChangeColor(r, g, b) =&gt; println!(
+            &quot;Change the color to red {}, green {}, and blue {}&quot;,
+            r, g, b
+        ),
     }
 }
 </code></pre></pre>
@@ -430,8 +417,8 @@ level deep. Matching can work on nested items too!</p>
 <p>For example, we can refactor the code in Listing 18-15 to support RGB and HSV
 colors in the <code>ChangeColor</code> message, as shown in Listing 18-16.</p>
 <pre><pre class="playpen"><code class="language-rust">enum Color {
-   Rgb(i32, i32, i32),
-   Hsv(i32, i32, i32),
+    Rgb(i32, i32, i32),
+    Hsv(i32, i32, i32),
 }
 
 enum Message {
@@ -445,23 +432,15 @@ fn main() {
     let msg = Message::ChangeColor(Color::Hsv(0, 160, 255));
 
     match msg {
-        Message::ChangeColor(Color::Rgb(r, g, b)) =&gt; {
-            println!(
-                &quot;Change the color to red {}, green {}, and blue {}&quot;,
-                r,
-                g,
-                b
-            )
-        }
-        Message::ChangeColor(Color::Hsv(h, s, v)) =&gt; {
-            println!(
-                &quot;Change the color to hue {}, saturation {}, and value {}&quot;,
-                h,
-                s,
-                v
-            )
-        }
-        _ =&gt; ()
+        Message::ChangeColor(Color::Rgb(r, g, b)) =&gt; println!(
+            &quot;Change the color to red {}, green {}, and blue {}&quot;,
+            r, g, b
+        ),
+        Message::ChangeColor(Color::Hsv(h, s, v)) =&gt; println!(
+            &quot;Change the color to hue {}, saturation {}, and value {}&quot;,
+            h, s, v
+        ),
+        _ =&gt; (),
     }
 }
 </code></pre></pre>
@@ -476,15 +455,13 @@ conditions in one <code>match</code> expression, even though two enums are invol
 <p>We can mix, match, and nest destructuring patterns in even more complex ways.
 The following example shows a complicated destructure where we nest structs and
 tuples inside a tuple and destructure all the primitive values out:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct Point {
-</span><span class="boring">    x: i32,
-</span><span class="boring">    y: i32,
-</span><span class="boring">}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    struct Point {
+</span><span class="boring">        x: i32,
+</span><span class="boring">        y: i32,
+</span><span class="boring">    }
 </span><span class="boring">
-</span>let ((feet, inches), Point {x, y}) = ((3, 10), Point { x: 3, y: -10 });
+</span>    let ((feet, inches), Point { x, y }) = ((3, 10), Point { x: 3, y: -10 });
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code lets us break complex types into their component parts so we can use
@@ -530,22 +507,20 @@ other parts in the corresponding code we want to run. Listing 18-18 shows code
 responsible for managing a setting’s value. The business requirements are that
 the user should not be allowed to overwrite an existing customization of a
 setting but can unset the setting and give it a value if it is currently unset.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut setting_value = Some(5);
-let new_setting_value = Some(10);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut setting_value = Some(5);
+    let new_setting_value = Some(10);
 
-match (setting_value, new_setting_value) {
-    (Some(_), Some(_)) =&gt; {
-        println!(&quot;Can't overwrite an existing customized value&quot;);
+    match (setting_value, new_setting_value) {
+        (Some(_), Some(_)) =&gt; {
+            println!(&quot;Can't overwrite an existing customized value&quot;);
+        }
+        _ =&gt; {
+            setting_value = new_setting_value;
+        }
     }
-    _ =&gt; {
-        setting_value = new_setting_value;
-    }
-}
 
-println!(&quot;setting is {:?}&quot;, setting_value);
+    println!(&quot;setting is {:?}&quot;, setting_value);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-18: Using an underscore within patterns that
@@ -563,16 +538,14 @@ changed.</p>
 <p>We can also use underscores in multiple places within one pattern to ignore
 particular values. Listing 18-19 shows an example of ignoring the second and
 fourth values in a tuple of five items.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let numbers = (2, 4, 8, 16, 32);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let numbers = (2, 4, 8, 16, 32);
 
-match numbers {
-    (first, _, third, _, fifth) =&gt; {
-        println!(&quot;Some numbers: {}, {}, {}&quot;, first, third, fifth)
-    },
-}
+    match numbers {
+        (first, _, third, _, fifth) =&gt; {
+            println!(&quot;Some numbers: {}, {}, {}&quot;, first, third, fifth)
+        }
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-19: Ignoring multiple parts of a tuple</span></p>
@@ -600,30 +573,30 @@ warning about not using the variable preceded by the underscore.</p>
 that starts with an underscore. The syntax <code>_x</code> still binds the value to the
 variable, whereas <code>_</code> doesn’t bind at all. To show a case where this
 distinction matters, Listing 18-21 will provide us with an error.</p>
-<pre><code class="language-rust ignore does_not_compile">let s = Some(String::from(&quot;Hello!&quot;));
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    let s = Some(String::from(&quot;Hello!&quot;));
 
-if let Some(_s) = s {
-    println!(&quot;found a string&quot;);
-}
+    if let Some(_s) = s {
+        println!(&quot;found a string&quot;);
+    }
 
-println!(&quot;{:?}&quot;, s);
-</code></pre>
+    println!(&quot;{:?}&quot;, s);
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 18-21: An unused variable starting with an
 underscore still binds the value, which might take ownership of the value</span></p>
 <p>We’ll receive an error because the <code>s</code> value will still be moved into <code>_s</code>,
 which prevents us from using <code>s</code> again. However, using the underscore by itself
 doesn’t ever bind to the value. Listing 18-22 will compile without any errors
 because <code>s</code> doesn’t get moved into <code>_</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s = Some(String::from(&quot;Hello!&quot;));
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s = Some(String::from(&quot;Hello!&quot;));
 
-if let Some(_) = s {
-    println!(&quot;found a string&quot;);
-}
+    if let Some(_) = s {
+        println!(&quot;found a string&quot;);
+    }
 
-println!(&quot;{:?}&quot;, s);
+    println!(&quot;{:?}&quot;, s);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-22: Using an underscore does not bind the
@@ -637,20 +610,18 @@ explicitly matched in the rest of the pattern. In Listing 18-23, we have a
 <code>Point</code> struct that holds a coordinate in three-dimensional space. In the
 <code>match</code> expression, we want to operate only on the <code>x</code> coordinate and ignore
 the values in the <code>y</code> and <code>z</code> fields.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>struct Point {
-    x: i32,
-    y: i32,
-    z: i32,
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    struct Point {
+        x: i32,
+        y: i32,
+        z: i32,
+    }
 
-let origin = Point { x: 0, y: 0, z: 0 };
+    let origin = Point { x: 0, y: 0, z: 0 };
 
-match origin {
-    Point { x, .. } =&gt; println!(&quot;x is {}&quot;, x),
-}
+    match origin {
+        Point { x, .. } =&gt; println!(&quot;x is {}&quot;, x),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-23: Ignoring all fields of a <code>Point</code> except
@@ -668,7 +639,7 @@ shows how to use <code>..</code> with a tuple.</p>
     match numbers {
         (first, .., last) =&gt; {
             println!(&quot;Some numbers: {}, {}&quot;, first, last);
-        },
+        }
     }
 }
 </code></pre></pre>
@@ -694,11 +665,21 @@ compile.</p>
 <p><span class="caption">Listing 18-25: An attempt to use <code>..</code> in an ambiguous
 way</span></p>
 <p>When we compile this example, we get this error:</p>
-<pre><code class="language-text">error: `..` can only be used once per tuple or tuple struct pattern
+<pre><code class="language-text">$ cargo run
+   Compiling patterns v0.1.0 (file:///projects/patterns)
+error: `..` can only be used once per tuple pattern
  --&gt; src/main.rs:5:22
   |
 5 |         (.., second, ..) =&gt; {
-  |                      ^^
+  |          --          ^^ can only be used once per tuple pattern
+  |          |
+  |          previously used here
+
+error: aborting due to previous error
+
+error: could not compile `patterns`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>It’s impossible for Rust to determine how many values in the tuple to ignore
 before matching a value with <code>second</code> and then how many further values to
@@ -715,16 +696,14 @@ than a pattern alone allows.</p>
 <p>The condition can use variables created in the pattern. Listing 18-26 shows a
 <code>match</code> where the first arm has the pattern <code>Some(x)</code> and also has a match
 guard of <code>if x &lt; 5</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let num = Some(4);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let num = Some(4);
 
-match num {
-    Some(x) if x &lt; 5 =&gt; println!(&quot;less than five: {}&quot;, x),
-    Some(x) =&gt; println!(&quot;{}&quot;, x),
-    None =&gt; (),
-}
+    match num {
+        Some(x) if x &lt; 5 =&gt; println!(&quot;less than five: {}&quot;, x),
+        Some(x) =&gt; println!(&quot;{}&quot;, x),
+        None =&gt; (),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-26: Adding a match guard to a pattern</span></p>
@@ -776,16 +755,14 @@ patterns; the match guard condition will apply to all the patterns. Listing
 <code>|</code>. The important part of this example is that the <code>if y</code> match guard applies
 to <code>4</code>, <code>5</code>, <em>and</em> <code>6</code>, even though it might look like <code>if y</code> only applies to
 <code>6</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let x = 4;
-let y = false;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let x = 4;
+    let y = false;
 
-match x {
-    4 | 5 | 6 if y =&gt; println!(&quot;yes&quot;),
-    _ =&gt; println!(&quot;no&quot;),
-}
+    match x {
+        4 | 5 | 6 if y =&gt; println!(&quot;yes&quot;),
+        _ =&gt; println!(&quot;no&quot;),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-28: Combining multiple patterns with a match
@@ -815,26 +792,22 @@ is within the range <code>3..=7</code>. But we also want to bind the value to th
 <code>id_variable</code> so we can use it in the code associated with the arm. We could
 name this variable <code>id</code>, the same as the field, but for this example we’ll use
 a different name.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>enum Message {
-    Hello { id: i32 },
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    enum Message {
+        Hello { id: i32 },
+    }
 
-let msg = Message::Hello { id: 5 };
+    let msg = Message::Hello { id: 5 };
 
-match msg {
-    Message::Hello { id: id_variable @ 3..=7 } =&gt; {
-        println!(&quot;Found an id in range: {}&quot;, id_variable)
-    },
-    Message::Hello { id: 10..=12 } =&gt; {
-        println!(&quot;Found an id in another range&quot;)
-    },
-    Message::Hello { id } =&gt; {
-        println!(&quot;Found some other id: {}&quot;, id)
-    },
-}
+    match msg {
+        Message::Hello {
+            id: id_variable @ 3..=7,
+        } =&gt; println!(&quot;Found an id in range: {}&quot;, id_variable),
+        Message::Hello { id: 10..=12 } =&gt; {
+            println!(&quot;Found an id in another range&quot;)
+        }
+        Message::Hello { id } =&gt; println!(&quot;Found some other id: {}&quot;, id),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-29: Using <code>@</code> to bind to a value in a pattern

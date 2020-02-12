@@ -198,12 +198,32 @@ handle. So why use associated types?</p>
 Chapter 13 that implements the <code>Iterator</code> trait on the <code>Counter</code> struct. In
 Listing 13-21, we specified that the <code>Item</code> type was <code>u32</code>:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">impl Iterator for Counter {
+<pre><code class="language-rust ignore"><span class="boring">struct Counter {
+</span><span class="boring">    count: u32,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Counter {
+</span><span class="boring">    fn new() -&gt; Counter {
+</span><span class="boring">        Counter { count: 0 }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Iterator for Counter {
     type Item = u32;
 
     fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
         // --snip--
-</code></pre>
+<span class="boring">        if self.count &lt; 5 {
+</span><span class="boring">            self.count += 1;
+</span><span class="boring">            Some(self.count)
+</span><span class="boring">        } else {
+</span><span class="boring">            None
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p>This syntax seems comparable to that of generics. So why not just define the
 <code>Iterator</code> trait with generics, as shown in Listing 19-13?</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -266,8 +286,10 @@ impl Add for Point {
 }
 
 fn main() {
-    assert_eq!(Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
-               Point { x: 3, y: 3 });
+    assert_eq!(
+        Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
+        Point { x: 3, y: 3 }
+    );
 }
 </code></pre></pre>
 <p><span class="caption">Listing 19-14: Implementing the <code>Add</code> trait to overload
@@ -351,10 +373,7 @@ want to use. Consider the code in Listing 19-16 where we’ve defined two traits
 both traits on a type <code>Human</code> that already has a method named <code>fly</code> implemented
 on it. Each <code>fly</code> method does something different.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>trait Pilot {
+<pre><pre class="playpen"><code class="language-rust">trait Pilot {
     fn fly(&amp;self);
 }
 
@@ -381,7 +400,8 @@ impl Human {
         println!(&quot;*waving arms furiously*&quot;);
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-16: Two traits are defined to have a <code>fly</code>
 method and are implemented on the <code>Human</code> type, and a <code>fly</code> method is
@@ -473,7 +493,11 @@ implementation of <code>fly</code> we want to call. We could also write
 in Listing 19-18, but this is a bit longer to write if we don’t need to
 disambiguate.</p>
 <p>Running this code prints the following:</p>
-<pre><code class="language-text">This is your captain speaking.
+<pre><code class="language-text">$ cargo run
+   Compiling traits-example v0.1.0 (file:///projects/traits-example)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.46s
+     Running `target/debug/traits-example`
+This is your captain speaking.
 Up!
 *waving arms furiously*
 </code></pre>
@@ -520,7 +544,11 @@ is expressed in the implementation of the <code>Animal</code> trait on <code>Dog
 <code>baby_name</code> function associated with the <code>Animal</code> trait.</p>
 <p>In <code>main</code>, we call the <code>Dog::baby_name</code> function, which calls the associated
 function defined on <code>Dog</code> directly. This code prints the following:</p>
-<pre><code class="language-text">A baby dog is called a Spot
+<pre><code class="language-text">$ cargo run
+   Compiling traits-example v0.1.0 (file:///projects/traits-example)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.54s
+     Running `target/debug/traits-example`
+A baby dog is called a Spot
 </code></pre>
 <p>This output isn’t what we wanted. We want to call the <code>baby_name</code> function that
 is part of the <code>Animal</code> trait that we implemented on <code>Dog</code> so the code prints
@@ -528,7 +556,25 @@ is part of the <code>Animal</code> trait that we implemented on <code>Dog</code>
 we used in Listing 19-18 doesn’t help here; if we change <code>main</code> to the code in
 Listing 19-20, we’ll get a compilation error.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn main() {
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">trait Animal {
+</span><span class="boring">    fn baby_name() -&gt; String;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Dog;
+</span><span class="boring">
+</span><span class="boring">impl Dog {
+</span><span class="boring">    fn baby_name() -&gt; String {
+</span><span class="boring">        String::from(&quot;Spot&quot;)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Animal for Dog {
+</span><span class="boring">    fn baby_name() -&gt; String {
+</span><span class="boring">        String::from(&quot;puppy&quot;)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn main() {
     println!(&quot;A baby dog is called a {}&quot;, Animal::baby_name());
 }
 </code></pre>
@@ -538,13 +584,25 @@ use</span></p>
 <p>Because <code>Animal::baby_name</code> is an associated function rather than a method, and
 thus doesn’t have a <code>self</code> parameter, Rust can’t figure out which
 implementation of <code>Animal::baby_name</code> we want. We’ll get this compiler error:</p>
-<pre><code class="language-text">error[E0283]: type annotations required: cannot resolve `_: Animal`
+<pre><code class="language-text">$ cargo run
+   Compiling traits-example v0.1.0 (file:///projects/traits-example)
+error[E0283]: type annotations needed
   --&gt; src/main.rs:20:43
    |
+2  |     fn baby_name() -&gt; String;
+   |     ------------------------- required by `Animal::baby_name`
+...
 20 |     println!(&quot;A baby dog is called a {}&quot;, Animal::baby_name());
-   |                                           ^^^^^^^^^^^^^^^^^
+   |                                           ^^^^^^^^^^^^^^^^^ cannot infer type
    |
-   = note: required by `Animal::baby_name`
+   = note: cannot resolve `_: Animal`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0283`.
+error: could not compile `traits-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>To disambiguate and tell Rust that we want to use the implementation of
 <code>Animal</code> for <code>Dog</code>, we need to use fully qualified syntax. Listing 19-21
@@ -579,7 +637,11 @@ implemented on <code>Dog</code></span></p>
 indicates we want to call the <code>baby_name</code> method from the <code>Animal</code> trait as
 implemented on <code>Dog</code> by saying that we want to treat the <code>Dog</code> type as an
 <code>Animal</code> for this function call. This code will now print what we want:</p>
-<pre><code class="language-text">A baby dog is called a puppy
+<pre><code class="language-text">$ cargo run
+   Compiling traits-example v0.1.0 (file:///projects/traits-example)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.48s
+     Running `target/debug/traits-example`
+A baby dog is called a puppy
 </code></pre>
 <p>In general, fully qualified syntax is defined as follows:</p>
 <pre><code class="language-rust ignore">&lt;Type as Trait&gt;::function(receiver_if_method, next_arg, ...);
@@ -613,10 +675,7 @@ that <code>OutlinePrint</code> needs. We can do that in the trait definition by 
 <code>OutlinePrint: Display</code>. This technique is similar to adding a trait bound to
 the trait. Listing 19-22 shows an implementation of the <code>OutlinePrint</code> trait.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::fmt;
+<pre><pre class="playpen"><code class="language-rust">use std::fmt;
 
 trait OutlinePrint: fmt::Display {
     fn outline_print(&amp;self) {
@@ -629,7 +688,8 @@ trait OutlinePrint: fmt::Display {
         println!(&quot;{}&quot;, &quot;*&quot;.repeat(len + 4));
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-22: Implementing the <code>OutlinePrint</code> trait that
 requires the functionality from <code>Display</code></span></p>
@@ -642,38 +702,72 @@ the current scope.</p>
 <p>Let’s see what happens when we try to implement <code>OutlinePrint</code> on a type that
 doesn’t implement <code>Display</code>, such as the <code>Point</code> struct:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">trait OutlinePrint {}
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">use std::fmt;
+</span><span class="boring">
+</span><span class="boring">trait OutlinePrint: fmt::Display {
+</span><span class="boring">    fn outline_print(&amp;self) {
+</span><span class="boring">        let output = self.to_string();
+</span><span class="boring">        let len = output.len();
+</span><span class="boring">        println!(&quot;{}&quot;, &quot;*&quot;.repeat(len + 4));
+</span><span class="boring">        println!(&quot;*{}*&quot;, &quot; &quot;.repeat(len + 2));
+</span><span class="boring">        println!(&quot;* {} *&quot;, output);
+</span><span class="boring">        println!(&quot;*{}*&quot;, &quot; &quot;.repeat(len + 2));
+</span><span class="boring">        println!(&quot;{}&quot;, &quot;*&quot;.repeat(len + 4));
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
 </span>struct Point {
     x: i32,
     y: i32,
 }
 
 impl OutlinePrint for Point {}
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let p = Point { x: 1, y: 3 };
+</span><span class="boring">    p.outline_print();
+</span><span class="boring">}
+</span></code></pre>
 <p>We get an error saying that <code>Display</code> is required but not implemented:</p>
-<pre><code class="language-text">error[E0277]: the trait bound `Point: std::fmt::Display` is not satisfied
+<pre><code class="language-text">$ cargo run
+   Compiling traits-example v0.1.0 (file:///projects/traits-example)
+error[E0277]: `Point` doesn't implement `std::fmt::Display`
   --&gt; src/main.rs:20:6
    |
 20 | impl OutlinePrint for Point {}
-   |      ^^^^^^^^^^^^ `Point` cannot be formatted with the default formatter;
-try using `:?` instead if you are using a format string
+   |      ^^^^^^^^^^^^ `Point` cannot be formatted with the default formatter
    |
    = help: the trait `std::fmt::Display` is not implemented for `Point`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `traits-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>To fix this, we implement <code>Display</code> on <code>Point</code> and satisfy the constraint that
 <code>OutlinePrint</code> requires, like so:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">trait OutlinePrint: fmt::Display {
+</span><span class="boring">    fn outline_print(&amp;self) {
+</span><span class="boring">        let output = self.to_string();
+</span><span class="boring">        let len = output.len();
+</span><span class="boring">        println!(&quot;{}&quot;, &quot;*&quot;.repeat(len + 4));
+</span><span class="boring">        println!(&quot;*{}*&quot;, &quot; &quot;.repeat(len + 2));
+</span><span class="boring">        println!(&quot;* {} *&quot;, output);
+</span><span class="boring">        println!(&quot;*{}*&quot;, &quot; &quot;.repeat(len + 2));
+</span><span class="boring">        println!(&quot;{}&quot;, &quot;*&quot;.repeat(len + 4));
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
 </span><span class="boring">struct Point {
 </span><span class="boring">    x: i32,
 </span><span class="boring">    y: i32,
 </span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl OutlinePrint for Point {}
 </span><span class="boring">
 </span>use std::fmt;
 
@@ -682,7 +776,11 @@ impl fmt::Display for Point {
         write!(f, &quot;({}, {})&quot;, self.x, self.y)
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let p = Point { x: 1, y: 3 };
+</span><span class="boring">    p.outline_print();
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>Then implementing the <code>OutlinePrint</code> trait on <code>Point</code> will compile
 successfully, and we can call <code>outline_print</code> on a <code>Point</code> instance to display

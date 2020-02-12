@@ -244,7 +244,9 @@ we’ll demonstrate.</p>
     Cons(i32, List),
     Nil,
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p><span class="caption">Listing 15-2: The first attempt at defining an enum to
 represent a cons list data structure of <code>i32</code> values</span></p>
 <blockquote>
@@ -256,7 +258,12 @@ any type.</p>
 <p>Using the <code>List</code> type to store the list <code>1, 2, 3</code> would look like the code in
 Listing 15-3:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">use crate::List::{Cons, Nil};
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">enum List {
+</span><span class="boring">    Cons(i32, List),
+</span><span class="boring">    Nil,
+</span><span class="boring">}
+</span><span class="boring">
+</span>use crate::List::{Cons, Nil};
 
 fn main() {
     let list = Cons(1, Cons(2, Cons(3, Nil)));
@@ -269,16 +276,34 @@ is one more <code>Cons</code> value that holds <code>3</code> and a <code>List</
 <code>Nil</code>, the non-recursive variant that signals the end of the list.</p>
 <p>If we try to compile the code in Listing 15-3, we get the error shown in
 Listing 15-4:</p>
-<pre><code class="language-text">error[E0072]: recursive type `List` has infinite size
+<pre><code class="language-text">$ cargo run
+   Compiling cons-list v0.1.0 (file:///projects/cons-list)
+error[E0072]: recursive type `List` has infinite size
  --&gt; src/main.rs:1:1
   |
 1 | enum List {
   | ^^^^^^^^^ recursive type has infinite size
 2 |     Cons(i32, List),
-  |               ----- recursive without indirection
+  |               ---- recursive without indirection
   |
-  = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to
-  make `List` representable
+  = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to make `List` representable
+
+error[E0391]: cycle detected when processing `List`
+ --&gt; src/main.rs:1:1
+  |
+1 | enum List {
+  | ^^^^^^^^^
+  |
+  = note: ...which again requires processing `List`, completing the cycle
+  = note: cycle used when computing dropck types for `Canonical { max_universe: U0, variables: [], value: ParamEnvAnd { param_env: ParamEnv { caller_bounds: [], reveal: UserFacing, def_id: None }, value: List } }`
+
+error: aborting due to 2 previous errors
+
+Some errors have detailed explanations: E0072, E0391.
+For more information about an error, try `rustc --explain E0072`.
+error: could not compile `cons-list`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p><span class="caption">Listing 15-4: The error we get when attempting to define
 a recursive enum</span></p>
@@ -291,16 +316,14 @@ type.</p>
 <h4><a class="header" href="#computing-the-size-of-a-non-recursive-type" id="computing-the-size-of-a-non-recursive-type">Computing the Size of a Non-Recursive Type</a></h4>
 <p>Recall the <code>Message</code> enum we defined in Listing 6-2 when we discussed enum
 definitions in Chapter 6:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>enum Message {
+<pre><pre class="playpen"><code class="language-rust">enum Message {
     Quit,
     Move { x: i32, y: i32 },
     Write(String),
     ChangeColor(i32, i32, i32),
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p>To determine how much space to allocate for a <code>Message</code> value, Rust goes
 through each of the variants to see which variant needs the most space. Rust
@@ -323,8 +346,10 @@ variant. The <code>Cons</code> variant holds a value of type <code>i32</code> an
 <p>Rust can’t figure out how much space to allocate for recursively defined types,
 so the compiler gives the error in Listing 15-4. But the error does include
 this helpful suggestion:</p>
-<pre><code class="language-text">  = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to
-  make `List` representable
+<!-- manual-regeneration
+after doing automatic regeneration, look at listings/ch15-smart-pointers/listing-15-03/output.txt and copy the relevant line
+-->
+<pre><code class="language-text">  = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to make `List` representable
 </code></pre>
 <p>In this suggestion, “indirection” means that instead of storing a value
 directly, we’ll change the data structure to store the value indirectly by
@@ -348,10 +373,7 @@ of the <code>List</code> in Listing 15-3 to the code in Listing 15-5, which will
 use crate::List::{Cons, Nil};
 
 fn main() {
-    let list = Cons(1,
-        Box::new(Cons(2,
-            Box::new(Cons(3,
-                Box::new(Nil))))));
+    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 }
 </code></pre></pre>
 <p><span class="caption">Listing 15-5: Definition of <code>List</code> that uses <code>Box&lt;T&gt;</code> in

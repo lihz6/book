@@ -233,6 +233,13 @@ error[E0603]: module `hosting` is private
    |
 12 |     front_of_house::hosting::add_to_waitlist();
    |                     ^^^^^^^
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `restaurant`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p><span class="caption">Listing 7-4: Compiler errors from building the code in
 Listing 7-3</span></p>
@@ -295,6 +302,13 @@ error[E0603]: function `add_to_waitlist` is private
    |
 12 |     front_of_house::hosting::add_to_waitlist();
    |                              ^^^^^^^^^^^^^^^
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `restaurant`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p><span class="caption">Listing 7-6: Compiler errors from building the code in
 Listing 7-5</span></p>
@@ -322,7 +336,8 @@ pub fn eat_at_restaurant() {
     // Relative path
     front_of_house::hosting::add_to_waitlist();
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-7: Adding the <code>pub</code> keyword to <code>mod hosting</code>
 and <code>fn add_to_waitlist</code> lets us call the function from
@@ -365,7 +380,8 @@ mod back_of_house {
 
     fn cook_order() {}
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 7-8: Calling a function using a relative path
 starting with <code>super</code></span></p>

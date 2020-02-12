@@ -175,8 +175,11 @@ using the pattern with, depending on the intended behavior of the code.</p>
 where Rust requires an irrefutable pattern and vice versa. Listing 18-8 shows a
 <code>let</code> statement, but for the pattern we’ve specified <code>Some(x)</code>, a refutable
 pattern. As you might expect, this code will not compile.</p>
-<pre><code class="language-rust ignore does_not_compile">let Some(x) = some_option_value;
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span><span class="boring">    let some_option_value: Option&lt;i32&gt; = None;
+</span>    let Some(x) = some_option_value;
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 18-8: Attempting to use a refutable pattern with
 <code>let</code></span></p>
 <p>If <code>some_option_value</code> was a <code>None</code> value, it would fail to match the pattern
@@ -184,11 +187,27 @@ pattern. As you might expect, this code will not compile.</p>
 only accept an irrefutable pattern because there is nothing valid the code can
 do with a <code>None</code> value. At compile time, Rust will complain that we’ve tried to
 use a refutable pattern where an irrefutable pattern is required:</p>
-<pre><code class="language-text">error[E0005]: refutable pattern in local binding: `None` not covered
- --&gt;
+<pre><code class="language-text">$ cargo run
+   Compiling patterns v0.1.0 (file:///projects/patterns)
+error[E0005]: refutable pattern in local binding: `None` not covered
+ --&gt; src/main.rs:3:9
   |
-3 | let Some(x) = some_option_value;
-  |     ^^^^^^^ pattern `None` not covered
+3 |     let Some(x) = some_option_value;
+  |         ^^^^^^^ pattern `None` not covered
+  |
+  = note: `let` bindings require an &quot;irrefutable pattern&quot;, like a `struct` or an `enum` with only one variant
+  = note: for more information, visit https://doc.rust-lang.org/book/ch18-02-refutability.html
+help: you might want to use `if let` to ignore the variant that isn't matched
+  |
+3 |     if let Some(x) = some_option_value { /* */ }
+  |
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0005`.
+error: could not compile `patterns`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Because we didn’t cover (and couldn’t cover!) every valid value with the
 pattern <code>Some(x)</code>, Rust rightfully produces a compiler error.</p>
@@ -197,13 +216,11 @@ pattern is needed, we can change the code that uses the pattern: instead of
 using <code>let</code>, we can use <code>if let</code>. Then if the pattern doesn’t match, the code
 will just skip the code in the curly brackets, giving it a way to continue
 validly. Listing 18-9 shows how to fix the code in Listing 18-8.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">let some_option_value: Option&lt;i32&gt; = None;
-</span>if let Some(x) = some_option_value {
-    println!(&quot;{}&quot;, x);
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let some_option_value: Option&lt;i32&gt; = None;
+</span>    if let Some(x) = some_option_value {
+        println!(&quot;{}&quot;, x);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-9: Using <code>if let</code> and a block with refutable
@@ -211,23 +228,31 @@ patterns instead of <code>let</code></span></p>
 <p>We’ve given the code an out! This code is perfectly valid, although it means we
 cannot use an irrefutable pattern without receiving an error. If we give <code>if let</code> a pattern that will always match, such as <code>x</code>, as shown in Listing 18-10,
 the compiler will give a warning.</p>
-<pre><code class="language-rust ignore">if let x = 5 {
-    println!(&quot;{}&quot;, x);
-};
-</code></pre>
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    if let x = 5 {
+        println!(&quot;{}&quot;, x);
+    };
+<span class="boring">}
+</span></code></pre></pre>
 <p><span class="caption">Listing 18-10: Attempting to use an irrefutable pattern
 with <code>if let</code></span></p>
 <p>Rust complains that it doesn’t make sense to use <code>if let</code> with an irrefutable
 pattern:</p>
-<pre><code class="language-text">warning: irrefutable if-let pattern
- --&gt; &lt;anon&gt;:2:5
+<pre><code class="language-text">$ cargo run
+   Compiling patterns v0.1.0 (file:///projects/patterns)
+warning: irrefutable if-let pattern
+ --&gt; src/main.rs:2:5
   |
 2 | /     if let x = 5 {
-3 | |     println!(&quot;{}&quot;, x);
-4 | | };
-  | |_^
+3 | |         println!(&quot;{}&quot;, x);
+4 | |     };
+  | |_____^
   |
-  = note: #[warn(irrefutable_let_patterns)] on by default
+  = note: `#[warn(irrefutable_let_patterns)]` on by default
+
+    Finished dev [unoptimized + debuginfo] target(s) in 0.39s
+     Running `target/debug/patterns`
+5
 </code></pre>
 <p>For this reason, match arms must use refutable patterns, except for the last
 arm, which should match any remaining values with an irrefutable pattern. Rust

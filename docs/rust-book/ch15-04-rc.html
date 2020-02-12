@@ -199,9 +199,7 @@ won’t work, as shown in Listing 15-17:</p>
 use crate::List::{Cons, Nil};
 
 fn main() {
-    let a = Cons(5,
-        Box::new(Cons(10,
-            Box::new(Nil))));
+    let a = Cons(5, Box::new(Cons(10, Box::new(Nil))));
     let b = Cons(3, Box::new(a));
     let c = Cons(4, Box::new(a));
 }
@@ -209,16 +207,24 @@ fn main() {
 <p><span class="caption">Listing 15-17: Demonstrating we’re not allowed to have
 two lists using <code>Box&lt;T&gt;</code> that try to share ownership of a third list</span></p>
 <p>When we compile this code, we get this error:</p>
-<pre><code class="language-text">error[E0382]: use of moved value: `a`
-  --&gt; src/main.rs:13:30
+<pre><code class="language-text">$ cargo run
+   Compiling cons-list v0.1.0 (file:///projects/cons-list)
+error[E0382]: use of moved value: `a`
+  --&gt; src/main.rs:11:30
    |
-12 |     let b = Cons(3, Box::new(a));
+9  |     let a = Cons(5, Box::new(Cons(10, Box::new(Nil))));
+   |         - move occurs because `a` has type `List`, which does not implement the `Copy` trait
+10 |     let b = Cons(3, Box::new(a));
    |                              - value moved here
-13 |     let c = Cons(4, Box::new(a));
+11 |     let c = Cons(4, Box::new(a));
    |                              ^ value used here after move
-   |
-   = note: move occurs because `a` has type `List`, which does not implement
-   the `Copy` trait
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `cons-list`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The <code>Cons</code> variants own the data they hold, so when we create the <code>b</code> list, <code>a</code>
 is moved into <code>b</code> and <code>b</code> owns <code>a</code>. Then, when we try to use <code>a</code> again when
@@ -305,7 +311,11 @@ type also has a <code>weak_count</code>; we’ll see what <code>weak_count</code
 <a href="ch15-06-reference-cycles.html#preventing-reference-cycles-turning-an-rct-into-a-weakt">“Preventing Reference Cycles: Turning an <code>Rc&lt;T&gt;</code> into a
 <code>Weak&lt;T&gt;</code>”</a><!-- ignore --> section.</p>
 <p>This code prints the following:</p>
-<pre><code class="language-text">count after creating a = 1
+<pre><code class="language-text">$ cargo run
+   Compiling cons-list v0.1.0 (file:///projects/cons-list)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.45s
+     Running `target/debug/cons-list`
+count after creating a = 1
 count after creating b = 2
 count after creating c = 3
 count after c goes out of scope = 2

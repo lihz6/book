@@ -218,11 +218,15 @@ isn’t able to infer the kind of collection you want.</p>
 <p>Finally, we print the vector using the debug formatter, <code>:?</code>. Let’s try running
 the code first with no arguments and then with two arguments:</p>
 <pre><code class="language-text">$ cargo run
---snip--
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.61s
+     Running `target/debug/minigrep`
 [&quot;target/debug/minigrep&quot;]
-
-$ cargo run needle haystack
---snip--
+</code></pre>
+<pre><code class="language-text">$ cargo run needle haystack
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.57s
+     Running `target/debug/minigrep needle haystack`
 [&quot;target/debug/minigrep&quot;, &quot;needle&quot;, &quot;haystack&quot;]
 </code></pre>
 <p>Notice that the first value in the vector is <code>&quot;target/debug/minigrep&quot;</code>, which
@@ -263,7 +267,7 @@ working as we intend. Let’s run this program again with the arguments <code>te
 and <code>sample.txt</code>:</p>
 <pre><code class="language-text">$ cargo run test sample.txt
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0s
      Running `target/debug/minigrep test sample.txt`
 Searching for test
 In file sample.txt

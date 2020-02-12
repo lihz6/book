@@ -1098,7 +1098,7 @@ usages and meanings are defined in the linked pages.</p>
 <tr><td><code>=&gt;</code></td><td>FatArrow</td><td><a href="expressions/match-expr.html">Match arms</a>, <a href="macros-by-example.html">Macros</a></td></tr>
 <tr><td><code>#</code></td><td>Pound</td><td><a href="attributes.html">Attributes</a></td></tr>
 <tr><td><code>$</code></td><td>Dollar</td><td><a href="macros-by-example.html">Macros</a></td></tr>
-<tr><td><code>?</code></td><td>Question</td><td><a href="expressions/operator-expr.html#the-question-mark-operator">Question mark operator</a>, <a href="trait-bounds.html#sized">Questionably sized</a></td></tr>
+<tr><td><code>?</code></td><td>Question</td><td><a href="expressions/operator-expr.html#the-question-mark-operator">Question mark operator</a>, <a href="trait-bounds.html#sized">Questionably sized</a>, <a href="macros-by-example.html">Macro Kleene Matcher</a></td></tr>
 </tbody></table>
 <h2><a class="header" href="#delimiters" id="delimiters">Delimiters</a></h2>
 <p>Bracket punctuation is used in various parts of the grammar. An open bracket
@@ -1264,7 +1264,8 @@ items in the top level of the crate (including <code>use</code> imports).</p>
 }
 mod b {
     pub fn foo() {
-        ::a::foo(); // call a's foo function
+        ::a::foo(); // call `a`'s foo function
+        // In Rust 2018, `::a` would be interpreted as the crate `a`.
     }
 }
 <span class="boring">fn main() {}
@@ -4067,6 +4068,108 @@ and</li>
 <li>It must not have any associated constants.</li>
 <li>All supertraits must also be object safe.</li>
 </ul>
+<p>When there isn't a <code>Self: Sized</code> bound on a method, the type of a method
+receiver must be one of the following types:</p>
+<ul>
+<li><code>&amp;Self</code></li>
+<li><code>&amp;mut Self</code></li>
+<li><a href="items/../special-types-and-traits.html#boxt"><code>Box&lt;Self&gt;</code></a></li>
+<li><a href="items/../special-types-and-traits.html#rct"><code>Rc&lt;Self&gt;</code></a></li>
+<li><a href="items/../special-types-and-traits.html#arct"><code>Arc&lt;Self&gt;</code></a></li>
+<li><a href="items/../special-types-and-traits.html#pinp"><code>Pin&lt;P&gt;</code></a> where <code>P</code> is one of the types above</li>
+</ul>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::rc::Rc;
+</span><span class="boring">use std::sync::Arc;
+</span><span class="boring">use std::pin::Pin;
+</span>// Examples of object safe methods.
+trait TraitMethods {
+    fn by_ref(self: &amp;Self) {}
+    fn by_ref_mut(self: &amp;mut Self) {}
+    fn by_box(self: Box&lt;Self&gt;) {}
+    fn by_rc(self: Rc&lt;Self&gt;) {}
+    fn by_arc(self: Arc&lt;Self&gt;) {}
+    fn by_pin(self: Pin&lt;&amp;Self&gt;) {}
+    fn with_lifetime&lt;'a&gt;(self: &amp;'a Self) {}
+    fn nested_pin(self: Pin&lt;Arc&lt;Self&gt;&gt;) {}
+}
+<span class="boring">struct S;
+</span><span class="boring">impl TraitMethods for S {}
+</span><span class="boring">let t: Box&lt;dyn TraitMethods&gt; = Box::new(S);
+</span><span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>// This trait is object-safe, but these methods cannot be dispatched on a trait object.
+trait NonDispatchable {
+    // Non-methods cannot be dispatched.
+    fn foo() where Self: Sized {}
+    // Self type isn't known until runtime.
+    fn returns(&amp;self) -&gt; Self where Self: Sized;
+    // `other` may be a different concrete type of the receiver.
+    fn param(&amp;self, other: Self) where Self: Sized {}
+    // Generics are not compatible with vtables.
+    fn typed&lt;T&gt;(&amp;self, x: T) where Self: Sized {}
+}
+
+struct S;
+impl NonDispatchable for S {
+    fn returns(&amp;self) -&gt; Self where Self: Sized { S }
+}
+let obj: Box&lt;dyn NonDispatchable&gt; = Box::new(S);
+obj.returns(); // ERROR: cannot call with Self return
+obj.param(S);  // ERROR: cannot call with Self parameter
+obj.typed(1);  // ERROR: cannot call with generic type
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::rc::Rc;
+</span>// Examples of non-object safe traits.
+trait NotObjectSafe {
+    const CONST: i32 = 1;  // ERROR: cannot have associated const
+
+    fn foo() {}  // ERROR: associated function without Sized
+    fn returns(&amp;self) -&gt; Self; // ERROR: Self in return type
+    fn typed&lt;T&gt;(&amp;self, x: T) {} // ERROR: has generic type parameters
+    fn nested(self: Rc&lt;Box&lt;Self&gt;&gt;) {} // ERROR: nested receiver not yet supported
+}
+
+struct S;
+impl NotObjectSafe for S {
+    fn returns(&amp;self) -&gt; Self { S }
+}
+let obj: Box&lt;dyn NotObjectSafe&gt; = Box::new(S); // ERROR
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>// Self: Sized traits are not object-safe.
+trait TraitWithSize where Self: Sized {}
+
+struct S;
+impl TraitWithSize for S {}
+let obj: Box&lt;dyn TraitWithSize&gt; = Box::new(S); // ERROR
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playpen"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>// Not object safe if `Self` is a type argument.
+trait Super&lt;A&gt; {}
+trait WithSelf: Super&lt;Self&gt; where Self: Sized {}
+
+struct S;
+impl&lt;A&gt; Super&lt;A&gt; for S {}
+impl WithSelf for S {}
+let obj: Box&lt;dyn WithSelf&gt; = Box::new(S); // ERROR: cannot use `Self` type parameter
+<span class="boring">}
+</span></code></pre></pre>
 <h2><a class="header" href="#supertraits" id="supertraits">Supertraits</a></h2>
 <p><strong>Supertraits</strong> are traits that are required to be implemented for a type to
 implement a specific trait. Furthermore, anywhere a <a href="items/generics.html">generic</a> or <a href="items/../types/trait-object.html">trait object</a>
@@ -4713,25 +4816,26 @@ let _: f64 = f64::from_i32(42);
 <p>Associated functions whose first parameter is named <code>self</code> are called <em>methods</em>
 and may be invoked using the <a href="items/../expressions/method-call-expr.html">method call operator</a>, for example, <code>x.foo()</code>, as
 well as the usual function call notation.</p>
-<p>If the type of the <code>self</code> parameter is specified, it is limited to one of the
-following types:</p>
-<ul>
-<li><code>Self</code></li>
-<li><code>&amp;Self</code></li>
-<li><code>&amp;mut Self</code></li>
-<li><a href="items/../special-types-and-traits.html#boxt"><code>Box&lt;Self&gt;</code></a></li>
-<li><a href="items/../special-types-and-traits.html#rct"><code>Rc&lt;Self&gt;</code></a></li>
-<li><a href="items/../special-types-and-traits.html#arct"><code>Arc&lt;Self&gt;</code></a></li>
-<li><a href="items/../special-types-and-traits.html#pinp"><code>Pin&lt;P&gt;</code></a> where <code>P</code> is one of the above types except <code>Self</code>.</li>
-</ul>
-<p>The <code>Self</code> term can be replaced with the type being implemented.</p>
+<p>If the type of the <code>self</code> parameter is specified, it is limited to semantic
+types generated by the following grammar (where <code>'lt</code> denotes some arbitrary
+lifetime):</p>
+<pre><code class="language-text">P = &amp;'lt S | &amp;'lt mut S | Box&lt;S&gt; | Rc&lt;S&gt; | Arc&lt;S&gt; | Pin&lt;P&gt;
+S = Self | P
+</code></pre>
+<p>The <code>Self</code> terminal in this grammar is the semantic <code>Self</code> type and can be
+replaced with the type being implemented, including type aliases or associated
+type projections for the type.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::rc::Rc;
 </span><span class="boring">use std::sync::Arc;
 </span><span class="boring">use std::pin::Pin;
-</span>struct Example;
+</span>// Examples of methods implemented on struct `Example`.
+struct Example;
+type Alias = Example;
+trait Trait { type Output; }
+impl Trait for Example { type Output = Example; }
 impl Example {
     fn by_value(self: Self) {}
     fn by_ref(self: &amp;Self) {}
@@ -4742,6 +4846,8 @@ impl Example {
     fn by_pin(self: Pin&lt;&amp;Self&gt;) {}
     fn explicit_type(self: Arc&lt;Example&gt;) {}
     fn with_lifetime&lt;'a&gt;(self: &amp;'a Self) {}
+    fn nested&lt;'a&gt;(self: &amp;mut &amp;'a Arc&lt;Rc&lt;Box&lt;Alias&gt;&gt;&gt;) {}
+    fn via_projection(self: &lt;Example as Trait&gt;::Output) {}
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -6547,7 +6653,7 @@ declared by <code>let</code> statements are in scope from the next statement unt
 of the block.</p>
 <p>Blocks are written as <code>{</code>, then any <a href="expressions/../attributes.html">inner attributes</a>, then <a href="expressions/../statements.html">statements</a>,
 then an optional expression, and finally a <code>}</code>. Statements are usually required
-to be followed a semicolon, with two exceptions. Item declaration statements do
+to be followed by a semicolon, with two exceptions. Item declaration statements do
 not need to be followed by a semicolon. Expression statements usually require
 a following semicolon except if its outer expression is a flow control
 expression. Furthermore, extra semicolons between statements are allowed, but
@@ -9714,12 +9820,13 @@ or move are <a href="types/../special-types-and-traits.html#clone"><code>Clone</
 <h1><a class="header" href="#pointer-types" id="pointer-types">Pointer types</a></h1>
 <p>All pointers in Rust are explicit first-class values. They can be moved or
 copied, stored into data structs, and returned from functions.</p>
-<h2><a class="header" href="#shared-references-" id="shared-references-">Shared references (<code>&amp;</code>)</a></h2>
+<h2><a class="header" href="#references--and-mut" id="references--and-mut">References (<code>&amp;</code> and <code>&amp;mut</code>)</a></h2>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
 <em>ReferenceType</em> :<br />
    <code>&amp;</code> <a href="types/../trait-bounds.html"><em>Lifetime</em></a><sup>?</sup> <code>mut</code><sup>?</sup> <a href="types/../types.html#type-expressions"><em>TypeNoBounds</em></a></p>
 </blockquote>
+<h3><a class="header" href="#shared-references-" id="shared-references-">Shared references (<code>&amp;</code>)</a></h3>
 <p>These point to memory <em>owned by some other value</em>. When a shared reference to
 a value is created it prevents direct mutation of the value. <a href="types/../interior-mutability.html">Interior
 mutability</a> provides an exception for this in certain circumstances. As the
@@ -9729,7 +9836,7 @@ explicit lifetime. Copying a reference is a &quot;shallow&quot; operation: it in
 only copying the pointer itself, that is, pointers are <code>Copy</code>. Releasing a
 reference has no effect on the value it points to, but referencing of a
 <a href="types/../expressions.html#temporary-lifetimes">temporary value</a> will keep it alive during the scope of the reference itself.</p>
-<h2><a class="header" href="#mutable-references-mut" id="mutable-references-mut">Mutable references (<code>&amp;mut</code>)</a></h2>
+<h3><a class="header" href="#mutable-references-mut" id="mutable-references-mut">Mutable references (<code>&amp;mut</code>)</a></h3>
 <p>These also point to memory owned by some other value. A mutable reference type
 is written <code>&amp;mut type</code> or <code>&amp;'a mut type</code>. A mutable reference (that hasn't been
 borrowed) is the only way to access the value it points to, so is not <code>Copy</code>.</p>
@@ -9747,9 +9854,9 @@ on the lifecycle of any other value. Dereferencing a raw pointer is an
 reference by reborrowing it (<code>&amp;*</code> or <code>&amp;mut *</code>). Raw pointers are generally
 discouraged in Rust code; they exist to support interoperability with foreign
 code, and writing performance-critical or low-level functions.</p>
-<p>When comparing pointers they are compared by their address, rather than by
-what they point to. When comparing pointers to <a href="types/../dynamically-sized-types.html">dynamically sized types</a> they
-also have their addition data compared.</p>
+<p>When comparing raw pointers they are compared by their address, rather than by
+what they point to. When comparing raw pointers to <a href="types/../dynamically-sized-types.html">dynamically sized types</a> they
+also have their additional data compared.</p>
 <h2><a class="header" href="#smart-pointers" id="smart-pointers">Smart Pointers</a></h2>
 <p>The standard library contains additional 'smart pointer' types beyond references
 and raw pointers.</p>
@@ -9799,7 +9906,7 @@ restrictions as <a href="types/../items/functions.html#attributes-on-function-pa
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
 <em>TraitObjectType</em> :<br />
-   <code>dyn</code><sup>?</sup> <a href="types/../types.html#type-expressions"><em>TypeParamBounds</em></a></p>
+   <code>dyn</code><sup>?</sup> <a href="types/../trait-bounds.html"><em>TypeParamBounds</em></a></p>
 <p><em>TraitObjectTypeOneBound</em> :<br />
    <code>dyn</code><sup>?</sup> <a href="types/../trait-bounds.html"><em>TraitBound</em></a></p>
 </blockquote>
@@ -11701,7 +11808,7 @@ for non-<code>bin</code> <a href="linkage.html">crate types</a>.</p>
 <h1><a class="header" href="#appendices" id="appendices">Appendices</a></h1>
 <h1><a class="header" href="#appendix-macro-follow-set-ambiguity-formal-specification" id="appendix-macro-follow-set-ambiguity-formal-specification">Appendix: Macro Follow-Set Ambiguity Formal Specification</a></h1>
 <p>This page documents the formal specification of the follow rules for <a href="macros-by-example.html">Macros
-By Example</a>. They were originally specified in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0550-macro-future-proofing.html">RFC 550</a>, from which the bulk
+By Example</a>. They were originally specified in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0550-macro-future-proofing.md">RFC 550</a>, from which the bulk
 of this text is copied, and expanded upon in subsequent RFCs.</p>
 <h2><a class="header" href="#definitions--conventions" id="definitions--conventions">Definitions &amp; Conventions</a></h2>
 <ul>

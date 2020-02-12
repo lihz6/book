@@ -182,17 +182,15 @@ included in the compiled result.</p>
 <p>Recall that when we generated the new <code>adder</code> project in the first section of
 this chapter, Cargo generated this code for us:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>#[cfg(test)]
+<pre><pre class="playpen"><code class="language-rust">#[cfg(test)]
 mod tests {
     #[test]
     fn it_works() {
         assert_eq!(2 + 2, 4);
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p>This code is the automatically generated test module. The attribute <code>cfg</code>
 stands for <em>configuration</em> and tells Rust that the following item should only
@@ -209,9 +207,7 @@ impossible to test private functions. Regardless of which testing ideology you
 adhere to, Rust’s privacy rules do allow you to test private functions.
 Consider the code in Listing 11-12 with the private function <code>internal_adder</code>.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {}
-</span>
-pub fn add_two(a: i32) -&gt; i32 {
+<pre><pre class="playpen"><code class="language-rust">pub fn add_two(a: i32) -&gt; i32 {
     internal_adder(a, 2)
 }
 
@@ -228,7 +224,9 @@ mod tests {
         assert_eq!(4, internal_adder(2, 2));
     }
 }
-</code></pre></pre>
+<span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
 <p><span class="caption">Listing 11-12: Testing a private function</span></p>
 <p>Note that the <code>internal_adder</code> function is not marked as <code>pub</code>, but because
 tests are just Rust code and the <code>tests</code> module is just another module, you can
@@ -269,15 +267,15 @@ crate, so we need to bring our library into each test crate’s scope.</p>
 in this directory only when we run <code>cargo test</code>. Run <code>cargo test</code> now:</p>
 <pre><code class="language-text">$ cargo test
    Compiling adder v0.1.0 (file:///projects/adder)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
-     Running target/debug/deps/adder-abcabcabc
+    Finished test [unoptimized + debuginfo] target(s) in 0.73s
+     Running target/debug/deps/adder-92948b65e88960b4
 
 running 1 test
 test tests::internal ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
-     Running target/debug/deps/integration_test-ce99bcc2479f4607
+     Running target/debug/deps/integration_test-82e7799c1bc62298
 
 running 1 test
 test it_adds_two ... ok
@@ -289,6 +287,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <p>The three sections of output include the unit tests, the integration test, and
 the doc tests. The first section for the unit tests is the same as we’ve been
@@ -308,13 +307,15 @@ function’s name as an argument to <code>cargo test</code>. To run all the test
 particular integration test file, use the <code>--test</code> argument of <code>cargo test</code>
 followed by the name of the file:</p>
 <pre><code class="language-text">$ cargo test --test integration_test
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
-     Running target/debug/integration_test-952a27e0126bb565
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.64s
+     Running target/debug/deps/integration_test-82e7799c1bc62298
 
 running 1 test
 test it_adds_two ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <p>This command runs only the tests in the <em>tests/integration_test.rs</em> file.</p>
 <h4><a class="header" href="#submodules-in-integration-tests" id="submodules-in-integration-tests">Submodules in Integration Tests</a></h4>
@@ -347,18 +348,23 @@ multiple test files:</p>
 <p>When we run the tests again, we’ll see a new section in the test output for the
 <em>common.rs</em> file, even though this file doesn’t contain any test functions nor
 did we call the <code>setup</code> function from anywhere:</p>
-<pre><code class="language-text">running 1 test
+<pre><code class="language-text">$ cargo test
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.89s
+     Running target/debug/deps/adder-92948b65e88960b4
+
+running 1 test
 test tests::internal ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
-     Running target/debug/deps/common-b8b07b6f1be2db70
+     Running target/debug/deps/common-7064e1b6d2e271be
 
 running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
-     Running target/debug/deps/integration_test-d993c68b431d39df
+     Running target/debug/deps/integration_test-82e7799c1bc62298
 
 running 1 test
 test it_adds_two ... ok
@@ -370,6 +376,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <p>Having <code>common</code> appear in the test results with <code>running 0 tests</code> displayed for
 it is not what we wanted. We just wanted to share some code with the other

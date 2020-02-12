@@ -185,7 +185,7 @@ further. Place the <code>another_function</code> example in <em>src/main.rs</em>
 should see the following output:</p>
 <pre><code class="language-text">$ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.28 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.28s
      Running `target/debug/functions`
 Hello, world!
 Another function.
@@ -215,7 +215,7 @@ fn another_function(x: i32) {
 <p>Try running this program; you should get the following output:</p>
 <pre><code class="language-text">$ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
-    Finished dev [unoptimized + debuginfo] target(s) in 1.21 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 1.21s
      Running `target/debug/functions`
 The value of x is: 5
 </code></pre>
@@ -247,7 +247,7 @@ in this example.</p>
 project’s <em>src/main.rs</em> file with the preceding example and run it using <code>cargo run</code>:</p>
 <pre><code class="language-text">$ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.31 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.31s
      Running `target/debug/functions`
 The value of x is: 5
 The value of y is: 6
@@ -283,6 +283,8 @@ to another variable, as the following code tries to do; you’ll get an error:</
 }
 </code></pre>
 <p>When you run this program, the error you’ll get looks like this:</p>
+<!--TODO: not extracting this because the new error message is incorrect; see
+https://github.com/rust-lang/rust/issues/65254 -->
 <pre><code class="language-text">$ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
 error: expected expression, found statement (`let`)
@@ -354,7 +356,7 @@ Rust. Note that the function’s return type is specified too, as <code>-&gt; i3
 running this code; the output should look like this:</p>
 <pre><code class="language-text">$ cargo run
    Compiling functions v0.1.0 (file:///projects/functions)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.30 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.30s
      Running `target/debug/functions`
 The value of x is: 5
 </code></pre>
@@ -399,18 +401,24 @@ fn plus_one(x: i32) -&gt; i32 {
 }
 </code></pre>
 <p>Compiling this code produces an error, as follows:</p>
-<pre><code class="language-text">error[E0308]: mismatched types
- --&gt; src/main.rs:7:28
+<pre><code class="language-text">$ cargo run
+   Compiling functions v0.1.0 (file:///projects/functions)
+error[E0308]: mismatched types
+ --&gt; src/main.rs:7:24
   |
-7 |   fn plus_one(x: i32) -&gt; i32 {
-  |  ____________________________^
-8 | |     x + 1;
-  | |          - help: consider removing this semicolon
-9 | | }
-  | |_^ expected i32, found ()
-  |
-  = note: expected type `i32`
-             found type `()`
+7 | fn plus_one(x: i32) -&gt; i32 {
+  |    --------            ^^^ expected `i32`, found `()`
+  |    |
+  |    implicitly returns `()` as its body has no tail or `return` expression
+8 |     x + 1;
+  |          - help: consider removing this semicolon
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `functions`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The main error message, “mismatched types,” reveals the core issue with this
 code. The definition of the function <code>plus_one</code> says that it will return an

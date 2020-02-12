@@ -168,8 +168,8 @@ convertible to the return type, it will convert automatically.</p>
 <pre><pre class="playpen"><code class="language-rust editable">use std::error;
 use std::fmt;
 
-// Change the alias to `Box&lt;error::Error&gt;`.
-type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;error::Error&gt;&gt;;
+// Change the alias to `Box&lt;dyn error::Error&gt;`.
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn error::Error&gt;&gt;;
 
 #[derive(Debug)]
 struct EmptyVec;

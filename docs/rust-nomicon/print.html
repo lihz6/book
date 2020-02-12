@@ -298,7 +298,7 @@ through a shared reference.</li>
 implementations have generally been rigorously manually checked, so the Safe Rust
 interfaces built on top of these implementations can be assumed to be safe.</p>
 <p>The need for all of this separation boils down a single fundamental property
-of Safe Rust:</p>
+of Safe Rust, the <em>soundness property</em>:</p>
 <p><strong>No matter what, Safe Rust can't cause Undefined Behavior.</strong></p>
 <p>The design of the safe/unsafe split means that there is an asymmetric trust
 relationship between Safe and Unsafe Rust. Safe Rust inherently has to
@@ -1419,6 +1419,7 @@ data.push(4);
 // Here, the destructor is run and therefore this'll fail to compile.
 <span class="boring">}
 </span></code></pre></pre>
+<p>One way to convince the compiler that <code>x</code> is no longer valid is by using <code>drop(x)</code> before <code>data.push(4)</code>.</p>
 <p>Furthermore, there might be multiple possible last uses of the borrow, for
 example in each branch of a condition.</p>
 <pre><pre class="playpen"><code class="language-rust edition2018">
@@ -4429,7 +4430,7 @@ Without this assert, some of our early drafts will do some Very Bad Things.</p>
 that, we'll need to use the rest of the heap APIs. These basically allow us to
 talk directly to Rust's allocator (jemalloc by default).</p>
 <p>We'll also need a way to handle out-of-memory (OOM) conditions. The standard
-library calls <code>std::alloc::oom()</code>, which in turn calls the the <code>oom</code> langitem,
+library calls <code>std::alloc::oom()</code>, which in turn calls the <code>oom</code> langitem,
 which aborts the program in a platform-specific manner.
 The reason we abort and don't panic is because unwinding can cause allocations
 to happen, and that seems like a bad thing to do when your allocator just came
@@ -6198,12 +6199,12 @@ fn main() {
 <p>You may wish to compile Rust code in a way so that it can be called from C. This is
 fairly easy, but requires a few things:</p>
 <pre><pre class="playpen"><code class="language-rust">#[no_mangle]
-pub extern fn hello_rust() -&gt; *const u8 {
+pub extern &quot;C&quot; fn hello_rust() -&gt; *const u8 {
     &quot;Hello, world!\0&quot;.as_ptr()
 }
 <span class="boring">fn main() {}
 </span></code></pre></pre>
-<p>The <code>extern</code> makes this function adhere to the C calling convention, as
+<p>The <code>extern &quot;C&quot;</code> makes this function adhere to the C calling convention, as
 discussed above in &quot;<a href="ffi.html#foreign-calling-conventions">Foreign Calling
 Conventions</a>&quot;. The <code>no_mangle</code>
 attribute turns off Rust's name mangling, so that it is easier to link to.</p>

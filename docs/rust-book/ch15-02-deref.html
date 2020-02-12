@@ -195,14 +195,23 @@ we have access to the integer value <code>y</code> is pointing to that we can co
 <code>5</code>.</p>
 <p>If we tried to write <code>assert_eq!(5, y);</code> instead, we would get this compilation
 error:</p>
-<pre><code class="language-text">error[E0277]: can't compare `{integer}` with `&amp;{integer}`
+<pre><code class="language-text">$ cargo run
+   Compiling deref-example v0.1.0 (file:///projects/deref-example)
+error[E0277]: can't compare `{integer}` with `&amp;{integer}`
  --&gt; src/main.rs:6:5
   |
 6 |     assert_eq!(5, y);
   |     ^^^^^^^^^^^^^^^^^ no implementation for `{integer} == &amp;{integer}`
   |
-  = help: the trait `std::cmp::PartialEq&lt;&amp;{integer}&gt;` is not implemented for
-  `{integer}`
+  = help: the trait `std::cmp::PartialEq&lt;&amp;{integer}&gt;` is not implemented for `{integer}`
+  = note: this error originates in a macro outside of the current crate (in Nightly builds, run with -Z external-macro-backtrace for more info)
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `deref-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Comparing a number and a reference to a number isn’t allowed because they’re
 different types. We must use the dereference operator to follow the reference
@@ -236,17 +245,15 @@ dereference operator.</p>
 Listing 15-8 defines a <code>MyBox&lt;T&gt;</code> type in the same way. We’ll also define a
 <code>new</code> function to match the <code>new</code> function defined on <code>Box&lt;T&gt;</code>.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>struct MyBox&lt;T&gt;(T);
+<pre><pre class="playpen"><code class="language-rust">struct MyBox&lt;T&gt;(T);
 
 impl&lt;T&gt; MyBox&lt;T&gt; {
     fn new(x: T) -&gt; MyBox&lt;T&gt; {
         MyBox(x)
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 15-8: Defining a <code>MyBox&lt;T&gt;</code> type</span></p>
 <p>We define a struct named <code>MyBox</code> and declare a generic parameter <code>T</code>, because
@@ -258,7 +265,15 @@ changing it to use the <code>MyBox&lt;T&gt;</code> type we’ve defined instead 
 code in Listing 15-9 won’t compile because Rust doesn’t know how to dereference
 <code>MyBox</code>.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn main() {
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">struct MyBox&lt;T&gt;(T);
+</span><span class="boring">
+</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
+</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
+</span><span class="boring">        MyBox(x)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn main() {
     let x = 5;
     let y = MyBox::new(x);
 
@@ -269,11 +284,20 @@ code in Listing 15-9 won’t compile because Rust doesn’t know how to derefere
 <p><span class="caption">Listing 15-9: Attempting to use <code>MyBox&lt;T&gt;</code> in the same
 way we used references and <code>Box&lt;T&gt;</code></span></p>
 <p>Here’s the resulting compilation error:</p>
-<pre><code class="language-text">error[E0614]: type `MyBox&lt;{integer}&gt;` cannot be dereferenced
+<pre><code class="language-text">$ cargo run
+   Compiling deref-example v0.1.0 (file:///projects/deref-example)
+error[E0614]: type `MyBox&lt;{integer}&gt;` cannot be dereferenced
   --&gt; src/main.rs:14:19
    |
 14 |     assert_eq!(5, *y);
    |                   ^^
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0614`.
+error: could not compile `deref-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Our <code>MyBox&lt;T&gt;</code> type can’t be dereferenced because we haven’t implemented that
 ability on our type. To enable dereferencing with the <code>*</code> operator, we
@@ -285,20 +309,31 @@ by the standard library, requires us to implement one method named <code>deref</
 borrows <code>self</code> and returns a reference to the inner data. Listing 15-10
 contains an implementation of <code>Deref</code> to add to the definition of <code>MyBox</code>:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::ops::Deref;
+<pre><pre class="playpen"><code class="language-rust">use std::ops::Deref;
 
-<span class="boring">struct MyBox&lt;T&gt;(T);
-</span>impl&lt;T&gt; Deref for MyBox&lt;T&gt; {
+impl&lt;T&gt; Deref for MyBox&lt;T&gt; {
     type Target = T;
 
     fn deref(&amp;self) -&gt; &amp;T {
         &amp;self.0
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">struct MyBox&lt;T&gt;(T);
+</span><span class="boring">
+</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
+</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
+</span><span class="boring">        MyBox(x)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let x = 5;
+</span><span class="boring">    let y = MyBox::new(x);
+</span><span class="boring">
+</span><span class="boring">    assert_eq!(5, x);
+</span><span class="boring">    assert_eq!(5, *y);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 15-10: Implementing <code>Deref</code> on <code>MyBox&lt;T&gt;</code></span></p>
 <p>The <code>type Target = T;</code> syntax defines an associated type for the <code>Deref</code> trait
@@ -335,13 +370,14 @@ end up with data of type <code>i32</code>, which matches the <code>5</code> in <
 Listing 15-9.</p>
 <h3><a class="header" href="#implicit-deref-coercions-with-functions-and-methods" id="implicit-deref-coercions-with-functions-and-methods">Implicit Deref Coercions with Functions and Methods</a></h3>
 <p><em>Deref coercion</em> is a convenience that Rust performs on arguments to functions
-and methods. Deref coercion converts a reference to a type that implements
-<code>Deref</code> into a reference to a type that <code>Deref</code> can convert the original type
-into. Deref coercion happens automatically when we pass a reference to a
-particular type’s value as an argument to a function or method that doesn’t
-match the parameter type in the function or method definition. A sequence of
-calls to the <code>deref</code> method converts the type we provided into the type the
-parameter needs.</p>
+and methods. Deref coercion works only on types that implement the <code>Deref</code>
+trait. Deref coercion converts such a type into a reference to another type.
+For example, deref coercion can convert <code>&amp;String</code> to <code>&amp;str</code> because <code>String</code>
+implements the <code>Deref</code> trait such that it returns <code>str</code>. Deref coercion happens
+automatically when we pass a reference to a particular type’s value as an
+argument to a function or method that doesn’t match the parameter type in the
+function or method definition. A sequence of calls to the <code>deref</code> method
+converts the type we provided into the type the parameter needs.</p>
 <p>Deref coercion was added to Rust so that programmers writing function and
 method calls don’t need to add as many explicit references and dereferences
 with <code>&amp;</code> and <code>*</code>. The deref coercion feature also lets us write more code that
@@ -351,13 +387,11 @@ Listing 15-8 as well as the implementation of <code>Deref</code> that we added i
 15-10. Listing 15-11 shows the definition of a function that has a string slice
 parameter:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>fn hello(name: &amp;str) {
+<pre><pre class="playpen"><code class="language-rust">fn hello(name: &amp;str) {
     println!(&quot;Hello, {}!&quot;, name);
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 15-11: A <code>hello</code> function that has the parameter
 <code>name</code> of type <code>&amp;str</code></span></p>
@@ -367,19 +401,19 @@ with a reference to a value of type <code>MyBox&lt;String&gt;</code>, as shown i
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::ops::Deref;
 </span><span class="boring">
-</span><span class="boring">struct MyBox&lt;T&gt;(T);
-</span><span class="boring">
-</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
-</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
-</span><span class="boring">        MyBox(x)
-</span><span class="boring">    }
-</span><span class="boring">}
-</span><span class="boring">
 </span><span class="boring">impl&lt;T&gt; Deref for MyBox&lt;T&gt; {
 </span><span class="boring">    type Target = T;
 </span><span class="boring">
 </span><span class="boring">    fn deref(&amp;self) -&gt; &amp;T {
 </span><span class="boring">        &amp;self.0
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct MyBox&lt;T&gt;(T);
+</span><span class="boring">
+</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
+</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
+</span><span class="boring">        MyBox(x)
 </span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
@@ -407,19 +441,19 @@ of type <code>&amp;MyBox&lt;String&gt;</code>.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::ops::Deref;
 </span><span class="boring">
-</span><span class="boring">struct MyBox&lt;T&gt;(T);
-</span><span class="boring">
-</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
-</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
-</span><span class="boring">        MyBox(x)
-</span><span class="boring">    }
-</span><span class="boring">}
-</span><span class="boring">
 </span><span class="boring">impl&lt;T&gt; Deref for MyBox&lt;T&gt; {
 </span><span class="boring">    type Target = T;
 </span><span class="boring">
 </span><span class="boring">    fn deref(&amp;self) -&gt; &amp;T {
 </span><span class="boring">        &amp;self.0
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct MyBox&lt;T&gt;(T);
+</span><span class="boring">
+</span><span class="boring">impl&lt;T&gt; MyBox&lt;T&gt; {
+</span><span class="boring">    fn new(x: T) -&gt; MyBox&lt;T&gt; {
+</span><span class="boring">        MyBox(x)
 </span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
@@ -465,10 +499,11 @@ never coerce to mutable references. Because of the borrowing rules, if you have
 a mutable reference, that mutable reference must be the only reference to that
 data (otherwise, the program wouldn’t compile). Converting one mutable
 reference to one immutable reference will never break the borrowing rules.
-Converting an immutable reference to a mutable reference would require that
-there is only one immutable reference to that data, and the borrowing rules
-don’t guarantee that. Therefore, Rust can’t make the assumption that converting
-an immutable reference to a mutable reference is possible.</p>
+Converting an immutable reference to a mutable reference would require that the
+initial immutable reference is the only immutable reference to that data, but
+the borrowing rules don’t guarantee that. Therefore, Rust can’t make the
+assumption that converting an immutable reference to a mutable reference is
+possible.</p>
 
                     </main>
 

@@ -162,12 +162,10 @@ methods that consume the iterator to use it up. For example, the code in
 Listing 13-13 creates an iterator over the items in the vector <code>v1</code> by calling
 the <code>iter</code> method defined on <code>Vec&lt;T&gt;</code>. This code by itself doesn’t do anything
 useful.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let v1 = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let v1 = vec![1, 2, 3];
 
-let v1_iter = v1.iter();
+    let v1_iter = v1.iter();
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-13: Creating an iterator</span></p>
@@ -179,16 +177,14 @@ use of the iterator in the <code>for</code> loop. The iterator is stored in the 
 variable, and no iteration takes place at that time. When the <code>for</code> loop is
 called using the iterator in <code>v1_iter</code>, each element in the iterator is used in
 one iteration of the loop, which prints out each value.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let v1 = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let v1 = vec![1, 2, 3];
 
-let v1_iter = v1.iter();
+    let v1_iter = v1.iter();
 
-for val in v1_iter {
-    println!(&quot;Got: {}&quot;, val);
-}
+    for val in v1_iter {
+        println!(&quot;Got: {}&quot;, val);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-14: Using an iterator in a <code>for</code> loop</span></p>
@@ -230,21 +226,22 @@ iterator.</p>
 what values are returned from repeated calls to <code>next</code> on the iterator created
 from the vector.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>#[test]
-fn iterator_demonstration() {
-    let v1 = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span>    #[test]
+    fn iterator_demonstration() {
+        let v1 = vec![1, 2, 3];
 
-    let mut v1_iter = v1.iter();
+        let mut v1_iter = v1.iter();
 
-    assert_eq!(v1_iter.next(), Some(&amp;1));
-    assert_eq!(v1_iter.next(), Some(&amp;2));
-    assert_eq!(v1_iter.next(), Some(&amp;3));
-    assert_eq!(v1_iter.next(), None);
-}
+        assert_eq!(v1_iter.next(), Some(&amp;1));
+        assert_eq!(v1_iter.next(), Some(&amp;2));
+        assert_eq!(v1_iter.next(), Some(&amp;3));
+        assert_eq!(v1_iter.next(), None);
+    }
 <span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-15: Calling the <code>next</code> method on an
 iterator</span></p>
@@ -274,20 +271,21 @@ consuming the iterator. As it iterates through, it adds each item to a running
 total and returns the total when iteration is complete. Listing 13-16 has a
 test illustrating a use of the <code>sum</code> method:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>#[test]
-fn iterator_sum() {
-    let v1 = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span>    #[test]
+    fn iterator_sum() {
+        let v1 = vec![1, 2, 3];
 
-    let v1_iter = v1.iter();
+        let v1_iter = v1.iter();
 
-    let total: i32 = v1_iter.sum();
+        let total: i32 = v1_iter.sum();
 
-    assert_eq!(total, 6);
-}
+        assert_eq!(total, 6);
+    }
 <span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-16: Calling the <code>sum</code> method to get the total
 of all items in the iterator</span></p>
@@ -304,25 +302,28 @@ which takes a closure to call on each item to produce a new iterator. The
 closure here creates a new iterator in which each item from the vector has been
 incremented by 1. However, this code produces a warning:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust not_desired_behavior">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let v1: Vec&lt;i32&gt; = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust not_desired_behavior"><span class="boring">fn main() {
+</span>    let v1: Vec&lt;i32&gt; = vec![1, 2, 3];
 
-v1.iter().map(|x| x + 1);
+    v1.iter().map(|x| x + 1);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-17: Calling the iterator adaptor <code>map</code> to
 create a new iterator</span></p>
 <p>The warning we get is this:</p>
-<pre><code class="language-text">warning: unused `std::iter::Map` which must be used: iterator adaptors are lazy
-and do nothing unless consumed
+<pre><code class="language-text">$ cargo run
+   Compiling iterators v0.1.0 (file:///projects/iterators)
+warning: unused `std::iter::Map` that must be used
  --&gt; src/main.rs:4:5
   |
 4 |     v1.iter().map(|x| x + 1);
   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
   |
-  = note: #[warn(unused_must_use)] on by default
+  = note: `#[warn(unused_must_use)]` on by default
+  = note: iterators are lazy and do nothing unless consumed
+
+    Finished dev [unoptimized + debuginfo] target(s) in 0.47s
+     Running `target/debug/iterators`
 </code></pre>
 <p>The code in Listing 13-17 doesn’t do anything; the closure we’ve specified
 never gets called. The warning reminds us why: iterator adaptors are lazy, and
@@ -334,14 +335,12 @@ iterator and collects the resulting values into a collection data type.</p>
 returned from the call to <code>map</code> into a vector. This vector will end up
 containing each item from the original vector incremented by 1.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let v1: Vec&lt;i32&gt; = vec![1, 2, 3];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let v1: Vec&lt;i32&gt; = vec![1, 2, 3];
 
-let v2: Vec&lt;_&gt; = v1.iter().map(|x| x + 1).collect();
+    let v2: Vec&lt;_&gt; = v1.iter().map(|x| x + 1).collect();
 
-assert_eq!(v2, vec![2, 3, 4]);
+    assert_eq!(v2, vec![2, 3, 4]);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-18: Calling the <code>map</code> method to create a new
@@ -362,41 +361,57 @@ will be included in the iterator produced by <code>filter</code>. If the closure
 variable from its environment to iterate over a collection of <code>Shoe</code> struct
 instances. It will return only shoes that are the specified size.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>#[derive(PartialEq, Debug)]
+<pre><pre class="playpen"><code class="language-rust">#[derive(PartialEq, Debug)]
 struct Shoe {
     size: u32,
     style: String,
 }
 
 fn shoes_in_my_size(shoes: Vec&lt;Shoe&gt;, shoe_size: u32) -&gt; Vec&lt;Shoe&gt; {
-    shoes.into_iter()
-        .filter(|s| s.size == shoe_size)
-        .collect()
+    shoes.into_iter().filter(|s| s.size == shoe_size).collect()
 }
 
-#[test]
-fn filters_by_size() {
-    let shoes = vec![
-        Shoe { size: 10, style: String::from(&quot;sneaker&quot;) },
-        Shoe { size: 13, style: String::from(&quot;sandal&quot;) },
-        Shoe { size: 10, style: String::from(&quot;boot&quot;) },
-    ];
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let in_my_size = shoes_in_my_size(shoes, 10);
+    #[test]
+    fn filters_by_size() {
+        let shoes = vec![
+            Shoe {
+                size: 10,
+                style: String::from(&quot;sneaker&quot;),
+            },
+            Shoe {
+                size: 13,
+                style: String::from(&quot;sandal&quot;),
+            },
+            Shoe {
+                size: 10,
+                style: String::from(&quot;boot&quot;),
+            },
+        ];
 
-    assert_eq!(
-        in_my_size,
-        vec![
-            Shoe { size: 10, style: String::from(&quot;sneaker&quot;) },
-            Shoe { size: 10, style: String::from(&quot;boot&quot;) },
-        ]
-    );
+        let in_my_size = shoes_in_my_size(shoes, 10);
+
+        assert_eq!(
+            in_my_size,
+            vec![
+                Shoe {
+                    size: 10,
+                    style: String::from(&quot;sneaker&quot;)
+                },
+                Shoe {
+                    size: 10,
+                    style: String::from(&quot;boot&quot;)
+                },
+            ]
+        );
+    }
 }
-<span class="boring">}
-</span></code></pre></pre>
+
+fn main() {}
+</code></pre></pre>
 <p><span class="caption">Listing 13-19: Using the <code>filter</code> method with a closure
 that captures <code>shoe_size</code></span></p>
 <p>The <code>shoes_in_my_size</code> function takes ownership of a vector of shoes and a shoe
@@ -428,10 +443,7 @@ that implementation.</p>
 <p>Listing 13-20 has the definition of the <code>Counter</code> struct and an associated
 <code>new</code> function to create instances of <code>Counter</code>:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>struct Counter {
+<pre><pre class="playpen"><code class="language-rust">struct Counter {
     count: u32,
 }
 
@@ -440,8 +452,9 @@ impl Counter {
         Counter { count: 0 }
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+
+fn main() {}
+</code></pre></pre>
 <p><span class="caption">Listing 13-20: Defining the <code>Counter</code> struct and a <code>new</code>
 function that creates instances of <code>Counter</code> with an initial value of 0 for
 <code>count</code></span></p>
@@ -454,27 +467,30 @@ always starting new instances with a value of 0 in the <code>count</code> field.
 the body of the <code>next</code> method to specify what we want to happen when this
 iterator is used, as shown in Listing 13-21:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct Counter {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct Counter {
 </span><span class="boring">    count: u32,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Counter {
+</span><span class="boring">    fn new() -&gt; Counter {
+</span><span class="boring">        Counter { count: 0 }
+</span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
 </span>impl Iterator for Counter {
     type Item = u32;
 
     fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
-        self.count += 1;
-
-        if self.count &lt; 6 {
+        if self.count &lt; 5 {
+            self.count += 1;
             Some(self.count)
         } else {
             None
         }
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-21: Implementing the <code>Iterator</code> trait on our
 <code>Counter</code> struct</span></p>
@@ -482,29 +498,32 @@ iterator is used, as shown in Listing 13-21:</p>
 iterator will return <code>u32</code> values. Again, don’t worry about associated types
 yet, we’ll cover them in Chapter 19.</p>
 <p>We want our iterator to add 1 to the current state, so we initialized <code>count</code>
-to 0 so it would return 1 first. If the value of <code>count</code> is less than 6, <code>next</code>
-will return the current value wrapped in <code>Some</code>, but if <code>count</code> is 6 or higher,
-our iterator will return <code>None</code>.</p>
+to 0 so it would return 1 first. If the value of <code>count</code> is less than 5, <code>next</code>
+will increment <code>count</code> and return the current value wrapped in <code>Some</code>. Once
+<code>count</code> is 5, our iterator will stop incrementing <code>count</code> and always return
+<code>None</code>.</p>
 <h4><a class="header" href="#using-our-counter-iterators-next-method" id="using-our-counter-iterators-next-method">Using Our <code>Counter</code> Iterator’s <code>next</code> Method</a></h4>
 <p>Once we’ve implemented the <code>Iterator</code> trait, we have an iterator! Listing 13-22
 shows a test demonstrating that we can use the iterator functionality of our
 <code>Counter</code> struct by calling the <code>next</code> method on it directly, just as we did
 with the iterator created from a vector in Listing 13-15.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct Counter {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct Counter {
 </span><span class="boring">    count: u32,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Counter {
+</span><span class="boring">    fn new() -&gt; Counter {
+</span><span class="boring">        Counter { count: 0 }
+</span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">impl Iterator for Counter {
 </span><span class="boring">    type Item = u32;
 </span><span class="boring">
 </span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
-</span><span class="boring">        self.count += 1;
-</span><span class="boring">
-</span><span class="boring">        if self.count &lt; 6 {
+</span><span class="boring">        if self.count &lt; 5 {
+</span><span class="boring">            self.count += 1;
 </span><span class="boring">            Some(self.count)
 </span><span class="boring">        } else {
 </span><span class="boring">            None
@@ -512,18 +531,24 @@ with the iterator created from a vector in Listing 13-15.</p>
 </span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
-</span>#[test]
-fn calling_next_directly() {
-    let mut counter = Counter::new();
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span>    #[test]
+    fn calling_next_directly() {
+        let mut counter = Counter::new();
 
-    assert_eq!(counter.next(), Some(1));
-    assert_eq!(counter.next(), Some(2));
-    assert_eq!(counter.next(), Some(3));
-    assert_eq!(counter.next(), Some(4));
-    assert_eq!(counter.next(), Some(5));
-    assert_eq!(counter.next(), None);
-}
+        assert_eq!(counter.next(), Some(1));
+        assert_eq!(counter.next(), Some(2));
+        assert_eq!(counter.next(), Some(3));
+        assert_eq!(counter.next(), Some(4));
+        assert_eq!(counter.next(), Some(5));
+        assert_eq!(counter.next(), None);
+    }
 <span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-22: Testing the functionality of the <code>next</code>
 method implementation</span></p>
@@ -540,10 +565,7 @@ instance after skipping the first value, multiply each pair together, keep only
 those results that are divisible by 3, and add all the resulting values
 together, we could do so, as shown in the test in Listing 13-23:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct Counter {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct Counter {
 </span><span class="boring">    count: u32,
 </span><span class="boring">}
 </span><span class="boring">
@@ -554,15 +576,11 @@ together, we could do so, as shown in the test in Listing 13-23:</p>
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">impl Iterator for Counter {
-</span><span class="boring">    // Our iterator will produce u32s
 </span><span class="boring">    type Item = u32;
 </span><span class="boring">
 </span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
-</span><span class="boring">        // increment our count. This is why we started at zero.
-</span><span class="boring">        self.count += 1;
-</span><span class="boring">
-</span><span class="boring">        // check to see if we've finished counting or not.
-</span><span class="boring">        if self.count &lt; 6 {
+</span><span class="boring">        if self.count &lt; 5 {
+</span><span class="boring">            self.count += 1;
 </span><span class="boring">            Some(self.count)
 </span><span class="boring">        } else {
 </span><span class="boring">            None
@@ -570,15 +588,34 @@ together, we could do so, as shown in the test in Listing 13-23:</p>
 </span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
-</span>#[test]
-fn using_other_iterator_trait_methods() {
-    let sum: u32 = Counter::new().zip(Counter::new().skip(1))
-                                 .map(|(a, b)| a * b)
-                                 .filter(|x| x % 3 == 0)
-                                 .sum();
-    assert_eq!(18, sum);
-}
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn calling_next_directly() {
+</span><span class="boring">        let mut counter = Counter::new();
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(counter.next(), Some(1));
+</span><span class="boring">        assert_eq!(counter.next(), Some(2));
+</span><span class="boring">        assert_eq!(counter.next(), Some(3));
+</span><span class="boring">        assert_eq!(counter.next(), Some(4));
+</span><span class="boring">        assert_eq!(counter.next(), Some(5));
+</span><span class="boring">        assert_eq!(counter.next(), None);
+</span><span class="boring">    }
+</span><span class="boring">
+</span>    #[test]
+    fn using_other_iterator_trait_methods() {
+        let sum: u32 = Counter::new()
+            .zip(Counter::new().skip(1))
+            .map(|(a, b)| a * b)
+            .filter(|x| x % 3 == 0)
+            .sum();
+        assert_eq!(18, sum);
+    }
 <span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 13-23: Using a variety of <code>Iterator</code> trait
 methods on our <code>Counter</code> iterator</span></p>

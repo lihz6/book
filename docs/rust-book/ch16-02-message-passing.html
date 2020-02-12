@@ -211,8 +211,8 @@ string so the spawned thread is communicating with the main thread, as shown in
 Listing 16-7. This is like putting a rubber duck in the river upstream or
 sending a chat message from one thread to another.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">use std::thread;
-use std::sync::mpsc;
+<pre><pre class="playpen"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
 
 fn main() {
     let (tx, rx) = mpsc::channel();
@@ -239,8 +239,8 @@ Chapter 9 to review strategies for proper error handling.</p>
 the main thread. This is like retrieving the rubber duck from the water at the
 end of the river or like getting a chat message.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">use std::thread;
-use std::sync::mpsc;
+<pre><pre class="playpen"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
 
 fn main() {
     let (tx, rx) = mpsc::channel();
@@ -274,6 +274,9 @@ for the main thread to do other than wait for messages, so blocking the main
 thread is appropriate.</p>
 <p>When we run the code in Listing 16-8, we’ll see the value printed from the main
 thread:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">Got: hi
 </code></pre>
 <p>Perfect!</p>
@@ -286,8 +289,8 @@ problems: we’ll try to use a <code>val</code> value in the spawned thread <em>
 sent it down the channel. Try compiling the code in Listing 16-9 to see why
 this code isn’t allowed:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">use std::thread;
-use std::sync::mpsc;
+<pre><code class="language-rust ignore does_not_compile">use std::sync::mpsc;
+use std::thread;
 
 fn main() {
     let (tx, rx) = mpsc::channel();
@@ -310,16 +313,24 @@ thread, that thread could modify or drop it before we try to use the value
 again. Potentially, the other thread’s modifications could cause errors or
 unexpected results due to inconsistent or nonexistent data. However, Rust gives
 us an error if we try to compile the code in Listing 16-9:</p>
-<pre><code class="language-text">error[E0382]: use of moved value: `val`
+<pre><code class="language-text">$ cargo run
+   Compiling message-passing v0.1.0 (file:///projects/message-passing)
+error[E0382]: borrow of moved value: `val`
   --&gt; src/main.rs:10:31
    |
+8  |         let val = String::from(&quot;hi&quot;);
+   |             --- move occurs because `val` has type `std::string::String`, which does not implement the `Copy` trait
 9  |         tx.send(val).unwrap();
    |                 --- value moved here
 10 |         println!(&quot;val is {}&quot;, val);
-   |                               ^^^ value used here after move
-   |
-   = note: move occurs because `val` has type `std::string::String`, which does
-not implement the `Copy` trait
+   |                               ^^^ value borrowed here after move
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `message-passing`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Our concurrency mistake has caused a compile time error. The <code>send</code> function
 takes ownership of its parameter, and when the value is moved, the receiver
@@ -332,8 +343,8 @@ two separate threads were talking to each other over the channel. In Listing
 running concurrently: the spawned thread will now send multiple messages and
 pause for a second between each message.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">use std::thread;
-use std::sync::mpsc;
+<pre><pre class="playpen"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
 use std::time::Duration;
 
 fn main() {
@@ -369,6 +380,9 @@ instead, we’re treating <code>rx</code> as an iterator. For each value receive
 printing it. When the channel is closed, iteration will end.</p>
 <p>When running the code in Listing 16-10, you should see the following output
 with a 1-second pause in between each line:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">Got: hi
 Got: from
 Got: the
@@ -383,49 +397,49 @@ single consumer</em>. Let’s put <code>mpsc</code> to use and expand the code i
 to create multiple threads that all send values to the same receiver. We can do
 so by cloning the transmitting half of the channel, as shown in Listing 16-11:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::thread;
-</span><span class="boring">use std::sync::mpsc;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::sync::mpsc;
+</span><span class="boring">use std::thread;
 </span><span class="boring">use std::time::Duration;
 </span><span class="boring">
 </span><span class="boring">fn main() {
-</span>// --snip--
+</span>    // --snip--
 
-let (tx, rx) = mpsc::channel();
+    let (tx, rx) = mpsc::channel();
 
-let tx1 = mpsc::Sender::clone(&amp;tx);
-thread::spawn(move || {
-    let vals = vec![
-        String::from(&quot;hi&quot;),
-        String::from(&quot;from&quot;),
-        String::from(&quot;the&quot;),
-        String::from(&quot;thread&quot;),
-    ];
+    let tx1 = mpsc::Sender::clone(&amp;tx);
+    thread::spawn(move || {
+        let vals = vec![
+            String::from(&quot;hi&quot;),
+            String::from(&quot;from&quot;),
+            String::from(&quot;the&quot;),
+            String::from(&quot;thread&quot;),
+        ];
 
-    for val in vals {
-        tx1.send(val).unwrap();
-        thread::sleep(Duration::from_secs(1));
+        for val in vals {
+            tx1.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from(&quot;more&quot;),
+            String::from(&quot;messages&quot;),
+            String::from(&quot;for&quot;),
+            String::from(&quot;you&quot;),
+        ];
+
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx {
+        println!(&quot;Got: {}&quot;, received);
     }
-});
 
-thread::spawn(move || {
-    let vals = vec![
-        String::from(&quot;more&quot;),
-        String::from(&quot;messages&quot;),
-        String::from(&quot;for&quot;),
-        String::from(&quot;you&quot;),
-    ];
-
-    for val in vals {
-        tx.send(val).unwrap();
-        thread::sleep(Duration::from_secs(1));
-    }
-});
-
-for received in rx {
-    println!(&quot;Got: {}&quot;, received);
-}
-
-// --snip--
+    // --snip--
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 16-11: Sending multiple messages from multiple
@@ -436,6 +450,9 @@ to the first spawned thread. We pass the original sending end of the channel to
 a second spawned thread. This gives us two threads, each sending different
 messages to the receiving end of the channel.</p>
 <p>When you run the code, your output should look something like this:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">Got: hi
 Got: more
 Got: from

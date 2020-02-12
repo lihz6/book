@@ -173,17 +173,19 @@ the concepts.</p>
 program to reference data other than the data it’s intended to reference.
 Consider the program in Listing 10-17, which has an outer scope and an inner
 scope.</p>
-<pre><code class="language-rust ignore does_not_compile">{
-    let r;
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    {
+        let r;
 
-    {
-        let x = 5;
-        r = &amp;x;
+        {
+            let x = 5;
+            r = &amp;x;
+        }
+
+        println!(&quot;r: {}&quot;, r);
     }
-
-    println!(&quot;r: {}&quot;, r);
-}
-</code></pre>
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 10-17: An attempt to use a reference whose value
 has gone out of scope</span></p>
 <blockquote>
@@ -200,16 +202,25 @@ the inner scope, we attempt to set the value of <code>r</code> as a reference to
 the inner scope ends, and we attempt to print the value in <code>r</code>. This code won’t
 compile because the value <code>r</code> is referring to has gone out of scope before we
 try to use it. Here is the error message:</p>
-<pre><code class="language-text">error[E0597]: `x` does not live long enough
-  --&gt; src/main.rs:7:5
+<pre><code class="language-text">$ cargo run
+   Compiling chapter10 v0.1.0 (file:///projects/chapter10)
+error[E0597]: `x` does not live long enough
+  --&gt; src/main.rs:7:17
    |
-6  |         r = &amp;x;
-   |              - borrow occurs here
-7  |     }
-   |     ^ `x` dropped here while still borrowed
-...
-10 | }
-   | - borrowed value needs to live until here
+7  |             r = &amp;x;
+   |                 ^^ borrowed value does not live long enough
+8  |         }
+   |         - `x` dropped here while still borrowed
+9  | 
+10 |         println!(&quot;r: {}&quot;, r);
+   |                           - borrow later used here
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0597`.
+error: could not compile `chapter10`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The variable <code>x</code> doesn’t “live long enough.” The reason is that <code>x</code> will be out
 of scope when the inner scope ends on line 7. But <code>r</code> is still valid for the
@@ -222,17 +233,19 @@ It uses a borrow checker.</p>
 <p>The Rust compiler has a <em>borrow checker</em> that compares scopes to determine
 whether all borrows are valid. Listing 10-18 shows the same code as Listing
 10-17 but with annotations showing the lifetimes of the variables.</p>
-<pre><code class="language-rust ignore does_not_compile">{
-    let r;                // ---------+-- 'a
-                          //          |
-    {                     //          |
-        let x = 5;        // -+-- 'b  |
-        r = &amp;x;           //  |       |
-    }                     // -+       |
-                          //          |
-    println!(&quot;r: {}&quot;, r); //          |
-}                         // ---------+
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    {
+        let r;                // ---------+-- 'a
+                              //          |
+        {                     //          |
+            let x = 5;        // -+-- 'b  |
+            r = &amp;x;           //  |       |
+        }                     // -+       |
+                              //          |
+        println!(&quot;r: {}&quot;, r); //          |
+    }                         // ---------+
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 10-18: Annotations of the lifetimes of <code>r</code> and
 <code>x</code>, named <code>'a</code> and <code>'b</code>, respectively</span></p>
 <p>Here, we’ve annotated the lifetime of <code>r</code> with <code>'a</code> and the lifetime of <code>x</code>
@@ -243,17 +256,15 @@ with a lifetime of <code>'b</code>. The program is rejected because <code>'b</co
 <code>'a</code>: the subject of the reference doesn’t live as long as the reference.</p>
 <p>Listing 10-19 fixes the code so it doesn’t have a dangling reference and
 compiles without any errors.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>{
-    let x = 5;            // ----------+-- 'b
-                          //           |
-    let r = &amp;x;           // --+-- 'a  |
-                          //   |       |
-    println!(&quot;r: {}&quot;, r); //   |       |
-                          // --+       |
-}                         // ----------+
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    {
+        let x = 5;            // ----------+-- 'b
+                              //           |
+        let r = &amp;x;           // --+-- 'a  |
+                              //   |       |
+        println!(&quot;r: {}&quot;, r); //   |       |
+                              // --+       |
+    }                         // ----------+
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 10-19: A valid reference because the data has a
@@ -290,7 +301,15 @@ use in Listing 10-20 are the ones we want.</p>
 <p>If we try to implement the <code>longest</code> function as shown in Listing 10-21, it
 won’t compile.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span><span class="boring">    let string1 = String::from(&quot;abcd&quot;);
+</span><span class="boring">    let string2 = &quot;xyz&quot;;
+</span><span class="boring">
+</span><span class="boring">    let result = longest(string1.as_str(), string2);
+</span><span class="boring">    println!(&quot;The longest string is {}&quot;, result);
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
     if x.len() &gt; y.len() {
         x
     } else {
@@ -302,14 +321,22 @@ won’t compile.</p>
 function that returns the longer of two string slices but does not yet
 compile</span></p>
 <p>Instead, we get the following error that talks about lifetimes:</p>
-<pre><code class="language-text">error[E0106]: missing lifetime specifier
- --&gt; src/main.rs:1:33
+<pre><code class="language-text">$ cargo run
+   Compiling chapter10 v0.1.0 (file:///projects/chapter10)
+error[E0106]: missing lifetime specifier
+ --&gt; src/main.rs:9:33
   |
-1 | fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
+9 | fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
   |                                 ^ expected lifetime parameter
   |
-  = help: this function's return type contains a borrowed value, but the
-signature does not say whether it is borrowed from `x` or `y`
+  = help: this function's return type contains a borrowed value, but the signature does not say whether it is borrowed from `x` or `y`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0106`.
+error: could not compile `chapter10`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The help text reveals that the return type needs a generic lifetime parameter
 on it because Rust can’t tell whether the reference being returned refers to
@@ -362,9 +389,14 @@ references in the parameters and the return value must have the same lifetime.
 We’ll name the lifetime <code>'a</code> and then add it to each reference, as shown in
 Listing 10-22.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let string1 = String::from(&quot;abcd&quot;);
+</span><span class="boring">    let string2 = &quot;xyz&quot;;
+</span><span class="boring">
+</span><span class="boring">    let result = longest(string1.as_str(), string2);
+</span><span class="boring">    println!(&quot;The longest string is {}&quot;, result);
+</span><span class="boring">}
+</span><span class="boring">
 </span>fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
     if x.len() &gt; y.len() {
         x
@@ -372,8 +404,7 @@ Listing 10-22.</p>
         y
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p><span class="caption">Listing 10-22: The <code>longest</code> function definition
 specifying that all the references in the signature must have the same lifetime
 <code>'a</code></span></p>
@@ -410,15 +441,7 @@ lifetimes of <code>x</code> and <code>y</code>.</p>
 passing in references that have different concrete lifetimes. Listing 10-23 is
 a straightforward example.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
-</span><span class="boring">    if x.len() &gt; y.len() {
-</span><span class="boring">        x
-</span><span class="boring">    } else {
-</span><span class="boring">        y
-</span><span class="boring">    }
-</span><span class="boring">}
-</span><span class="boring">
-</span>fn main() {
+<pre><pre class="playpen"><code class="language-rust">fn main() {
     let string1 = String::from(&quot;long string is long&quot;);
 
     {
@@ -427,7 +450,15 @@ a straightforward example.</p>
         println!(&quot;The longest string is {}&quot;, result);
     }
 }
-</code></pre></pre>
+<span class="boring">
+</span><span class="boring">fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
+</span><span class="boring">    if x.len() &gt; y.len() {
+</span><span class="boring">        x
+</span><span class="boring">    } else {
+</span><span class="boring">        y
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre></pre>
 <p><span class="caption">Listing 10-23: Using the <code>longest</code> function with
 references to <code>String</code> values that have different concrete lifetimes</span></p>
 <p>In this example, <code>string1</code> is valid until the end of the outer scope, <code>string2</code>
@@ -451,20 +482,36 @@ compile.</p>
     }
     println!(&quot;The longest string is {}&quot;, result);
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
+</span><span class="boring">    if x.len() &gt; y.len() {
+</span><span class="boring">        x
+</span><span class="boring">    } else {
+</span><span class="boring">        y
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 10-24: Attempting to use <code>result</code> after <code>string2</code>
 has gone out of scope</span></p>
 <p>When we try to compile this code, we’ll get this error:</p>
-<pre><code class="language-text">error[E0597]: `string2` does not live long enough
-  --&gt; src/main.rs:15:5
-   |
-14 |         result = longest(string1.as_str(), string2.as_str());
-   |                                            ------- borrow occurs here
-15 |     }
-   |     ^ `string2` dropped here while still borrowed
-16 |     println!(&quot;The longest string is {}&quot;, result);
-17 | }
-   | - borrowed value needs to live until here
+<pre><code class="language-text">$ cargo run
+   Compiling chapter10 v0.1.0 (file:///projects/chapter10)
+error[E0597]: `string2` does not live long enough
+ --&gt; src/main.rs:6:44
+  |
+6 |         result = longest(string1.as_str(), string2.as_str());
+  |                                            ^^^^^^^ borrowed value does not live long enough
+7 |     }
+  |     - `string2` dropped here while still borrowed
+8 |     println!(&quot;The longest string is {}&quot;, result);
+  |                                          ------ borrow later used here
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0597`.
+error: could not compile `chapter10`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The error shows that for <code>result</code> to be valid for the <code>println!</code> statement,
 <code>string2</code> would need to be valid until the end of the outer scope. Rust knows
@@ -489,14 +536,18 @@ function is doing. For example, if we changed the implementation of the
 string slice, we wouldn’t need to specify a lifetime on the <code>y</code> parameter. The
 following code will compile:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let string1 = String::from(&quot;abcd&quot;);
+</span><span class="boring">    let string2 = &quot;efghijklmnopqrstuvwxyz&quot;;
+</span><span class="boring">
+</span><span class="boring">    let result = longest(string1.as_str(), string2);
+</span><span class="boring">    println!(&quot;The longest string is {}&quot;, result);
+</span><span class="boring">}
+</span><span class="boring">
 </span>fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;str) -&gt; &amp;'a str {
     x
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p>In this example, we’ve specified a lifetime parameter <code>'a</code> for the parameter
 <code>x</code> and the return type, but not for the parameter <code>y</code>, because the lifetime of
 <code>y</code> does not have any relationship with the lifetime of <code>x</code> or the return value.</p>
@@ -507,7 +558,15 @@ to a value created within this function, which would be a dangling reference
 because the value will go out of scope at the end of the function. Consider
 this attempted implementation of the <code>longest</code> function that won’t compile:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn longest&lt;'a&gt;(x: &amp;str, y: &amp;str) -&gt; &amp;'a str {
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span><span class="boring">    let string1 = String::from(&quot;abcd&quot;);
+</span><span class="boring">    let string2 = &quot;xyz&quot;;
+</span><span class="boring">
+</span><span class="boring">    let result = longest(string1.as_str(), string2);
+</span><span class="boring">    println!(&quot;The longest string is {}&quot;, result);
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn longest&lt;'a&gt;(x: &amp;str, y: &amp;str) -&gt; &amp;'a str {
     let result = String::from(&quot;really long string&quot;);
     result.as_str()
 }
@@ -516,23 +575,23 @@ this attempted implementation of the <code>longest</code> function that won’t 
 type, this implementation will fail to compile because the return value
 lifetime is not related to the lifetime of the parameters at all. Here is the
 error message we get:</p>
-<pre><code class="language-text">error[E0597]: `result` does not live long enough
- --&gt; src/main.rs:3:5
-  |
-3 |     result.as_str()
-  |     ^^^^^^ does not live long enough
-4 | }
-  | - borrowed value only lives until here
-  |
-note: borrowed value must be valid for the lifetime 'a as defined on the
-function body at 1:1...
- --&gt; src/main.rs:1:1
-  |
-1 | / fn longest&lt;'a&gt;(x: &amp;str, y: &amp;str) -&gt; &amp;'a str {
-2 | |     let result = String::from(&quot;really long string&quot;);
-3 | |     result.as_str()
-4 | | }
-  | |_^
+<pre><code class="language-text">$ cargo run
+   Compiling chapter10 v0.1.0 (file:///projects/chapter10)
+error[E0515]: cannot return value referencing local variable `result`
+  --&gt; src/main.rs:11:5
+   |
+11 |     result.as_str()
+   |     ------^^^^^^^^^
+   |     |
+   |     returns a value referencing data owned by the current function
+   |     `result` is borrowed here
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0515`.
+error: could not compile `chapter10`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The problem is that <code>result</code> goes out of scope and gets cleaned up at the end
 of the <code>longest</code> function. We’re also trying to return a reference to <code>result</code>
@@ -557,10 +616,10 @@ struct named <code>ImportantExcerpt</code> that holds a string slice.</p>
 
 fn main() {
     let novel = String::from(&quot;Call me Ishmael. Some years ago...&quot;);
-    let first_sentence = novel.split('.')
-        .next()
-        .expect(&quot;Could not find a '.'&quot;);
-    let i = ImportantExcerpt { part: first_sentence };
+    let first_sentence = novel.split('.').next().expect(&quot;Could not find a '.'&quot;);
+    let i = ImportantExcerpt {
+        part: first_sentence,
+    };
 }
 </code></pre></pre>
 <p><span class="caption">Listing 10-25: A struct that holds a reference, so its
@@ -583,10 +642,7 @@ lifetime parameters for functions or structs that use references. However, in
 Chapter 4 we had a function in Listing 4-9, which is shown again in Listing
 10-26, that compiled without lifetime annotations.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>fn first_word(s: &amp;str) -&gt; &amp;str {
+<pre><pre class="playpen"><code class="language-rust">fn first_word(s: &amp;str) -&gt; &amp;str {
     let bytes = s.as_bytes();
 
     for (i, &amp;item) in bytes.iter().enumerate() {
@@ -597,7 +653,22 @@ Chapter 4 we had a function in Listing 4-9, which is shown again in Listing
 
     &amp;s[..]
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let my_string = String::from(&quot;hello world&quot;);
+</span><span class="boring">
+</span><span class="boring">    // first_word works on slices of `String`s
+</span><span class="boring">    let word = first_word(&amp;my_string[..]);
+</span><span class="boring">
+</span><span class="boring">    let my_string_literal = &quot;hello world&quot;;
+</span><span class="boring">
+</span><span class="boring">    // first_word works on slices of string literals
+</span><span class="boring">    let word = first_word(&amp;my_string_literal[..]);
+</span><span class="boring">
+</span><span class="boring">    // Because string literals *are* string slices already,
+</span><span class="boring">    // this works too, without the slice syntax!
+</span><span class="boring">    let word = first_word(my_string_literal);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 10-26: A function we defined in Listing 4-9 that
 compiled without lifetime annotations, even though the parameter and return
@@ -698,10 +769,7 @@ aren’t necessary in method signatures. Let’s look at some examples using the
 struct named <code>ImportantExcerpt</code> that we defined in Listing 10-25.</p>
 <p>First, we’ll use a method named <code>level</code> whose only parameter is a reference to
 <code>self</code> and whose return value is an <code>i32</code>, which is not a reference to anything:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct ImportantExcerpt&lt;'a&gt; {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct ImportantExcerpt&lt;'a&gt; {
 </span><span class="boring">    part: &amp;'a str,
 </span><span class="boring">}
 </span><span class="boring">
@@ -710,17 +778,34 @@ struct named <code>ImportantExcerpt</code> that we defined in Listing 10-25.</p>
         3
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">impl&lt;'a&gt; ImportantExcerpt&lt;'a&gt; {
+</span><span class="boring">    fn announce_and_return_part(&amp;self, announcement: &amp;str) -&gt; &amp;str {
+</span><span class="boring">        println!(&quot;Attention please: {}&quot;, announcement);
+</span><span class="boring">        self.part
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let novel = String::from(&quot;Call me Ishmael. Some years ago...&quot;);
+</span><span class="boring">    let first_sentence = novel.split('.').next().expect(&quot;Could not find a '.'&quot;);
+</span><span class="boring">    let i = ImportantExcerpt {
+</span><span class="boring">        part: first_sentence,
+</span><span class="boring">    };
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>The lifetime parameter declaration after <code>impl</code> and its use after the type name
 are required, but we’re not required to annotate the lifetime of the reference
 to <code>self</code> because of the first elision rule.</p>
 <p>Here is an example where the third lifetime elision rule applies:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct ImportantExcerpt&lt;'a&gt; {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct ImportantExcerpt&lt;'a&gt; {
 </span><span class="boring">    part: &amp;'a str,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;'a&gt; ImportantExcerpt&lt;'a&gt; {
+</span><span class="boring">    fn level(&amp;self) -&gt; i32 {
+</span><span class="boring">        3
+</span><span class="boring">    }
 </span><span class="boring">}
 </span><span class="boring">
 </span>impl&lt;'a&gt; ImportantExcerpt&lt;'a&gt; {
@@ -729,7 +814,14 @@ to <code>self</code> because of the first elision rule.</p>
         self.part
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let novel = String::from(&quot;Call me Ishmael. Some years ago...&quot;);
+</span><span class="boring">    let first_sentence = novel.split('.').next().expect(&quot;Could not find a '.'&quot;);
+</span><span class="boring">    let i = ImportantExcerpt {
+</span><span class="boring">        part: first_sentence,
+</span><span class="boring">    };
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>There are two input lifetimes, so Rust applies the first lifetime elision rule
 and gives both <code>&amp;self</code> and <code>announcement</code> their own lifetimes. Then, because
@@ -758,13 +850,27 @@ solution is fixing those problems, not specifying the <code>'static</code> lifet
 <h2><a class="header" href="#generic-type-parameters-trait-bounds-and-lifetimes-together" id="generic-type-parameters-trait-bounds-and-lifetimes-together">Generic Type Parameters, Trait Bounds, and Lifetimes Together</a></h2>
 <p>Let’s briefly look at the syntax of specifying generic type parameters, trait
 bounds, and lifetimes all in one function!</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let string1 = String::from(&quot;abcd&quot;);
+</span><span class="boring">    let string2 = &quot;xyz&quot;;
+</span><span class="boring">
+</span><span class="boring">    let result = longest_with_an_announcement(
+</span><span class="boring">        string1.as_str(),
+</span><span class="boring">        string2,
+</span><span class="boring">        &quot;Today is someone's birthday!&quot;,
+</span><span class="boring">    );
+</span><span class="boring">    println!(&quot;The longest string is {}&quot;, result);
+</span><span class="boring">}
+</span><span class="boring">
 </span>use std::fmt::Display;
 
-fn longest_with_an_announcement&lt;'a, T&gt;(x: &amp;'a str, y: &amp;'a str, ann: T) -&gt; &amp;'a str
-    where T: Display
+fn longest_with_an_announcement&lt;'a, T&gt;(
+    x: &amp;'a str,
+    y: &amp;'a str,
+    ann: T,
+) -&gt; &amp;'a str
+where
+    T: Display,
 {
     println!(&quot;Announcement! {}&quot;, ann);
     if x.len() &gt; y.len() {
@@ -773,8 +879,7 @@ fn longest_with_an_announcement&lt;'a, T&gt;(x: &amp;'a str, y: &amp;'a str, ann
         y
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p>This is the <code>longest</code> function from Listing 10-22 that returns the longer of
 two string slices. But now it has an extra parameter named <code>ann</code> of the generic
 type <code>T</code>, which can be filled in by any type that implements the <code>Display</code>

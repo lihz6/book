@@ -704,12 +704,12 @@ fn main() {
 <p>You may wish to compile Rust code in a way so that it can be called from C. This is
 fairly easy, but requires a few things:</p>
 <pre><pre class="playpen"><code class="language-rust">#[no_mangle]
-pub extern fn hello_rust() -&gt; *const u8 {
+pub extern &quot;C&quot; fn hello_rust() -&gt; *const u8 {
     &quot;Hello, world!\0&quot;.as_ptr()
 }
 <span class="boring">fn main() {}
 </span></code></pre></pre>
-<p>The <code>extern</code> makes this function adhere to the C calling convention, as
+<p>The <code>extern &quot;C&quot;</code> makes this function adhere to the C calling convention, as
 discussed above in &quot;<a href="ffi.html#foreign-calling-conventions">Foreign Calling
 Conventions</a>&quot;. The <code>no_mangle</code>
 attribute turns off Rust's name mangling, so that it is easier to link to.</p>

@@ -174,7 +174,7 @@ is one of the goals of the language. Let’s explore what we can do with unsafe
 Rust and how to do it.</p>
 <h3><a class="header" href="#unsafe-superpowers" id="unsafe-superpowers">Unsafe Superpowers</a></h3>
 <p>To switch to unsafe Rust, use the <code>unsafe</code> keyword and then start a new block
-that holds the unsafe code. You can take four actions in unsafe Rust, called
+that holds the unsafe code. You can take five actions in unsafe Rust, called
 <em>unsafe superpowers</em>, that you can’t in safe Rust. Those superpowers include
 the ability to:</p>
 <ul>
@@ -187,13 +187,13 @@ the ability to:</p>
 <p>It’s important to understand that <code>unsafe</code> doesn’t turn off the borrow checker
 or disable any other of Rust’s safety checks: if you use a reference in unsafe
 code, it will still be checked. The <code>unsafe</code> keyword only gives you access to
-these four features that are then not checked by the compiler for memory
+these five features that are then not checked by the compiler for memory
 safety. You’ll still get some degree of safety inside of an unsafe block.</p>
 <p>In addition, <code>unsafe</code> does not mean the code inside the block is necessarily
 dangerous or that it will definitely have memory safety problems: the intent is
 that as the programmer, you’ll ensure the code inside an <code>unsafe</code> block will
 access memory in a valid way.</p>
-<p>People are fallible, and mistakes will happen, but by requiring these four
+<p>People are fallible, and mistakes will happen, but by requiring these five
 unsafe operations to be inside blocks annotated with <code>unsafe</code> you’ll know that
 any errors related to memory safety must be within an <code>unsafe</code> block. Keep
 <code>unsafe</code> blocks small; you’ll be thankful later when you investigate memory
@@ -206,7 +206,7 @@ audited. Wrapping unsafe code in a safe abstraction prevents uses of <code>unsaf
 from leaking out into all the places that you or your users might want to use
 the functionality implemented with <code>unsafe</code> code, because using a safe
 abstraction is safe.</p>
-<p>Let’s look at each of the four unsafe superpowers in turn. We’ll also look at
+<p>Let’s look at each of the five unsafe superpowers in turn. We’ll also look at
 some abstractions that provide a safe interface to unsafe code.</p>
 <h3><a class="header" href="#dereferencing-a-raw-pointer" id="dereferencing-a-raw-pointer">Dereferencing a Raw Pointer</a></h3>
 <p>In Chapter 4, in the <a href="ch04-02-references-and-borrowing.html#dangling-references">“Dangling References”</a><!-- ignore
@@ -230,13 +230,11 @@ guaranteed safety in exchange for greater performance or the ability to
 interface with another language or hardware where Rust’s guarantees don’t apply.</p>
 <p>Listing 19-1 shows how to create an immutable and a mutable raw pointer from
 references.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut num = 5;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut num = 5;
 
-let r1 = &amp;num as *const i32;
-let r2 = &amp;mut num as *mut i32;
+    let r1 = &amp;num as *const i32;
+    let r2 = &amp;mut num as *mut i32;
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-1: Creating raw pointers from references</span></p>
@@ -254,11 +252,9 @@ memory. Trying to use arbitrary memory is undefined: there might be data at
 that address or there might not, the compiler might optimize the code so there
 is no memory access, or the program might error with a segmentation fault.
 Usually, there is no good reason to write code like this, but it is possible.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let address = 0x012345usize;
-let r = address as *const i32;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let address = 0x012345usize;
+    let r = address as *const i32;
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-2: Creating a raw pointer to an arbitrary
@@ -266,18 +262,16 @@ memory address</span></p>
 <p>Recall that we can create raw pointers in safe code, but we can’t <em>dereference</em>
 raw pointers and read the data being pointed to. In Listing 19-3, we use the
 dereference operator <code>*</code> on a raw pointer that requires an <code>unsafe</code> block.</p>
-<pre><pre class="playpen"><code class="language-rust unsafe">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut num = 5;
+<pre><pre class="playpen"><code class="language-rust unsafe"><span class="boring">fn main() {
+</span>    let mut num = 5;
 
-let r1 = &amp;num as *const i32;
-let r2 = &amp;mut num as *mut i32;
+    let r1 = &amp;num as *const i32;
+    let r2 = &amp;mut num as *mut i32;
 
-unsafe {
-    println!(&quot;r1 is: {}&quot;, *r1);
-    println!(&quot;r2 is: {}&quot;, *r2);
-}
+    unsafe {
+        println!(&quot;r1 is: {}&quot;, *r1);
+        println!(&quot;r2 is: {}&quot;, *r2);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-3: Dereferencing raw pointers within an
@@ -310,23 +304,32 @@ we’re saying that we’ve read this function’s documentation and take
 responsibility for upholding the function’s contracts.</p>
 <p>Here is an unsafe function named <code>dangerous</code> that doesn’t do anything in its
 body:</p>
-<pre><pre class="playpen"><code class="language-rust unsafe">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>unsafe fn dangerous() {}
+<pre><pre class="playpen"><code class="language-rust unsafe"><span class="boring">fn main() {
+</span>    unsafe fn dangerous() {}
 
-unsafe {
-    dangerous();
-}
+    unsafe {
+        dangerous();
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>We must call the <code>dangerous</code> function within a separate <code>unsafe</code> block. If we
 try to call <code>dangerous</code> without the <code>unsafe</code> block, we’ll get an error:</p>
-<pre><code class="language-text">error[E0133]: call to unsafe function requires unsafe function or block
- --&gt;
+<pre><code class="language-text">$ cargo run
+   Compiling unsafe-example v0.1.0 (file:///projects/unsafe-example)
+error[E0133]: call to unsafe function is unsafe and requires unsafe function or block
+ --&gt; src/main.rs:4:5
   |
 4 |     dangerous();
   |     ^^^^^^^^^^^ call to unsafe function
+  |
+  = note: consult the function's documentation for information on how to avoid undefined behavior
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0133`.
+error: could not compile `unsafe-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>By inserting the <code>unsafe</code> block around our call to <code>dangerous</code>, we’re asserting
 to Rust that we’ve read the function’s documentation, we understand how to use
@@ -343,17 +346,15 @@ library, <code>split_at_mut</code>, that requires some unsafe code and explore h
 might implement it. This safe method is defined on mutable slices: it takes one
 slice and makes it two by splitting the slice at the index given as an
 argument. Listing 19-4 shows how to use <code>split_at_mut</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut v = vec![1, 2, 3, 4, 5, 6];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut v = vec![1, 2, 3, 4, 5, 6];
 
-let r = &amp;mut v[..];
+    let r = &amp;mut v[..];
 
-let (a, b) = r.split_at_mut(3);
+    let (a, b) = r.split_at_mut(3);
 
-assert_eq!(a, &amp;mut [1, 2, 3]);
-assert_eq!(b, &amp;mut [4, 5, 6]);
+    assert_eq!(a, &amp;mut [1, 2, 3]);
+    assert_eq!(b, &amp;mut [4, 5, 6]);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-4: Using the safe <code>split_at_mut</code>
@@ -367,10 +368,14 @@ of <code>i32</code> values rather than for a generic type <code>T</code>.</p>
 
     assert!(mid &lt;= len);
 
-    (&amp;mut slice[..mid],
-     &amp;mut slice[mid..])
+    (&amp;mut slice[..mid], &amp;mut slice[mid..])
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let mut vector = vec![1, 2, 3, 4, 5, 6];
+</span><span class="boring">    let (left, right) = split_at_mut(&amp;mut vector, 3);
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 19-5: An attempted implementation of
 <code>split_at_mut</code> using only safe Rust</span></p>
 <p>This function first gets the total length of the slice. Then it asserts that
@@ -382,15 +387,27 @@ before it attempts to use that index.</p>
 original slice to the <code>mid</code> index and another from <code>mid</code> to the end of the
 slice.</p>
 <p>When we try to compile the code in Listing 19-5, we’ll get an error.</p>
-<pre><code class="language-text">error[E0499]: cannot borrow `*slice` as mutable more than once at a time
- --&gt;
+<pre><code class="language-text">$ cargo run
+   Compiling unsafe-example v0.1.0 (file:///projects/unsafe-example)
+error[E0499]: cannot borrow `*slice` as mutable more than once at a time
+ --&gt; src/main.rs:6:30
   |
-6 |     (&amp;mut slice[..mid],
-  |           ----- first mutable borrow occurs here
-7 |      &amp;mut slice[mid..])
-  |           ^^^^^ second mutable borrow occurs here
-8 | }
-  | - first borrow ends here
+1 | fn split_at_mut(slice: &amp;mut [i32], mid: usize) -&gt; (&amp;mut [i32], &amp;mut [i32]) {
+  |                        - let's call the lifetime of this reference `'1`
+...
+6 |     (&amp;mut slice[..mid], &amp;mut slice[mid..])
+  |     -------------------------^^^^^--------
+  |     |     |                  |
+  |     |     |                  second mutable borrow occurs here
+  |     |     first mutable borrow occurs here
+  |     returning this value requires that `*slice` is borrowed for `'1`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0499`.
+error: could not compile `unsafe-example`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Rust’s borrow checker can’t understand that we’re borrowing different parts of
 the slice; it only knows that we’re borrowing from the same slice twice.
@@ -399,10 +416,7 @@ slices aren’t overlapping, but Rust isn’t smart enough to know this. When we
 know code is okay, but Rust doesn’t, it’s time to reach for unsafe code.</p>
 <p>Listing 19-6 shows how to use an <code>unsafe</code> block, a raw pointer, and some calls
 to unsafe functions to make the implementation of <code>split_at_mut</code> work.</p>
-<pre><pre class="playpen"><code class="language-rust unsafe">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::slice;
+<pre><pre class="playpen"><code class="language-rust unsafe">use std::slice;
 
 fn split_at_mut(slice: &amp;mut [i32], mid: usize) -&gt; (&amp;mut [i32], &amp;mut [i32]) {
     let len = slice.len();
@@ -411,11 +425,17 @@ fn split_at_mut(slice: &amp;mut [i32], mid: usize) -&gt; (&amp;mut [i32], &amp;m
     assert!(mid &lt;= len);
 
     unsafe {
-        (slice::from_raw_parts_mut(ptr, mid),
-         slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid))
+        (
+            slice::from_raw_parts_mut(ptr, mid),
+            slice::from_raw_parts_mut(ptr.add(mid), len - mid),
+        )
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let mut vector = vec![1, 2, 3, 4, 5, 6];
+</span><span class="boring">    let (left, right) = split_at_mut(&amp;mut vector, 3);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-6: Using unsafe code in the implementation of
 the <code>split_at_mut</code> function</span></p>
@@ -428,15 +448,15 @@ mutable slice to <code>i32</code> values, <code>as_mut_ptr</code> returns a raw 
 <p>We keep the assertion that the <code>mid</code> index is within the slice. Then we get to
 the unsafe code: the <code>slice::from_raw_parts_mut</code> function takes a raw pointer
 and a length, and it creates a slice. We use this function to create a slice
-that starts from <code>ptr</code> and is <code>mid</code> items long. Then we call the <code>offset</code>
+that starts from <code>ptr</code> and is <code>mid</code> items long. Then we call the <code>add</code>
 method on <code>ptr</code> with <code>mid</code> as an argument to get a raw pointer that starts at
 <code>mid</code>, and we create a slice using that pointer and the remaining number of
 items after <code>mid</code> as the length.</p>
 <p>The function <code>slice::from_raw_parts_mut</code> is unsafe because it takes a raw
-pointer and must trust that this pointer is valid. The <code>offset</code> method on raw
+pointer and must trust that this pointer is valid. The <code>add</code> method on raw
 pointers is also unsafe, because it must trust that the offset location is also
 a valid pointer. Therefore, we had to put an <code>unsafe</code> block around our calls to
-<code>slice::from_raw_parts_mut</code> and <code>offset</code> so we could call them. By looking at
+<code>slice::from_raw_parts_mut</code> and <code>add</code> so we could call them. By looking at
 the code and by adding the assertion that <code>mid</code> must be less than or equal to
 <code>len</code>, we can tell that all the raw pointers used within the <code>unsafe</code> block
 will be valid pointers to data within the slice. This is an acceptable and
@@ -449,17 +469,13 @@ data this function has access to.</p>
 <p>In contrast, the use of <code>slice::from_raw_parts_mut</code> in Listing 19-7 would
 likely crash when the slice is used. This code takes an arbitrary memory
 location and creates a slice 10,000 items long.</p>
-<pre><pre class="playpen"><code class="language-rust unsafe">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::slice;
+<pre><pre class="playpen"><code class="language-rust unsafe"><span class="boring">fn main() {
+</span>    use std::slice;
 
-let address = 0x01234usize;
-let r = address as *mut i32;
+    let address = 0x01234usize;
+    let r = address as *mut i32;
 
-let slice: &amp;[i32] = unsafe {
-    slice::from_raw_parts_mut(r, 10000)
-};
+    let slice: &amp;[i32] = unsafe { slice::from_raw_parts_mut(r, 10000) };
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 19-7: Creating a slice from an arbitrary memory
@@ -589,18 +605,16 @@ A trait is unsafe when at least one of its methods has some invariant that the
 compiler can’t verify. We can declare that a trait is <code>unsafe</code> by adding the
 <code>unsafe</code> keyword before <code>trait</code> and marking the implementation of the trait as
 <code>unsafe</code> too, as shown in Listing 19-11.</p>
-<pre><pre class="playpen"><code class="language-rust unsafe">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>unsafe trait Foo {
+<pre><pre class="playpen"><code class="language-rust unsafe">unsafe trait Foo {
     // methods go here
 }
 
 unsafe impl Foo for i32 {
     // method implementations go here
 }
-<span class="boring">}
-</span></code></pre></pre>
+
+fn main() {}
+</code></pre></pre>
 <p><span class="caption">Listing 19-11: Defining and implementing an unsafe
 trait</span></p>
 <p>By using <code>unsafe impl</code>, we’re promising that we’ll uphold the invariants that
@@ -615,12 +629,18 @@ and we want to mark that type as <code>Send</code> or <code>Sync</code>, we must
 can’t verify that our type upholds the guarantees that it can be safely sent
 across threads or accessed from multiple threads; therefore, we need to do
 those checks manually and indicate as such with <code>unsafe</code>.</p>
+<h3><a class="header" href="#accessing-fields-of-a-union" id="accessing-fields-of-a-union">Accessing Fields of a Union</a></h3>
+<p>A <code>union</code> is similar to a <code>struct</code>, but only one declared field is used in a
+particular instance at one time. Unions are primarily used to interface with
+unions in C code. Accessing union fields is unsafe because Rust can’t guarantee
+the type of the data currently being stored in the union instance. You can
+learn more about unions in <a href="../reference/items/unions.html">the reference</a>.</p>
 <h3><a class="header" href="#when-to-use-unsafe-code" id="when-to-use-unsafe-code">When to Use Unsafe Code</a></h3>
-<p>Using <code>unsafe</code> to take one of the four actions (superpowers) just discussed
+<p>Using <code>unsafe</code> to take one of the five actions (superpowers) just discussed
 isn’t wrong or even frowned upon. But it is trickier to get <code>unsafe</code> code
 correct because the compiler can’t help uphold memory safety. When you have a
 reason to use <code>unsafe</code> code, you can do so, and having the explicit <code>unsafe</code>
-annotation makes it easier to track down the source of problems if they occur.</p>
+annotation makes it easier to track down the source of problems when they occur.</p>
 
                     </main>
 

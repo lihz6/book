@@ -164,6 +164,8 @@ macros, static values, attributes, types, traits, or lifetimes.</p>
 <ul>
 <li><code>as</code> - perform primitive casting, disambiguate the specific trait containing
 an item, or rename items in <code>use</code> and <code>extern crate</code> statements</li>
+<li><code>async</code> -  return a <code>Future</code> instead of blocking the current thread</li>
+<li><code>await</code> - suspend execution until the result of a <code>Future</code> is ready</li>
 <li><code>break</code> - exit a loop immediately</li>
 <li><code>const</code> - define constant items or constant raw pointers</li>
 <li><code>continue</code> - continue to the next loop iteration</li>
@@ -189,7 +191,7 @@ higher-ranked lifetime</li>
 <li><code>pub</code> - denote public visibility in struct fields, <code>impl</code> blocks, or modules</li>
 <li><code>ref</code> - bind by reference</li>
 <li><code>return</code> - return from function</li>
-<li><code>Self</code> - a type alias for the type implementing a trait</li>
+<li><code>Self</code> - a type alias for the type we are defining or implementing</li>
 <li><code>self</code> - method subject or current module</li>
 <li><code>static</code> - global variable or lifetime lasting the entire program execution</li>
 <li><code>struct</code> - define a structure</li>
@@ -207,8 +209,6 @@ higher-ranked lifetime</li>
 for potential future use.</p>
 <ul>
 <li><code>abstract</code></li>
-<li><code>async</code></li>
-<li><code>await</code></li>
 <li><code>become</code></li>
 <li><code>box</code></li>
 <li><code>do</code></li>

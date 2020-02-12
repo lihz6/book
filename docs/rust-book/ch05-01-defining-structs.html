@@ -163,16 +163,14 @@ struct’s name should describe the significance of the pieces of data being
 grouped together. Then, inside curly brackets, we define the names and types of
 the pieces of data, which we call <em>fields</em>. For example, Listing 5-1 shows a
 struct that stores information about a user account.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>struct User {
+<pre><pre class="playpen"><code class="language-rust">struct User {
     username: String,
     email: String,
     sign_in_count: u64,
     active: bool,
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-1: A <code>User</code> struct definition</span></p>
 <p>To use a struct after we’ve defined it, we create an <em>instance</em> of that struct
@@ -183,22 +181,20 @@ the same order in which we declared them in the struct. In other words, the
 struct definition is like a general template for the type, and instances fill
 in that template with particular data to create values of the type. For
 example, we can declare a particular user as shown in Listing 5-2.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
 </span><span class="boring">    active: bool,
 </span><span class="boring">}
 </span><span class="boring">
-</span>let user1 = User {
-    email: String::from(&quot;someone@example.com&quot;),
-    username: String::from(&quot;someusername123&quot;),
-    active: true,
-    sign_in_count: 1,
-};
+</span><span class="boring">fn main() {
+</span>    let user1 = User {
+        email: String::from(&quot;someone@example.com&quot;),
+        username: String::from(&quot;someusername123&quot;),
+        active: true,
+        sign_in_count: 1,
+    };
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-2: Creating an instance of the <code>User</code>
@@ -208,24 +204,22 @@ just this user’s email address, we could use <code>user1.email</code> wherever
 to use this value. If the instance is mutable, we can change a value by using
 the dot notation and assigning into a particular field. Listing 5-3 shows how
 to change the value in the <code>email</code> field of a mutable <code>User</code> instance.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
 </span><span class="boring">    active: bool,
 </span><span class="boring">}
 </span><span class="boring">
-</span>let mut user1 = User {
-    email: String::from(&quot;someone@example.com&quot;),
-    username: String::from(&quot;someusername123&quot;),
-    active: true,
-    sign_in_count: 1,
-};
+</span><span class="boring">fn main() {
+</span>    let mut user1 = User {
+        email: String::from(&quot;someone@example.com&quot;),
+        username: String::from(&quot;someusername123&quot;),
+        active: true,
+        sign_in_count: 1,
+    };
 
-user1.email = String::from(&quot;anotheremail@example.com&quot;);
+    user1.email = String::from(&quot;anotheremail@example.com&quot;);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-3: Changing the value in the <code>email</code> field of a
@@ -237,10 +231,7 @@ implicitly return that new instance.</p>
 <p>Listing 5-4 shows a <code>build_user</code> function that returns a <code>User</code> instance with
 the given email and username. The <code>active</code> field gets the value of <code>true</code>, and
 the <code>sign_in_count</code> gets a value of <code>1</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
@@ -255,7 +246,13 @@ the <code>sign_in_count</code> gets a value of <code>1</code>.</p>
         sign_in_count: 1,
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let user1 = build_user(
+</span><span class="boring">        String::from(&quot;someone@example.com&quot;),
+</span><span class="boring">        String::from(&quot;someusername123&quot;),
+</span><span class="boring">    );
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-4: A <code>build_user</code> function that takes an email
 and username and returns a <code>User</code> instance</span></p>
@@ -268,10 +265,7 @@ would get even more annoying. Luckily, there’s a convenient shorthand!</p>
 Listing 5-4, we can use the <em>field init shorthand</em> syntax to rewrite
 <code>build_user</code> so that it behaves exactly the same but doesn’t have the
 repetition of <code>email</code> and <code>username</code>, as shown in Listing 5-5.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
@@ -286,7 +280,13 @@ repetition of <code>email</code> and <code>username</code>, as shown in Listing 
         sign_in_count: 1,
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let user1 = build_user(
+</span><span class="boring">        String::from(&quot;someone@example.com&quot;),
+</span><span class="boring">        String::from(&quot;someusername123&quot;),
+</span><span class="boring">    );
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-5: A <code>build_user</code> function that uses field init
 shorthand because the <code>email</code> and <code>username</code> parameters have the same name as
@@ -302,29 +302,27 @@ instance’s values but changes some. You’ll do this using <em>struct update s
 <p>First, Listing 5-6 shows how we create a new <code>User</code> instance in <code>user2</code> without
 the update syntax. We set new values for <code>email</code> and <code>username</code> but otherwise
 use the same values from <code>user1</code> that we created in Listing 5-2.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
 </span><span class="boring">    active: bool,
 </span><span class="boring">}
 </span><span class="boring">
-</span><span class="boring">let user1 = User {
-</span><span class="boring">    email: String::from(&quot;someone@example.com&quot;),
-</span><span class="boring">    username: String::from(&quot;someusername123&quot;),
-</span><span class="boring">    active: true,
-</span><span class="boring">    sign_in_count: 1,
-</span><span class="boring">};
+</span><span class="boring">fn main() {
+</span><span class="boring">    let user1 = User {
+</span><span class="boring">        email: String::from(&quot;someone@example.com&quot;),
+</span><span class="boring">        username: String::from(&quot;someusername123&quot;),
+</span><span class="boring">        active: true,
+</span><span class="boring">        sign_in_count: 1,
+</span><span class="boring">    };
 </span><span class="boring">
-</span>let user2 = User {
-    email: String::from(&quot;another@example.com&quot;),
-    username: String::from(&quot;anotherusername567&quot;),
-    active: user1.active,
-    sign_in_count: user1.sign_in_count,
-};
+</span>    let user2 = User {
+        email: String::from(&quot;another@example.com&quot;),
+        username: String::from(&quot;anotherusername567&quot;),
+        active: user1.active,
+        sign_in_count: user1.sign_in_count,
+    };
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-6: Creating a new <code>User</code> instance using some of
@@ -332,28 +330,26 @@ the values from <code>user1</code></span></p>
 <p>Using struct update syntax, we can achieve the same effect with less code, as
 shown in Listing 5-7. The syntax <code>..</code> specifies that the remaining fields not
 explicitly set should have the same value as the fields in the given instance.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">struct User {
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">struct User {
 </span><span class="boring">    username: String,
 </span><span class="boring">    email: String,
 </span><span class="boring">    sign_in_count: u64,
 </span><span class="boring">    active: bool,
 </span><span class="boring">}
 </span><span class="boring">
-</span><span class="boring">let user1 = User {
-</span><span class="boring">    email: String::from(&quot;someone@example.com&quot;),
-</span><span class="boring">    username: String::from(&quot;someusername123&quot;),
-</span><span class="boring">    active: true,
-</span><span class="boring">    sign_in_count: 1,
-</span><span class="boring">};
+</span><span class="boring">fn main() {
+</span><span class="boring">    let user1 = User {
+</span><span class="boring">        email: String::from(&quot;someone@example.com&quot;),
+</span><span class="boring">        username: String::from(&quot;someusername123&quot;),
+</span><span class="boring">        active: true,
+</span><span class="boring">        sign_in_count: 1,
+</span><span class="boring">    };
 </span><span class="boring">
-</span>let user2 = User {
-    email: String::from(&quot;another@example.com&quot;),
-    username: String::from(&quot;anotherusername567&quot;),
-    ..user1
-};
+</span>    let user2 = User {
+        email: String::from(&quot;another@example.com&quot;),
+        username: String::from(&quot;anotherusername567&quot;),
+        ..user1
+    };
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-7: Using struct update syntax to set new
@@ -372,14 +368,12 @@ field as in a regular struct would be verbose or redundant.</p>
 <p>To define a tuple struct, start with the <code>struct</code> keyword and the struct name
 followed by the types in the tuple. For example, here are definitions and
 usages of two tuple structs named <code>Color</code> and <code>Point</code>:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>struct Color(i32, i32, i32);
-struct Point(i32, i32, i32);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    struct Color(i32, i32, i32);
+    struct Point(i32, i32, i32);
 
-let black = Color(0, 0, 0);
-let origin = Point(0, 0, 0);
+    let black = Color(0, 0, 0);
+    let origin = Point(0, 0, 0);
 <span class="boring">}
 </span></code></pre></pre>
 <p>Note that the <code>black</code> and <code>origin</code> values are different types, because they’re
@@ -408,6 +402,7 @@ discuss in Chapter 10. Lifetimes ensure that the data referenced by a struct
 is valid for as long as the struct is. Let’s say you try to store a reference
 in a struct without specifying lifetimes, like this, which won’t work:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
+<!-- CAN'T EXTRACT SEE https://github.com/rust-lang/mdBook/issues/1127 -->
 <pre><code class="language-rust ignore does_not_compile">struct User {
     username: &amp;str,
     email: &amp;str,
@@ -425,22 +420,37 @@ fn main() {
 }
 </code></pre>
 <p>The compiler will complain that it needs lifetime specifiers:</p>
-<pre><code class="language-text">error[E0106]: missing lifetime specifier
- --&gt;
+<pre><code class="language-text">$ cargo run
+   Compiling structs v0.1.0 (file:///projects/structs)
+error[E0106]: missing lifetime specifier
+ --&gt; src/main.rs:2:15
   |
 2 |     username: &amp;str,
   |               ^ expected lifetime parameter
 
 error[E0106]: missing lifetime specifier
- --&gt;
+ --&gt; src/main.rs:3:12
   |
 3 |     email: &amp;str,
   |            ^ expected lifetime parameter
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0106`.
+error: could not compile `structs`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>In Chapter 10, we’ll discuss how to fix these errors so you can store
 references in structs, but for now, we’ll fix errors like these using owned
 types like <code>String</code> instead of references like <code>&amp;str</code>.</p>
 </blockquote>
+<!-- manual-regeneration
+for the error above
+after running update-rustc.sh:
+pbcopy < listings/ch05-using-structs-to-structure-related-data/no-listing-02-reference-in-struct/output.txt
+paste above
+add `> ` before every line -->
 
                     </main>
 

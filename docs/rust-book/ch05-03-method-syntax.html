@@ -178,7 +178,10 @@ impl Rectangle {
 }
 
 fn main() {
-    let rect1 = Rectangle { width: 30, height: 50 };
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
 
     println!(
         &quot;The area of the rectangle is {} square pixels.&quot;,
@@ -228,6 +231,9 @@ one of the few places in Rust that has this behavior.</p>
 <p>Here’s how it works: when you call a method with <code>object.something()</code>, Rust
 automatically adds in <code>&amp;</code>, <code>&amp;mut</code>, or <code>*</code> so <code>object</code> matches the signature of
 the method. In other words, the following are the same:</p>
+</blockquote>
+<!-- CAN'T EXTRACT SEE BUG TODO -->
+<blockquote>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
@@ -267,9 +273,18 @@ to write the program shown in Listing 5-14, once we’ve defined the <code>can_h
 method.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><code class="language-rust ignore">fn main() {
-    let rect1 = Rectangle { width: 30, height: 50 };
-    let rect2 = Rectangle { width: 10, height: 40 };
-    let rect3 = Rectangle { width: 60, height: 45 };
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    let rect3 = Rectangle {
+        width: 60,
+        height: 45,
+    };
 
     println!(&quot;Can rect1 hold rect2? {}&quot;, rect1.can_hold(&amp;rect2));
     println!(&quot;Can rect1 hold rect3? {}&quot;, rect1.can_hold(&amp;rect3));
@@ -297,10 +312,7 @@ Boolean, and the implementation will check whether the width and height of
 respectively. Let’s add the new <code>can_hold</code> method to the <code>impl</code> block from
 Listing 5-13, shown in Listing 5-15.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">#[derive(Debug)]
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[derive(Debug)]
 </span><span class="boring">struct Rectangle {
 </span><span class="boring">    width: u32,
 </span><span class="boring">    height: u32,
@@ -315,7 +327,24 @@ Listing 5-13, shown in Listing 5-15.</p>
         self.width &gt; other.width &amp;&amp; self.height &gt; other.height
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let rect1 = Rectangle {
+</span><span class="boring">        width: 30,
+</span><span class="boring">        height: 50,
+</span><span class="boring">    };
+</span><span class="boring">    let rect2 = Rectangle {
+</span><span class="boring">        width: 10,
+</span><span class="boring">        height: 40,
+</span><span class="boring">    };
+</span><span class="boring">    let rect3 = Rectangle {
+</span><span class="boring">        width: 60,
+</span><span class="boring">        height: 45,
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Can rect1 hold rect2? {}&quot;, rect1.can_hold(&amp;rect2));
+</span><span class="boring">    println!(&quot;Can rect1 hold rect3? {}&quot;, rect1.can_hold(&amp;rect3));
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-15: Implementing the <code>can_hold</code> method on
 <code>Rectangle</code> that takes another <code>Rectangle</code> instance as a parameter</span></p>
@@ -336,10 +365,7 @@ that would have one dimension parameter and use that as both width and height,
 thus making it easier to create a square <code>Rectangle</code> rather than having to
 specify the same value twice:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">#[derive(Debug)]
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[derive(Debug)]
 </span><span class="boring">struct Rectangle {
 </span><span class="boring">    width: u32,
 </span><span class="boring">    height: u32,
@@ -347,10 +373,16 @@ specify the same value twice:</p>
 </span><span class="boring">
 </span>impl Rectangle {
     fn square(size: u32) -&gt; Rectangle {
-        Rectangle { width: size, height: size }
+        Rectangle {
+            width: size,
+            height: size,
+        }
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let sq = Rectangle::square(3);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>To call this associated function, we use the <code>::</code> syntax with the struct name;
 <code>let sq = Rectangle::square(3);</code> is an example. This function is namespaced by
@@ -360,10 +392,7 @@ namespaces created by modules. We’ll discuss modules in Chapter 7.</p>
 <p>Each struct is allowed to have multiple <code>impl</code> blocks. For example, Listing
 5-15 is equivalent to the code shown in Listing 5-16, which has each method
 in its own <code>impl</code> block.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">#[derive(Debug)]
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[derive(Debug)]
 </span><span class="boring">struct Rectangle {
 </span><span class="boring">    width: u32,
 </span><span class="boring">    height: u32,
@@ -380,7 +409,24 @@ impl Rectangle {
         self.width &gt; other.width &amp;&amp; self.height &gt; other.height
     }
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let rect1 = Rectangle {
+</span><span class="boring">        width: 30,
+</span><span class="boring">        height: 50,
+</span><span class="boring">    };
+</span><span class="boring">    let rect2 = Rectangle {
+</span><span class="boring">        width: 10,
+</span><span class="boring">        height: 40,
+</span><span class="boring">    };
+</span><span class="boring">    let rect3 = Rectangle {
+</span><span class="boring">        width: 60,
+</span><span class="boring">        height: 45,
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Can rect1 hold rect2? {}&quot;, rect1.can_hold(&amp;rect2));
+</span><span class="boring">    println!(&quot;Can rect1 hold rect3? {}&quot;, rect1.can_hold(&amp;rect3));
+</span><span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 5-16: Rewriting Listing 5-15 using multiple <code>impl</code>
 blocks</span></p>

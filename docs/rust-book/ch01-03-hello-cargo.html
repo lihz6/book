@@ -185,8 +185,10 @@ our project <em>hello_cargo</em>, and Cargo creates its files in a directory of 
 same name.</p>
 <p>Go into the <em>hello_cargo</em> directory and list the files. You’ll see that Cargo
 has generated two files and one directory for us: a <em>Cargo.toml</em> file and a
-<em>src</em> directory with a <em>main.rs</em> file inside. It has also initialized a new Git
-repository along with a <em>.gitignore</em> file.</p>
+<em>src</em> directory with a <em>main.rs</em> file inside.</p>
+<p>It has also initialized a new Git repository along with a <em>.gitignore</em> file.
+Git files won’t be generated if you run <code>cargo new</code> within an existing Git
+repository; you can override this behavior by using <code>cargo new --vcs=git</code>.</p>
 <blockquote>
 <p>Note: Git is a common version control system. You can change <code>cargo new</code> to
 use a different version control system or no version control system by using

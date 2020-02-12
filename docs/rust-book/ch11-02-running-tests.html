@@ -230,23 +230,31 @@ mod tests {
 <p><span class="caption">Listing 11-10: Tests for a function that calls
 <code>println!</code></span></p>
 <p>When we run these tests with <code>cargo test</code>, we’ll see the following output:</p>
-<pre><code class="language-text">running 2 tests
-test tests::this_test_will_pass ... ok
+<pre><code class="language-text">$ cargo test
+   Compiling silly-function v0.1.0 (file:///projects/silly-function)
+    Finished test [unoptimized + debuginfo] target(s) in 0.58s
+     Running target/debug/deps/silly_function-160869f38cff9166
+
+running 2 tests
 test tests::this_test_will_fail ... FAILED
+test tests::this_test_will_pass ... ok
 
 failures:
 
 ---- tests::this_test_will_fail stdout ----
 I got the value 8
-thread 'tests::this_test_will_fail' panicked at 'assertion failed: `(left == right)`
+thread 'main' panicked at 'assertion failed: `(left == right)`
   left: `5`,
  right: `10`', src/lib.rs:19:9
-note: Run with `RUST_BACKTRACE=1` for a backtrace.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
+
 
 failures:
     tests::this_test_will_fail
 
 test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+
+error: test failed, to rerun pass '--lib'
 </code></pre>
 <p>Note that nowhere in this output do we see <code>I got the value 4</code>, which is what
 is printed when the test that passes runs. That output has been captured. The
@@ -258,9 +266,14 @@ to also show the output of successful tests at the end with <code>--show-output<
 </code></pre>
 <p>When we run the tests in Listing 11-10 again with the <code>--show-output</code> flag, we
 see the following output:</p>
-<pre><code class="language-text">running 2 tests
-test tests::this_test_will_pass ... ok
+<pre><code class="language-text">$ cargo test -- --show-output
+   Compiling silly-function v0.1.0 (file:///projects/silly-function)
+    Finished test [unoptimized + debuginfo] target(s) in 0.60s
+     Running target/debug/deps/silly_function-160869f38cff9166
+
+running 2 tests
 test tests::this_test_will_fail ... FAILED
+test tests::this_test_will_pass ... ok
 
 successes:
 
@@ -275,7 +288,7 @@ failures:
 
 ---- tests::this_test_will_fail stdout ----
 I got the value 8
-thread 'tests::this_test_will_fail' panicked at 'assertion failed: `(left == right)`
+thread 'main' panicked at 'assertion failed: `(left == right)`
   left: `5`,
  right: `10`', src/lib.rs:19:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
@@ -285,6 +298,8 @@ failures:
     tests::this_test_will_fail
 
 test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+
+error: test failed, to rerun pass '--lib'
 </code></pre>
 <h3><a class="header" href="#running-a-subset-of-tests-by-name" id="running-a-subset-of-tests-by-name">Running a Subset of Tests by Name</a></h3>
 <p>Sometimes, running a full test suite can take a long time. If you’re working on
@@ -326,23 +341,37 @@ mod tests {
 names</span></p>
 <p>If we run the tests without passing any arguments, as we saw earlier, all the
 tests will run in parallel:</p>
-<pre><code class="language-text">running 3 tests
-test tests::add_two_and_two ... ok
+<pre><code class="language-text">$ cargo test
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.62s
+     Running target/debug/deps/adder-92948b65e88960b4
+
+running 3 tests
 test tests::add_three_and_two ... ok
+test tests::add_two_and_two ... ok
 test tests::one_hundred ... ok
 
 test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+   Doc-tests adder
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <h4><a class="header" href="#running-single-tests" id="running-single-tests">Running Single Tests</a></h4>
 <p>We can pass the name of any test function to <code>cargo test</code> to run only that test:</p>
 <pre><code class="language-text">$ cargo test one_hundred
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
-     Running target/debug/deps/adder-06a75b4a1f2515e9
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.69s
+     Running target/debug/deps/adder-92948b65e88960b4
 
 running 1 test
 test tests::one_hundred ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out
+
 </code></pre>
 <p>Only the test with the name <code>one_hundred</code> ran; the other two tests didn’t match
 that name. The test output lets us know we had more tests than what this
@@ -354,14 +383,16 @@ given to <code>cargo test</code> will be used. But there is a way to run multipl
 will be run. For example, because two of our tests’ names contain <code>add</code>, we can
 run those two by running <code>cargo test add</code>:</p>
 <pre><code class="language-text">$ cargo test add
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
-     Running target/debug/deps/adder-06a75b4a1f2515e9
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.61s
+     Running target/debug/deps/adder-92948b65e88960b4
 
 running 2 tests
-test tests::add_two_and_two ... ok
 test tests::add_three_and_two ... ok
+test tests::add_two_and_two ... ok
 
 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out
+
 </code></pre>
 <p>This command ran all tests with <code>add</code> in the name and filtered out the test
 named <code>one_hundred</code>. Also note that the module in which a test appears becomes
@@ -374,10 +405,7 @@ listing as arguments all tests you do want to run, you can instead annotate the
 time-consuming tests using the <code>ignore</code> attribute to exclude them, as shown
 here:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><pre class="playpen"><code class="language-rust">#[test]
 fn it_works() {
     assert_eq!(2 + 2, 4);
 }
@@ -387,31 +415,47 @@ fn it_works() {
 fn expensive_test() {
     // code that takes an hour to run
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p>After <code>#[test]</code> we add the <code>#[ignore]</code> line to the test we want to exclude. Now
 when we run our tests, <code>it_works</code> runs, but <code>expensive_test</code> doesn’t:</p>
 <pre><code class="language-text">$ cargo test
    Compiling adder v0.1.0 (file:///projects/adder)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.24 secs
-     Running target/debug/deps/adder-ce99bcc2479f4607
+    Finished test [unoptimized + debuginfo] target(s) in 0.60s
+     Running target/debug/deps/adder-92948b65e88960b4
 
 running 2 tests
 test expensive_test ... ignored
 test it_works ... ok
 
 test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out
+
+   Doc-tests adder
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <p>The <code>expensive_test</code> function is listed as <code>ignored</code>. If we want to run only
 the ignored tests, we can use <code>cargo test -- --ignored</code>:</p>
 <pre><code class="language-text">$ cargo test -- --ignored
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
-     Running target/debug/deps/adder-ce99bcc2479f4607
+   Compiling adder v0.1.0 (file:///projects/adder)
+    Finished test [unoptimized + debuginfo] target(s) in 0.61s
+     Running target/debug/deps/adder-92948b65e88960b4
 
 running 1 test
 test expensive_test ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out
+
+   Doc-tests adder
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
 </code></pre>
 <p>By controlling which tests run, you can make sure your <code>cargo test</code> results
 will be fast. When you’re at a point where it makes sense to check the results

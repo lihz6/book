@@ -278,17 +278,25 @@ lock so another thread can acquire it.</p>
 that point, the main thread will acquire the lock and print the result of this
 program.</p>
 <p>We hinted that this example wouldn’t compile. Now let’s find out why!</p>
-<pre><code class="language-text">error[E0382]: use of moved value: `counter`
+<pre><code class="language-text">$ cargo run
+   Compiling shared-state v0.1.0 (file:///projects/shared-state)
+error[E0382]: use of moved value: `counter`
   --&gt; src/main.rs:9:36
    |
+5  |     let counter = Mutex::new(0);
+   |         ------- move occurs because `counter` has type `std::sync::Mutex&lt;i32&gt;`, which does not implement the `Copy` trait
+...
 9  |         let handle = thread::spawn(move || {
-   |                                    ^^^^^^^ value moved into closure here,
-in previous iteration of loop
+   |                                    ^^^^^^^ value moved into closure here, in previous iteration of loop
 10 |             let mut num = counter.lock().unwrap();
    |                           ------- use occurs due to use in closure
-   |
-   = note: move occurs because `counter` has type `std::sync::Mutex&lt;i32&gt;`,
-which does not implement the `Copy` trait
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `shared-state`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The error message states that the <code>counter</code> value was moved in the previous
 iteration of the loop. So Rust is telling us that we can’t move the ownership
@@ -331,19 +339,23 @@ fn main() {
 multiple threads to own the <code>Mutex&lt;T&gt;</code></span></p>
 <p>Once again, we compile and get... different errors! The compiler is teaching us
 a lot.</p>
-<pre><code class="language-text">error[E0277]: `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;` cannot be sent between threads safely
-  --&gt; src/main.rs:11:22
-   |
-11 |         let handle = thread::spawn(move || {
-   |                      ^^^^^^^^^^^^^ `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;`
-cannot be sent between threads safely
-   |
-   = help: within `[closure@src/main.rs:11:36: 14:10
-counter:std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;]`, the trait `std::marker::Send`
-is not implemented for `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;`
-   = note: required because it appears within the type
-`[closure@src/main.rs:11:36: 14:10 counter:std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;]`
-   = note: required by `std::thread::spawn`
+<pre><code class="language-text">$ cargo run
+   Compiling shared-state v0.1.0 (file:///projects/shared-state)
+error[E0277]: `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;` cannot be sent between threads safely
+   --&gt; src/main.rs:11:22
+    |
+11  |         let handle = thread::spawn(move || {
+    |                      ^^^^^^^^^^^^^ `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;` cannot be sent between threads safely
+    |
+    = help: within `[closure@src/main.rs:11:36: 15:10 counter:std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;]`, the trait `std::marker::Send` is not implemented for `std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;`
+    = note: required because it appears within the type `[closure@src/main.rs:11:36: 15:10 counter:std::rc::Rc&lt;std::sync::Mutex&lt;i32&gt;&gt;]`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `shared-state`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Wow, that error message is very wordy! Here’s the important part to focus
 on: <code>`Rc&lt;Mutex&lt;i32&gt;&gt;` cannot be sent between threads safely</code>. The compiler
@@ -376,7 +388,7 @@ guarantees atomics provide.</p>
 our program by changing the <code>use</code> line, the call to <code>new</code>, and the call to
 <code>clone</code>. The code in Listing 16-15 will finally compile and run:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">use std::sync::{Mutex, Arc};
+<pre><pre class="playpen"><code class="language-rust">use std::sync::{Arc, Mutex};
 use std::thread;
 
 fn main() {
@@ -403,6 +415,9 @@ fn main() {
 <p><span class="caption">Listing 16-15: Using an <code>Arc&lt;T&gt;</code> to wrap the <code>Mutex&lt;T&gt;</code>
 to be able to share ownership across multiple threads</span></p>
 <p>This code will print the following:</p>
+<!-- Not extracting output because changes to this output aren't significant;
+the changes are likely to be due to the threads running differently rather than
+changes in the compiler -->
 <pre><code class="language-text">Result: 10
 </code></pre>
 <p>We did it! We counted from 0 to 10, which may not seem very impressive, but it

@@ -168,10 +168,7 @@ ownership, so this is fine. But what should we return? We don’t really have a
 way to talk about <em>part</em> of a string. However, we could return the index of the
 end of the word. Let’s try that, as shown in Listing 4-7.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>fn first_word(s: &amp;String) -&gt; usize {
+<pre><pre class="playpen"><code class="language-rust">fn first_word(s: &amp;String) -&gt; usize {
     let bytes = s.as_bytes();
 
     for (i, &amp;item) in bytes.iter().enumerate() {
@@ -182,18 +179,43 @@ end of the word. Let’s try that, as shown in Listing 4-7.</p>
 
     s.len()
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 4-7: The <code>first_word</code> function that returns a
 byte index value into the <code>String</code> parameter</span></p>
 <p>Because we need to go through the <code>String</code> element by element and check whether
 a value is a space, we’ll convert our <code>String</code> to an array of bytes using the
 <code>as_bytes</code> method:</p>
-<pre><code class="language-rust ignore">let bytes = s.as_bytes();
-</code></pre>
+<pre><code class="language-rust ignore"><span class="boring">fn first_word(s: &amp;String) -&gt; usize {
+</span>    let bytes = s.as_bytes();
+<span class="boring">
+</span><span class="boring">    for (i, &amp;item) in bytes.iter().enumerate() {
+</span><span class="boring">        if item == b' ' {
+</span><span class="boring">            return i;
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    s.len()
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p>Next, we create an iterator over the array of bytes using the <code>iter</code> method:</p>
-<pre><code class="language-rust ignore">for (i, &amp;item) in bytes.iter().enumerate() {
-</code></pre>
+<pre><code class="language-rust ignore"><span class="boring">fn first_word(s: &amp;String) -&gt; usize {
+</span><span class="boring">    let bytes = s.as_bytes();
+</span><span class="boring">
+</span>    for (i, &amp;item) in bytes.iter().enumerate() {
+<span class="boring">        if item == b' ' {
+</span><span class="boring">            return i;
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    s.len()
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p>We’ll discuss iterators in more detail in Chapter 13. For now, know that <code>iter</code>
 is a method that returns each element in a collection and that <code>enumerate</code>
 wraps the result of <code>iter</code> and returns each element as part of a tuple instead.
@@ -208,13 +230,20 @@ from <code>.iter().enumerate()</code>, we use <code>&amp;</code> in the pattern.
 <p>Inside the <code>for</code> loop, we search for the byte that represents the space by
 using the byte literal syntax. If we find a space, we return the position.
 Otherwise, we return the length of the string by using <code>s.len()</code>:</p>
-<pre><code class="language-rust ignore">    if item == b' ' {
-        return i;
+<pre><code class="language-rust ignore"><span class="boring">fn first_word(s: &amp;String) -&gt; usize {
+</span><span class="boring">    let bytes = s.as_bytes();
+</span><span class="boring">
+</span><span class="boring">    for (i, &amp;item) in bytes.iter().enumerate() {
+</span>        if item == b' ' {
+            return i;
+        }
     }
-}
 
-s.len()
-</code></pre>
+    s.len()
+<span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p>We now have a way to find out the index of the end of the first word in the
 string, but there’s a problem. We’re returning a <code>usize</code> on its own, but it’s
 only a meaningful number in the context of the <code>&amp;String</code>. In other words,
@@ -264,13 +293,11 @@ need to be kept in sync.</p>
 <p>Luckily, Rust has a solution to this problem: string slices.</p>
 <h3><a class="header" href="#string-slices" id="string-slices">String Slices</a></h3>
 <p>A <em>string slice</em> is a reference to part of a <code>String</code>, and it looks like this:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s = String::from(&quot;hello world&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s = String::from(&quot;hello world&quot;);
 
-let hello = &amp;s[0..5];
-let world = &amp;s[6..11];
+    let hello = &amp;s[0..5];
+    let world = &amp;s[6..11];
 <span class="boring">}
 </span></code></pre></pre>
 <p>This is similar to taking a reference to the whole <code>String</code> but with the extra
@@ -335,10 +362,7 @@ Text with Strings”</a><!-- ignore --> section of Chapter 8.</p>
 <p>With all this information in mind, let’s rewrite <code>first_word</code> to return a
 slice. The type that signifies “string slice” is written as <code>&amp;str</code>:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>fn first_word(s: &amp;String) -&gt; &amp;str {
+<pre><pre class="playpen"><code class="language-rust">fn first_word(s: &amp;String) -&gt; &amp;str {
     let bytes = s.as_bytes();
 
     for (i, &amp;item) in bytes.iter().enumerate() {
@@ -349,7 +373,8 @@ slice. The type that signifies “string slice” is written as <code>&amp;str</
 
     &amp;s[..]
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p>We get the index for the end of the word in the same way as we did in Listing
 4-7, by looking for the first occurrence of a space. When we find a space, we
@@ -371,7 +396,19 @@ string. Slices make this bug impossible and let us know we have a problem with
 our code much sooner. Using the slice version of <code>first_word</code> will throw a
 compile-time error:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore does_not_compile">fn main() {
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn first_word(s: &amp;String) -&gt; &amp;str {
+</span><span class="boring">    let bytes = s.as_bytes();
+</span><span class="boring">
+</span><span class="boring">    for (i, &amp;item) in bytes.iter().enumerate() {
+</span><span class="boring">        if item == b' ' {
+</span><span class="boring">            return &amp;s[0..i];
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    &amp;s[..]
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn main() {
     let mut s = String::from(&quot;hello world&quot;);
 
     let word = first_word(&amp;s);
@@ -382,17 +419,26 @@ compile-time error:</p>
 }
 </code></pre>
 <p>Here’s the compiler error:</p>
-<pre><code class="language-text">error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
+<pre><code class="language-text">$ cargo run
+   Compiling ownership v0.1.0 (file:///projects/ownership)
+error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immutable
   --&gt; src/main.rs:18:5
    |
 16 |     let word = first_word(&amp;s);
    |                           -- immutable borrow occurs here
-17 |
+17 | 
 18 |     s.clear(); // error!
    |     ^^^^^^^^^ mutable borrow occurs here
-19 |
+19 | 
 20 |     println!(&quot;the first word is: {}&quot;, word);
    |                                       ---- immutable borrow later used here
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0502`.
+error: could not compile `ownership`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>Recall from the borrowing rules that if we have an immutable reference to
 something, we cannot also take a mutable reference. Because <code>clear</code> needs to
@@ -420,7 +466,33 @@ one more improvement on <code>first_word</code>, and that’s its signature:</p>
 instead because it allows us to use the same function on both <code>&amp;String</code> values
 and <code>&amp;str</code> values.</p>
 <pre><code class="language-rust ignore">fn first_word(s: &amp;str) -&gt; &amp;str {
-</code></pre>
+<span class="boring">    let bytes = s.as_bytes();
+</span><span class="boring">
+</span><span class="boring">    for (i, &amp;item) in bytes.iter().enumerate() {
+</span><span class="boring">        if item == b' ' {
+</span><span class="boring">            return &amp;s[0..i];
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    &amp;s[..]
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let my_string = String::from(&quot;hello world&quot;);
+</span><span class="boring">
+</span><span class="boring">    // first_word works on slices of `String`s
+</span><span class="boring">    let word = first_word(&amp;my_string[..]);
+</span><span class="boring">
+</span><span class="boring">    let my_string_literal = &quot;hello world&quot;;
+</span><span class="boring">
+</span><span class="boring">    // first_word works on slices of string literals
+</span><span class="boring">    let word = first_word(&amp;my_string_literal[..]);
+</span><span class="boring">
+</span><span class="boring">    // Because string literals *are* string slices already,
+</span><span class="boring">    // this works too, without the slice syntax!
+</span><span class="boring">    let word = first_word(my_string_literal);
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 4-9: Improving the <code>first_word</code> function by using
 a string slice for the type of the <code>s</code> parameter</span></p>
 <p>If we have a string slice, we can pass that directly. If we have a <code>String</code>, we
@@ -439,6 +511,7 @@ without losing any functionality:</p>
 </span><span class="boring">
 </span><span class="boring">    &amp;s[..]
 </span><span class="boring">}
+</span><span class="boring">
 </span>fn main() {
     let my_string = String::from(&quot;hello world&quot;);
 

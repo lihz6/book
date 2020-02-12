@@ -231,6 +231,11 @@ better than documentation with examples. But nothing is worse than examples
 that don’t work because the code has changed since the documentation was
 written. If we run <code>cargo test</code> with the documentation for the <code>add_one</code>
 function from Listing 14-1, we will see a section in the test results like this:</p>
+<!-- manual-regeneration
+cd listings/ch14-more-about-cargo/listing-14-01/
+cargo test
+copy just the doc-tests section below
+-->
 <pre><code class="language-text">   Doc-tests my_crate
 
 running 1 test
@@ -259,7 +264,19 @@ shown in Listing 14-2:</p>
 
 /// Adds one to the number given.
 // --snip--
-</code></pre>
+<span class="boring">///
+</span><span class="boring">/// # Examples
+</span><span class="boring">///
+</span><span class="boring">/// ```
+</span><span class="boring">/// let arg = 5;
+</span><span class="boring">/// let answer = my_crate::add_one(arg);
+</span><span class="boring">///
+</span><span class="boring">/// assert_eq!(6, answer);
+</span><span class="boring">/// ```
+</span><span class="boring">pub fn add_one(x: i32) -&gt; i32 {
+</span><span class="boring">    x + 1
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 14-2: Documentation for the <code>my_crate</code> crate as a
 whole</span></p>
 <p>Notice there isn’t any code after the last line that begins with <code>//!</code>. Because
@@ -332,7 +349,8 @@ pub mod utils {
 <span class="boring">        SecondaryColor::Orange
 </span>    }
 }
-<span class="boring">fn main() {}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 14-3: An <code>art</code> library with items organized into
 <code>kinds</code> and <code>utils</code> modules</span></p>
@@ -384,11 +402,31 @@ pub use self::utils::mix;
 
 pub mod kinds {
     // --snip--
-}
+<span class="boring">    /// The primary colors according to the RYB color model.
+</span><span class="boring">    pub enum PrimaryColor {
+</span><span class="boring">        Red,
+</span><span class="boring">        Yellow,
+</span><span class="boring">        Blue,
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    /// The secondary colors according to the RYB color model.
+</span><span class="boring">    pub enum SecondaryColor {
+</span><span class="boring">        Orange,
+</span><span class="boring">        Green,
+</span><span class="boring">        Purple,
+</span><span class="boring">    }
+</span>}
 
 pub mod utils {
     // --snip--
-}
+<span class="boring">    use crate::kinds::*;
+</span><span class="boring">
+</span><span class="boring">    /// Combines two primary colors in equal amounts to create
+</span><span class="boring">    /// a secondary color.
+</span><span class="boring">    pub fn mix(c1: PrimaryColor, c2: PrimaryColor) -&gt; SecondaryColor {
+</span><span class="boring">        SecondaryColor::Orange
+</span><span class="boring">    }
+</span>}
 </code></pre>
 <p><span class="caption">Listing 14-5: Adding <code>pub use</code> statements to re-export
 items</span></p>
@@ -402,12 +440,15 @@ that lists the re-exports</span></p>
 14-3 as demonstrated in Listing 14-4, or they can use the more convenient
 structure in Listing 14-5, as shown in Listing 14-6:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">use art::PrimaryColor;
-use art::mix;
+<pre><code class="language-rust ignore">use art::mix;
+use art::PrimaryColor;
 
 fn main() {
     // --snip--
-}
+<span class="boring">    let red = PrimaryColor::Red;
+</span><span class="boring">    let yellow = PrimaryColor::Yellow;
+</span><span class="boring">    mix(red, yellow);
+</span>}
 </code></pre>
 <p><span class="caption">Listing 14-6: A program using the re-exported items from
 the <code>art</code> crate</span></p>
@@ -453,12 +494,17 @@ name = &quot;guessing_game&quot;
 </code></pre>
 <p>Even if you’ve chosen a unique name, when you run <code>cargo publish</code> to publish
 the crate at this point, you’ll get a warning and then an error:</p>
+<!-- manual-regeneration
+cd listings/ch14-more-about-cargo/listing-14-01/
+cargo publish
+copy just the relevant lines below
+-->
 <pre><code class="language-text">$ cargo publish
-    Updating registry `https://github.com/rust-lang/crates.io-index`
-warning: manifest has no description, license, license-file, documentation,
-homepage or repository.
+    Updating crates.io index
+warning: manifest has no description, license, license-file, documentation, homepage or repository.
+See https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info.
 --snip--
-error: api errors: missing or empty metadata fields: description, license.
+error: api errors (status 200 OK): missing or empty metadata fields: description, license. Please see https://doc.rust-lang.org/cargo/reference/manifest.html for how to upload metadata
 </code></pre>
 <p>The reason is that you’re missing some crucial information: a description and
 license are required so people will know what your crate does and under what
@@ -514,14 +560,19 @@ archive of code so that builds of all projects that depend on crates from
 version deletions would make fulfilling that goal impossible. However, there is
 no limit to the number of crate versions you can publish.</p>
 <p>Run the <code>cargo publish</code> command again. It should succeed now:</p>
+<!-- manual-regeneration
+go to some valid crate, publish a new version
+cargo publish
+copy just the relevant lines below
+-->
 <pre><code class="language-text">$ cargo publish
- Updating registry `https://github.com/rust-lang/crates.io-index`
-Packaging guessing_game v0.1.0 (file:///projects/guessing_game)
-Verifying guessing_game v0.1.0 (file:///projects/guessing_game)
-Compiling guessing_game v0.1.0
+    Updating crates.io index
+   Packaging guessing_game v0.1.0 (file:///projects/guessing_game)
+   Verifying guessing_game v0.1.0 (file:///projects/guessing_game)
+   Compiling guessing_game v0.1.0
 (file:///projects/guessing_game/target/package/guessing_game-0.1.0)
- Finished dev [unoptimized + debuginfo] target(s) in 0.19 secs
-Uploading guessing_game v0.1.0 (file:///projects/guessing_game)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.19s
+   Uploading guessing_game v0.1.0 (file:///projects/guessing_game)
 </code></pre>
 <p>Congratulations! You’ve now shared your code with the Rust community, and
 anyone can easily add your crate as a dependency of their project.</p>

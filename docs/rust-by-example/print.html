@@ -1535,7 +1535,7 @@ to infer its type. Here's an advanced example of type inference:</p>
 programmer!</p>
 <h1><a class="header" href="#aliasing" id="aliasing">Aliasing</a></h1>
 <p>The <code>type</code> statement can be used to give a new name to an existing type. Types
-must have <code>CamelCase</code> names, or the compiler will raise a warning. The
+must have <code>UpperCamelCase</code> names, or the compiler will raise a warning. The
 exception to this rule are the primitive types: <code>usize</code>, <code>f32</code>, etc.</p>
 <pre><pre class="playpen"><code class="language-rust editable">// `NanoSecond` is a new name for `u64`.
 type NanoSecond = u64;
@@ -1932,13 +1932,12 @@ The above can be written as:</p>
 </code></pre></pre>
 <h2><a class="header" href="#for-and-iterators" id="for-and-iterators">for and iterators</a></h2>
 <p>The <code>for in</code> construct is able to interact with an <code>Iterator</code> in several ways.
-As discussed in with the <a href="flow_control/../trait/iter.html">Iterator</a> trait, if not specified, the <code>for</code>
-loop will apply the <code>into_iter</code> function on the collection provided to convert
-the collection into an iterator. This is not the only means to convert a
-collection into an iterator however, the other functions available include
-<code>iter</code> and <code>iter_mut</code>.</p>
-<p>These 3 functions will return different views of the data within your
-collection.</p>
+As discussed in the section on the <a href="flow_control/../trait/iter.html">Iterator</a> trait, by default the <code>for</code>
+loop will apply the <code>into_iter</code> function to the collection. However, this is
+not the only means of converting collections into iterators.</p>
+<p><code>into_iter</code>, <code>iter</code> and <code>iter_mut</code> all handle the conversion of a collection
+into an iterator in different ways, by providing different views on the data
+within.</p>
 <ul>
 <li><code>iter</code> - This borrows each element of the collection through each iteration.
 Thus leaving the collection untouched and available for reuse after the loop.</li>
@@ -2337,7 +2336,7 @@ fn main() {
     }
 }
 </code></pre></pre>
-<p>Another benefit: <code>if let</code> allows to match enum non-parameterized variants, even if the enum doesn't <code>#[derive(PartialEq)]</code>, neither we implement <code>PartialEq</code> for it. In such case, classic <code>if Foo::Bar==a</code> fails, because instances of such enum are not comparable for equality. However, <code>if let</code> works.</p>
+<p>Another benefit is that <code>if let</code> allows us to match non-parameterized enum variants. This is true even in cases where the enum doesn't implement or derive <code>PartialEq</code>. In such cases <code>if Foo::Bar == a</code> would fail to compile, because instances of the enum cannot be equated, however <code>if let</code> will continue to work.</p>
 <p>Would you like a challenge? Fix the following example to use <code>if let</code>:</p>
 <pre><pre class="playpen"><code class="language-rust editable ignore mdbook-runnable">// This enum purposely doesn't #[derive(PartialEq)],
 // neither we implement PartialEq for it. That's why comparing Foo::Bar==a fails below.
@@ -6926,8 +6925,8 @@ convertible to the return type, it will convert automatically.</p>
 <pre><pre class="playpen"><code class="language-rust editable">use std::error;
 use std::fmt;
 
-// Change the alias to `Box&lt;error::Error&gt;`.
-type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;error::Error&gt;&gt;;
+// Change the alias to `Box&lt;dyn error::Error&gt;`.
+type Result&lt;T&gt; = std::result::Result&lt;T, Box&lt;dyn error::Error&gt;&gt;;
 
 #[derive(Debug)]
 struct EmptyVec;

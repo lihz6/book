@@ -217,6 +217,7 @@ on the struct, as shown in Listing 17-2:</p>
 </span><span class="boring">    list: Vec&lt;i32&gt;,
 </span><span class="boring">    average: f64,
 </span><span class="boring">}
+</span><span class="boring">
 </span>impl AveragedCollection {
     pub fn add(&amp;mut self, value: i32) {
         self.list.push(value);
@@ -229,7 +230,7 @@ on the struct, as shown in Listing 17-2:</p>
             Some(value) =&gt; {
                 self.update_average();
                 Some(value)
-            },
+            }
             None =&gt; None,
         }
     }

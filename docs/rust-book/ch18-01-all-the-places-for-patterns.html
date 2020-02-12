@@ -236,18 +236,16 @@ not alert us to the possible logic bug.</p>
 <code>while</code> loop to run for as long as a pattern continues to match. The example in
 Listing 18-2 shows a <code>while let</code> loop that uses a vector as a stack and prints
 the values in the vector in the opposite order in which they were pushed.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut stack = Vec::new();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut stack = Vec::new();
 
-stack.push(1);
-stack.push(2);
-stack.push(3);
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
 
-while let Some(top) = stack.pop() {
-    println!(&quot;{}&quot;, top);
-}
+    while let Some(top) = stack.pop() {
+        println!(&quot;{}&quot;, top);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-2: Using a <code>while let</code> loop to print values
@@ -264,20 +262,22 @@ takes. In a <code>for</code> loop, the pattern is the value that directly follow
 keyword <code>for</code>, so in <code>for x in y</code> the <code>x</code> is the pattern.</p>
 <p>Listing 18-3 demonstrates how to use a pattern in a <code>for</code> loop to destructure,
 or break apart, a tuple as part of the <code>for</code> loop.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let v = vec!['a', 'b', 'c'];
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let v = vec!['a', 'b', 'c'];
 
-for (index, value) in v.iter().enumerate() {
-    println!(&quot;{} is at index {}&quot;, value, index);
-}
+    for (index, value) in v.iter().enumerate() {
+        println!(&quot;{} is at index {}&quot;, value, index);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-3: Using a pattern in a <code>for</code> loop to
 destructure a tuple</span></p>
 <p>The code in Listing 18-3 will print the following:</p>
-<pre><code class="language-text">a is at index 0
+<pre><code class="language-text">$ cargo run
+   Compiling patterns v0.1.0 (file:///projects/patterns)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.52s
+     Running `target/debug/patterns`
+a is at index 0
 b is at index 1
 c is at index 2
 </code></pre>
@@ -310,10 +310,8 @@ the variable <code>x</code>.” Because the name <code>x</code> is the whole pat
 effectively means “bind everything to the variable <code>x</code>, whatever the value is.”</p>
 <p>To see the pattern matching aspect of <code>let</code> more clearly, consider Listing
 18-4, which uses a pattern with <code>let</code> to destructure a tuple.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let (x, y, z) = (1, 2, 3);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let (x, y, z) = (1, 2, 3);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-4: Using a pattern to destructure a tuple and
@@ -326,19 +324,30 @@ pattern as nesting three individual variable patterns inside it.</p>
 in the tuple, the overall type won’t match and we’ll get a compiler error. For
 example, Listing 18-5 shows an attempt to destructure a tuple with three
 elements into two variables, which won’t work.</p>
-<pre><code class="language-rust ignore does_not_compile">let (x, y) = (1, 2, 3);
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    let (x, y) = (1, 2, 3);
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 18-5: Incorrectly constructing a pattern whose
 variables don’t match the number of elements in the tuple</span></p>
 <p>Attempting to compile this code results in this type error:</p>
-<pre><code class="language-text">error[E0308]: mismatched types
+<pre><code class="language-text">$ cargo run
+   Compiling patterns v0.1.0 (file:///projects/patterns)
+error[E0308]: mismatched types
  --&gt; src/main.rs:2:9
   |
 2 |     let (x, y) = (1, 2, 3);
   |         ^^^^^^ expected a tuple with 3 elements, found one with 2 elements
   |
-  = note: expected type `({integer}, {integer}, {integer})`
-             found type `(_, _)`
+  = note: expected tuple `({integer}, {integer}, {integer})`
+             found tuple `(_, _)`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `patterns`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>If we wanted to ignore one or more of the values in the tuple, we could use <code>_</code>
 or <code>..</code>, as you’ll see in the <a href="ch18-03-pattern-syntax.html#ignoring-values-in-a-pattern">“Ignoring Values in a
@@ -350,13 +359,11 @@ of elements in the tuple.</p>
 <p>Function parameters can also be patterns. The code in Listing 18-6, which
 declares a function named <code>foo</code> that takes one parameter named <code>x</code> of type
 <code>i32</code>, should by now look familiar.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>fn foo(x: i32) {
+<pre><pre class="playpen"><code class="language-rust">fn foo(x: i32) {
     // code goes here
 }
-<span class="boring">}
+<span class="boring">
+</span><span class="boring">fn main() {}
 </span></code></pre></pre>
 <p><span class="caption">Listing 18-6: A function signature uses patterns in the
 parameters</span></p>

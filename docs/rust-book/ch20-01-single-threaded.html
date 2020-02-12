@@ -266,8 +266,8 @@ print it so we can see the data being sent from the browser. Change the code to
 look like Listing 20-2.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playpen"><code class="language-rust no_run">use std::io::prelude::*;
-use std::net::TcpStream;
 use std::net::TcpListener;
+use std::net::TcpStream;
 
 fn main() {
     let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
@@ -317,7 +317,7 @@ again. Note that we’ll still get an error page in the browser, but our
 program’s output in the terminal will now look similar to this:</p>
 <pre><code class="language-text">$ cargo run
    Compiling hello v0.1.0 (file:///projects/hello)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.42 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.42s
      Running `target/debug/hello`
 Request: GET / HTTP/1.1
 Host: 127.0.0.1:7878
@@ -388,11 +388,20 @@ successful request! From the <code>handle_connection</code> function, remove the
 <code>println!</code> that was printing the request data and replace it with the code in
 Listing 20-3.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">use std::io::prelude::*;
+<pre><pre class="playpen"><code class="language-rust no_run"><span class="boring">use std::io::prelude::*;
+</span><span class="boring">use std::net::TcpListener;
 </span><span class="boring">use std::net::TcpStream;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">    for stream in listener.incoming() {
+</span><span class="boring">        let stream = stream.unwrap();
+</span><span class="boring">
+</span><span class="boring">        handle_connection(stream);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
 </span>fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
 
@@ -403,8 +412,7 @@ Listing 20-3.</p>
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p><span class="caption">Listing 20-3: Writing a tiny successful HTTP response to
 the stream</span></p>
 <p>The first new line defines the <code>response</code> variable that holds the success
@@ -446,15 +454,24 @@ from the server when a request is received, we’ll modify <code>handle_connecti
 shown in Listing 20-5 to read the HTML file, add it to the response as a body,
 and send it.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">use std::io::prelude::*;
-</span><span class="boring">use std::net::TcpStream;
-</span>use std::fs;
+<pre><pre class="playpen"><code class="language-rust no_run">use std::fs;
 // --snip--
 
-fn handle_connection(mut stream: TcpStream) {
+<span class="boring">use std::io::prelude::*;
+</span><span class="boring">use std::net::TcpListener;
+</span><span class="boring">use std::net::TcpStream;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">    for stream in listener.incoming() {
+</span><span class="boring">        let stream = stream.unwrap();
+</span><span class="boring">
+</span><span class="boring">        handle_connection(stream);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
     stream.read(&amp;mut buffer).unwrap();
 
@@ -465,8 +482,7 @@ fn handle_connection(mut stream: TcpStream) {
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p><span class="caption">Listing 20-5: Sending the contents of <em>hello.html</em> as the
 body of the response</span></p>
 <p>We’ve added a line at the top to bring the standard library’s filesystem module
@@ -492,12 +508,21 @@ as shown in Listing 20-6. This new code checks the content of the request
 received against what we know a request for <em>/</em> looks like and adds <code>if</code> and
 <code>else</code> blocks to treat requests differently.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust no_run"><span class="boring">use std::fs;
 </span><span class="boring">use std::io::prelude::*;
+</span><span class="boring">use std::net::TcpListener;
 </span><span class="boring">use std::net::TcpStream;
-</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">    for stream in listener.incoming() {
+</span><span class="boring">        let stream = stream.unwrap();
+</span><span class="boring">
+</span><span class="boring">        handle_connection(stream);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
 </span>// --snip--
 
 fn handle_connection(mut stream: TcpStream) {
@@ -517,8 +542,7 @@ fn handle_connection(mut stream: TcpStream) {
         // some other request
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p><span class="caption">Listing 20-6: Matching the request and handling requests
 to <em>/</em> differently from other requests</span></p>
 <p>First, we hardcode the data corresponding to the <em>/</em> request into the <code>get</code>
@@ -540,27 +564,45 @@ with the status code 404, which signals that the content for the request was
 not found. We’ll also return some HTML for a page to render in the browser
 indicating the response to the end user.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust no_run"><span class="boring">use std::fs;
 </span><span class="boring">use std::io::prelude::*;
+</span><span class="boring">use std::net::TcpListener;
 </span><span class="boring">use std::net::TcpStream;
-</span><span class="boring">use std::fs;
-</span><span class="boring">fn handle_connection(mut stream: TcpStream) {
-</span><span class="boring">if true {
-</span>// --snip--
-
-} else {
-    let status_line = &quot;HTTP/1.1 404 NOT FOUND\r\n\r\n&quot;;
-    let contents = fs::read_to_string(&quot;404.html&quot;).unwrap();
-
-    let response = format!(&quot;{}{}&quot;, status_line, contents);
-
-    stream.write(response.as_bytes()).unwrap();
-    stream.flush().unwrap();
-}
-<span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">    for stream in listener.incoming() {
+</span><span class="boring">        let stream = stream.unwrap();
+</span><span class="boring">
+</span><span class="boring">        handle_connection(stream);
+</span><span class="boring">    }
 </span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn handle_connection(mut stream: TcpStream) {
+</span><span class="boring">    let mut buffer = [0; 512];
+</span><span class="boring">    stream.read(&amp;mut buffer).unwrap();
+</span><span class="boring">
+</span><span class="boring">    let get = b&quot;GET / HTTP/1.1\r\n&quot;;
+</span><span class="boring">
+</span><span class="boring">    if buffer.starts_with(get) {
+</span><span class="boring">        let contents = fs::read_to_string(&quot;hello.html&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">        let response = format!(&quot;HTTP/1.1 200 OK\r\n\r\n{}&quot;, contents);
+</span><span class="boring">
+</span><span class="boring">        stream.write(response.as_bytes()).unwrap();
+</span><span class="boring">        stream.flush().unwrap();
+</span>    // --snip--
+    } else {
+        let status_line = &quot;HTTP/1.1 404 NOT FOUND\r\n\r\n&quot;;
+        let contents = fs::read_to_string(&quot;404.html&quot;).unwrap();
+
+        let response = format!(&quot;{}{}&quot;, status_line, contents);
+
+        stream.write(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
+    }
+<span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 20-7: Responding with status code 404 and an
 error page if anything other than <em>/</em> was requested</span></p>
@@ -597,22 +639,32 @@ we can then use those variables unconditionally in the code to read the file
 and write the response. Listing 20-9 shows the resulting code after replacing
 the large <code>if</code> and <code>else</code> blocks.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
+<pre><pre class="playpen"><code class="language-rust no_run"><span class="boring">use std::fs;
 </span><span class="boring">use std::io::prelude::*;
+</span><span class="boring">use std::net::TcpListener;
 </span><span class="boring">use std::net::TcpStream;
-</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let listener = TcpListener::bind(&quot;127.0.0.1:7878&quot;).unwrap();
+</span><span class="boring">
+</span><span class="boring">    for stream in listener.incoming() {
+</span><span class="boring">        let stream = stream.unwrap();
+</span><span class="boring">
+</span><span class="boring">        handle_connection(stream);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
 </span>// --snip--
 
 fn handle_connection(mut stream: TcpStream) {
+    // --snip--
+
 <span class="boring">    let mut buffer = [0; 512];
 </span><span class="boring">    stream.read(&amp;mut buffer).unwrap();
 </span><span class="boring">
 </span><span class="boring">    let get = b&quot;GET / HTTP/1.1\r\n&quot;;
-</span>    // --snip--
-
-    let (status_line, filename) = if buffer.starts_with(get) {
+</span><span class="boring">
+</span>    let (status_line, filename) = if buffer.starts_with(get) {
         (&quot;HTTP/1.1 200 OK\r\n\r\n&quot;, &quot;hello.html&quot;)
     } else {
         (&quot;HTTP/1.1 404 NOT FOUND\r\n\r\n&quot;, &quot;404.html&quot;)
@@ -625,8 +677,7 @@ fn handle_connection(mut stream: TcpStream) {
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre></pre>
 <p><span class="caption">Listing 20-9: Refactoring the <code>if</code> and <code>else</code> blocks to
 contain only the code that differs between the two cases</span></p>
 <p>Now the <code>if</code> and <code>else</code> blocks only return the appropriate values for the

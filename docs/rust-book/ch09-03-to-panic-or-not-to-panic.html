@@ -192,12 +192,10 @@ failing in general, even though it’s logically impossible in your particular
 situation. If you can ensure by manually inspecting the code that you’ll never
 have an <code>Err</code> variant, it’s perfectly acceptable to call <code>unwrap</code>. Here’s an
 example:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::net::IpAddr;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::net::IpAddr;
 
-let home: IpAddr = &quot;127.0.0.1&quot;.parse().unwrap();
+    let home: IpAddr = &quot;127.0.0.1&quot;.parse().unwrap();
 <span class="boring">}
 </span></code></pre></pre>
 <p>We’re creating an <code>IpAddr</code> instance by parsing a hardcoded string. We can see
@@ -270,23 +268,48 @@ types, for example, letters instead.</p>
 <p>One way to do this would be to parse the guess as an <code>i32</code> instead of only a
 <code>u32</code> to allow potentially negative numbers, and then add a check for the
 number being in range, like so:</p>
-<pre><code class="language-rust ignore">loop {
-    // --snip--
+<pre><code class="language-rust ignore"><span class="boring">use rand::Rng;
+</span><span class="boring">use std::cmp::Ordering;
+</span><span class="boring">use std::io;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    println!(&quot;Guess the number!&quot;);
+</span><span class="boring">
+</span><span class="boring">    let secret_number = rand::thread_rng().gen_range(1, 101);
+</span><span class="boring">
+</span>    loop {
+        // --snip--
 
-    let guess: i32 = match guess.trim().parse() {
-        Ok(num) =&gt; num,
-        Err(_) =&gt; continue,
-    };
+<span class="boring">        println!(&quot;Please input your guess.&quot;);
+</span><span class="boring">
+</span><span class="boring">        let mut guess = String::new();
+</span><span class="boring">
+</span><span class="boring">        io::stdin()
+</span><span class="boring">            .read_line(&amp;mut guess)
+</span><span class="boring">            .expect(&quot;Failed to read line&quot;);
+</span><span class="boring">
+</span>        let guess: i32 = match guess.trim().parse() {
+            Ok(num) =&gt; num,
+            Err(_) =&gt; continue,
+        };
 
-    if guess &lt; 1 || guess &gt; 100 {
-        println!(&quot;The secret number will be between 1 and 100.&quot;);
-        continue;
-    }
+        if guess &lt; 1 || guess &gt; 100 {
+            println!(&quot;The secret number will be between 1 and 100.&quot;);
+            continue;
+        }
 
-    match guess.cmp(&amp;secret_number) {
-    // --snip--
-}
-</code></pre>
+        match guess.cmp(&amp;secret_number) {
+            // --snip--
+<span class="boring">            Ordering::Less =&gt; println!(&quot;Too small!&quot;),
+</span><span class="boring">            Ordering::Greater =&gt; println!(&quot;Too big!&quot;),
+</span><span class="boring">            Ordering::Equal =&gt; {
+</span><span class="boring">                println!(&quot;You win!&quot;);
+</span><span class="boring">                break;
+</span><span class="boring">            }
+</span><span class="boring">        }
+</span>    }
+<span class="boring">}
+</span></code></pre>
 <p>The <code>if</code> expression checks whether our value is out of range, tells the user
 about the problem, and calls <code>continue</code> to start the next iteration of the loop
 and ask for another guess. After the <code>if</code> expression, we can proceed with the
@@ -302,6 +325,10 @@ way, it’s safe for functions to use the new type in their signatures and
 confidently use the values they receive. Listing 9-10 shows one way to define a
 <code>Guess</code> type that will only create an instance of <code>Guess</code> if the <code>new</code> function
 receives a value between 1 and 100.</p>
+<!-- Deliberately not using rustdoc_include here; the `main` function in the
+file requires the `rand` crate. We do want to include it for reader
+experimentation purposes, but don't want to include it for rustdoc testing
+purposes. -->
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
@@ -315,9 +342,7 @@ impl Guess {
             panic!(&quot;Guess value must be between 1 and 100, got {}.&quot;, value);
         }
 
-        Guess {
-            value
-        }
+        Guess { value }
     }
 
     pub fn value(&amp;self) -&gt; i32 {

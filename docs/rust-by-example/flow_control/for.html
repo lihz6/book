@@ -189,13 +189,12 @@ The above can be written as:</p>
 </code></pre></pre>
 <h2><a class="header" href="#for-and-iterators" id="for-and-iterators">for and iterators</a></h2>
 <p>The <code>for in</code> construct is able to interact with an <code>Iterator</code> in several ways.
-As discussed in with the <a href="../trait/iter.html">Iterator</a> trait, if not specified, the <code>for</code>
-loop will apply the <code>into_iter</code> function on the collection provided to convert
-the collection into an iterator. This is not the only means to convert a
-collection into an iterator however, the other functions available include
-<code>iter</code> and <code>iter_mut</code>.</p>
-<p>These 3 functions will return different views of the data within your
-collection.</p>
+As discussed in the section on the <a href="../trait/iter.html">Iterator</a> trait, by default the <code>for</code>
+loop will apply the <code>into_iter</code> function to the collection. However, this is
+not the only means of converting collections into iterators.</p>
+<p><code>into_iter</code>, <code>iter</code> and <code>iter_mut</code> all handle the conversion of a collection
+into an iterator in different ways, by providing different views on the data
+within.</p>
 <ul>
 <li><code>iter</code> - This borrows each element of the collection through each iteration.
 Thus leaving the collection untouched and available for reuse after the loop.</li>

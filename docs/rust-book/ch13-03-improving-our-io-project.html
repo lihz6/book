@@ -164,7 +164,17 @@ values, allowing the <code>Config</code> struct to own those values. In Listing 
 we’ve reproduced the implementation of the <code>Config::new</code> function as it was in
 Listing 12-23:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">impl Config {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">pub struct Config {
+</span><span class="boring">    pub query: String,
+</span><span class="boring">    pub filename: String,
+</span><span class="boring">    pub case_sensitive: bool,
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Config {
     pub fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
         if args.len() &lt; 3 {
             return Err(&quot;not enough arguments&quot;);
@@ -175,10 +185,92 @@ Listing 12-23:</p>
 
         let case_sensitive = env::var(&quot;CASE_INSENSITIVE&quot;).is_err();
 
-        Ok(Config { query, filename, case_sensitive })
+        Ok(Config {
+            query,
+            filename,
+            case_sensitive,
+        })
     }
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    let results = if config.case_sensitive {
+</span><span class="boring">        search(&amp;config.query, &amp;contents)
+</span><span class="boring">    } else {
+</span><span class="boring">        search_case_insensitive(&amp;config.query, &amp;contents)
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    for line in results {
+</span><span class="boring">        println!(&quot;{}&quot;, line);
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.contains(query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search_case_insensitive&lt;'a&gt;(
+</span><span class="boring">    query: &amp;str,
+</span><span class="boring">    contents: &amp;'a str,
+</span><span class="boring">) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let query = query.to_lowercase();
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.to_lowercase().contains(&amp;query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_sensitive() {
+</span><span class="boring">        let query = &quot;duct&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Duct tape.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(vec![&quot;safe, fast, productive.&quot;], search(query, contents));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_insensitive() {
+</span><span class="boring">        let query = &quot;rUsT&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Trust me.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(
+</span><span class="boring">            vec![&quot;Rust:&quot;, &quot;Trust me.&quot;],
+</span><span class="boring">            search_case_insensitive(query, contents)
+</span><span class="boring">        );
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre>
 <p><span class="caption">Listing 13-24: Reproduction of the <code>Config::new</code> function
 from Listing 12-23</span></p>
 <p>At the time, we said not to worry about the inefficient <code>clone</code> calls because
@@ -198,7 +290,12 @@ operations that borrow, we can move the <code>String</code> values from the iter
 <h4><a class="header" href="#using-the-returned-iterator-directly" id="using-the-returned-iterator-directly">Using the Returned Iterator Directly</a></h4>
 <p>Open your I/O project’s <em>src/main.rs</em> file, which should look like this:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::process;
+</span><span class="boring">
+</span><span class="boring">use minigrep::Config;
+</span><span class="boring">
+</span>fn main() {
     let args: Vec&lt;String&gt; = env::args().collect();
 
     let config = Config::new(&amp;args).unwrap_or_else(|err| {
@@ -207,20 +304,37 @@ operations that borrow, we can move the <code>String</code> values from the iter
     });
 
     // --snip--
-}
+<span class="boring">
+</span><span class="boring">    if let Err(e) = minigrep::run(config) {
+</span><span class="boring">        eprintln!(&quot;Application error: {}&quot;, e);
+</span><span class="boring">
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    }
+</span>}
 </code></pre>
 <p>We’ll change the start of the <code>main</code> function that we had in Listing 12-24 to
 the code in Listing 13-25. This won’t compile until we update <code>Config::new</code> as
 well.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::process;
+</span><span class="boring">
+</span><span class="boring">use minigrep::Config;
+</span><span class="boring">
+</span>fn main() {
     let config = Config::new(env::args()).unwrap_or_else(|err| {
         eprintln!(&quot;Problem parsing arguments: {}&quot;, err);
         process::exit(1);
     });
 
     // --snip--
-}
+<span class="boring">
+</span><span class="boring">    if let Err(e) = minigrep::run(config) {
+</span><span class="boring">        eprintln!(&quot;Application error: {}&quot;, e);
+</span><span class="boring">
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    }
+</span>}
 </code></pre>
 <p><span class="caption">Listing 13-25: Passing the return value of <code>env::args</code> to
 <code>Config::new</code></span></p>
@@ -233,10 +347,112 @@ we’re passing ownership of the iterator returned from <code>env::args</code> t
 Listing 13-26. This still won’t compile because we need to update the function
 body.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">impl Config {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">pub struct Config {
+</span><span class="boring">    pub query: String,
+</span><span class="boring">    pub filename: String,
+</span><span class="boring">    pub case_sensitive: bool,
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Config {
     pub fn new(mut args: std::env::Args) -&gt; Result&lt;Config, &amp;'static str&gt; {
         // --snip--
-</code></pre>
+<span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        let case_sensitive = env::var(&quot;CASE_INSENSITIVE&quot;).is_err();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config {
+</span><span class="boring">            query,
+</span><span class="boring">            filename,
+</span><span class="boring">            case_sensitive,
+</span><span class="boring">        })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    let results = if config.case_sensitive {
+</span><span class="boring">        search(&amp;config.query, &amp;contents)
+</span><span class="boring">    } else {
+</span><span class="boring">        search_case_insensitive(&amp;config.query, &amp;contents)
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    for line in results {
+</span><span class="boring">        println!(&quot;{}&quot;, line);
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.contains(query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search_case_insensitive&lt;'a&gt;(
+</span><span class="boring">    query: &amp;str,
+</span><span class="boring">    contents: &amp;'a str,
+</span><span class="boring">) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let query = query.to_lowercase();
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.to_lowercase().contains(&amp;query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_sensitive() {
+</span><span class="boring">        let query = &quot;duct&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Duct tape.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(vec![&quot;safe, fast, productive.&quot;], search(query, contents));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_insensitive() {
+</span><span class="boring">        let query = &quot;rUsT&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Trust me.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(
+</span><span class="boring">            vec![&quot;Rust:&quot;, &quot;Trust me.&quot;],
+</span><span class="boring">            search_case_insensitive(query, contents)
+</span><span class="boring">        );
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 13-26: Updating the signature of <code>Config::new</code> to
 expect an iterator</span></p>
 <p>The standard library documentation for the <code>env::args</code> function shows that the
@@ -251,13 +467,14 @@ also mentions that <code>std::env::Args</code> implements the <code>Iterator</co
 we can call the <code>next</code> method on it! Listing 13-27 updates the code from
 Listing 12-23 to use the <code>next</code> method:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {}
-</span><span class="boring">use std::env;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">use std::env;
+</span><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
 </span><span class="boring">
-</span><span class="boring">struct Config {
-</span><span class="boring">    query: String,
-</span><span class="boring">    filename: String,
-</span><span class="boring">    case_sensitive: bool,
+</span><span class="boring">pub struct Config {
+</span><span class="boring">    pub query: String,
+</span><span class="boring">    pub filename: String,
+</span><span class="boring">    pub case_sensitive: bool,
 </span><span class="boring">}
 </span><span class="boring">
 </span>impl Config {
@@ -276,10 +493,92 @@ Listing 12-23 to use the <code>next</code> method:</p>
 
         let case_sensitive = env::var(&quot;CASE_INSENSITIVE&quot;).is_err();
 
-        Ok(Config { query, filename, case_sensitive })
+        Ok(Config {
+            query,
+            filename,
+            case_sensitive,
+        })
     }
 }
-</code></pre></pre>
+<span class="boring">
+</span><span class="boring">pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    let results = if config.case_sensitive {
+</span><span class="boring">        search(&amp;config.query, &amp;contents)
+</span><span class="boring">    } else {
+</span><span class="boring">        search_case_insensitive(&amp;config.query, &amp;contents)
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    for line in results {
+</span><span class="boring">        println!(&quot;{}&quot;, line);
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.contains(query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn search_case_insensitive&lt;'a&gt;(
+</span><span class="boring">    query: &amp;str,
+</span><span class="boring">    contents: &amp;'a str,
+</span><span class="boring">) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let query = query.to_lowercase();
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.to_lowercase().contains(&amp;query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_sensitive() {
+</span><span class="boring">        let query = &quot;duct&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Duct tape.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(vec![&quot;safe, fast, productive.&quot;], search(query, contents));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_insensitive() {
+</span><span class="boring">        let query = &quot;rUsT&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Trust me.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(
+</span><span class="boring">            vec![&quot;Rust:&quot;, &quot;Trust me.&quot;],
+</span><span class="boring">            search_case_insensitive(query, contents)
+</span><span class="boring">        );
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {}
+</span></code></pre></pre>
 <p><span class="caption">Listing 13-27: Changing the body of <code>Config::new</code> to use
 iterator methods</span></p>
 <p>Remember that the first value in the return value of <code>env::args</code> is the name of
@@ -293,7 +592,34 @@ the same thing for the <code>filename</code> value.</p>
 <p>We can also take advantage of iterators in the <code>search</code> function in our I/O
 project, which is reproduced here in Listing 13-28 as it was in Listing 12-19:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+<pre><code class="language-rust ignore"><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">pub struct Config {
+</span><span class="boring">    pub query: String,
+</span><span class="boring">    pub filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    pub fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span>pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
     let mut results = Vec::new();
 
     for line in contents.lines() {
@@ -304,7 +630,23 @@ project, which is reproduced here in Listing 13-28 as it was in Listing 12-19:</
 
     results
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn one_result() {
+</span><span class="boring">        let query = &quot;duct&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(vec![&quot;safe, fast, productive.&quot;], search(query, contents));
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 13-28: The implementation of the <code>search</code>
 function from Listing 12-19</span></p>
 <p>We can write this code in a more concise way using iterator adaptor methods.
@@ -314,12 +656,111 @@ make code clearer. Removing the mutable state might enable a future enhancement
 to make searching happen in parallel, because we wouldn’t have to manage
 concurrent access to the <code>results</code> vector. Listing 13-29 shows this change:</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust ignore">pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
-    contents.lines()
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">pub struct Config {
+</span><span class="boring">    pub query: String,
+</span><span class="boring">    pub filename: String,
+</span><span class="boring">    pub case_sensitive: bool,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    pub fn new(mut args: std::env::Args) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        args.next();
+</span><span class="boring">
+</span><span class="boring">        let query = match args.next() {
+</span><span class="boring">            Some(arg) =&gt; arg,
+</span><span class="boring">            None =&gt; return Err(&quot;Didn't get a query string&quot;),
+</span><span class="boring">        };
+</span><span class="boring">
+</span><span class="boring">        let filename = match args.next() {
+</span><span class="boring">            Some(arg) =&gt; arg,
+</span><span class="boring">            None =&gt; return Err(&quot;Didn't get a file name&quot;),
+</span><span class="boring">        };
+</span><span class="boring">
+</span><span class="boring">        let case_sensitive = env::var(&quot;CASE_INSENSITIVE&quot;).is_err();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config {
+</span><span class="boring">            query,
+</span><span class="boring">            filename,
+</span><span class="boring">            case_sensitive,
+</span><span class="boring">        })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    let results = if config.case_sensitive {
+</span><span class="boring">        search(&amp;config.query, &amp;contents)
+</span><span class="boring">    } else {
+</span><span class="boring">        search_case_insensitive(&amp;config.query, &amp;contents)
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    for line in results {
+</span><span class="boring">        println!(&quot;{}&quot;, line);
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span>pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+    contents
+        .lines()
         .filter(|line| line.contains(query))
         .collect()
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">pub fn search_case_insensitive&lt;'a&gt;(
+</span><span class="boring">    query: &amp;str,
+</span><span class="boring">    contents: &amp;'a str,
+</span><span class="boring">) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let query = query.to_lowercase();
+</span><span class="boring">    let mut results = Vec::new();
+</span><span class="boring">
+</span><span class="boring">    for line in contents.lines() {
+</span><span class="boring">        if line.to_lowercase().contains(&amp;query) {
+</span><span class="boring">            results.push(line);
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    results
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_sensitive() {
+</span><span class="boring">        let query = &quot;duct&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Duct tape.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(vec![&quot;safe, fast, productive.&quot;], search(query, contents));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn case_insensitive() {
+</span><span class="boring">        let query = &quot;rUsT&quot;;
+</span><span class="boring">        let contents = &quot;\
+</span><span class="boring">Rust:
+</span><span class="boring">safe, fast, productive.
+</span><span class="boring">Pick three.
+</span><span class="boring">Trust me.&quot;;
+</span><span class="boring">
+</span><span class="boring">        assert_eq!(
+</span><span class="boring">            vec![&quot;Rust:&quot;, &quot;Trust me.&quot;],
+</span><span class="boring">            search_case_insensitive(query, contents)
+</span><span class="boring">        );
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 13-29: Using iterator adaptor methods in the
 implementation of the <code>search</code> function</span></p>
 <p>Recall that the purpose of the <code>search</code> function is to return all lines in

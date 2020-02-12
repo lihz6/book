@@ -378,6 +378,7 @@ data.push(4);
 // Here, the destructor is run and therefore this'll fail to compile.
 <span class="boring">}
 </span></code></pre></pre>
+<p>One way to convince the compiler that <code>x</code> is no longer valid is by using <code>drop(x)</code> before <code>data.push(4)</code>.</p>
 <p>Furthermore, there might be multiple possible last uses of the borrow, for
 example in each branch of a condition.</p>
 <pre><pre class="playpen"><code class="language-rust edition2018">

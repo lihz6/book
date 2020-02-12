@@ -192,10 +192,8 @@ API documentation for more about how to use them and when each is appropriate.</
 <p>Many of the same operations available with <code>Vec&lt;T&gt;</code> are available with <code>String</code>
 as well, starting with the <code>new</code> function to create a string, shown in Listing
 8-11.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut s = String::new();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut s = String::new();
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-11: Creating a new, empty <code>String</code></span></p>
@@ -204,15 +202,13 @@ into. Often, we’ll have some initial data that we want to start the string
 with. For that, we use the <code>to_string</code> method, which is available on any type
 that implements the <code>Display</code> trait, as string literals do. Listing 8-12 shows
 two examples.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let data = &quot;initial contents&quot;;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let data = &quot;initial contents&quot;;
 
-let s = data.to_string();
+    let s = data.to_string();
 
-// the method also works on a literal directly:
-let s = &quot;initial contents&quot;.to_string();
+    // the method also works on a literal directly:
+    let s = &quot;initial contents&quot;.to_string();
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-12: Using the <code>to_string</code> method to create a
@@ -221,10 +217,8 @@ let s = &quot;initial contents&quot;.to_string();
 <p>We can also use the function <code>String::from</code> to create a <code>String</code> from a string
 literal. The code in Listing 8-13 is equivalent to the code from Listing 8-12
 that uses <code>to_string</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s = String::from(&quot;initial contents&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s = String::from(&quot;initial contents&quot;);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-13: Using the <code>String::from</code> function to create
@@ -235,20 +229,18 @@ redundant, but they all have their place! In this case, <code>String::from</code
 <code>to_string</code> do the same thing, so which you choose is a matter of style.</p>
 <p>Remember that strings are UTF-8 encoded, so we can include any properly encoded
 data in them, as shown in Listing 8-14.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let hello = String::from(&quot;السلام عليكم&quot;);
-let hello = String::from(&quot;Dobrý den&quot;);
-let hello = String::from(&quot;Hello&quot;);
-let hello = String::from(&quot;שָׁלוֹם&quot;);
-let hello = String::from(&quot;नमस्ते&quot;);
-let hello = String::from(&quot;こんにちは&quot;);
-let hello = String::from(&quot;안녕하세요&quot;);
-let hello = String::from(&quot;你好&quot;);
-let hello = String::from(&quot;Olá&quot;);
-let hello = String::from(&quot;Здравствуйте&quot;);
-let hello = String::from(&quot;Hola&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let hello = String::from(&quot;السلام عليكم&quot;);
+    let hello = String::from(&quot;Dobrý den&quot;);
+    let hello = String::from(&quot;Hello&quot;);
+    let hello = String::from(&quot;שָׁלוֹם&quot;);
+    let hello = String::from(&quot;नमस्ते&quot;);
+    let hello = String::from(&quot;こんにちは&quot;);
+    let hello = String::from(&quot;안녕하세요&quot;);
+    let hello = String::from(&quot;你好&quot;);
+    let hello = String::from(&quot;Olá&quot;);
+    let hello = String::from(&quot;Здравствуйте&quot;);
+    let hello = String::from(&quot;Hola&quot;);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-14: Storing greetings in different languages in
@@ -261,11 +253,9 @@ use the <code>+</code> operator or the <code>format!</code> macro to concatenate
 <h4><a class="header" href="#appending-to-a-string-with-push_str-and-push" id="appending-to-a-string-with-push_str-and-push">Appending to a String with <code>push_str</code> and <code>push</code></a></h4>
 <p>We can grow a <code>String</code> by using the <code>push_str</code> method to append a string slice,
 as shown in Listing 8-15.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut s = String::from(&quot;foo&quot;);
-s.push_str(&quot;bar&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut s = String::from(&quot;foo&quot;);
+    s.push_str(&quot;bar&quot;);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-15: Appending a string slice to a <code>String</code>
@@ -274,13 +264,11 @@ using the <code>push_str</code> method</span></p>
 string slice because we don’t necessarily want to take ownership of the
 parameter. For example, the code in Listing 8-16 shows that it would be
 unfortunate if we weren’t able to use <code>s2</code> after appending its contents to <code>s1</code>.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut s1 = String::from(&quot;foo&quot;);
-let s2 = &quot;bar&quot;;
-s1.push_str(s2);
-println!(&quot;s2 is {}&quot;, s2);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut s1 = String::from(&quot;foo&quot;);
+    let s2 = &quot;bar&quot;;
+    s1.push_str(s2);
+    println!(&quot;s2 is {}&quot;, s2);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-16: Using a string slice after appending its
@@ -290,11 +278,9 @@ its value on the last line. However, this code works as we’d expect!</p>
 <p>The <code>push</code> method takes a single character as a parameter and adds it to the
 <code>String</code>. Listing 8-17 shows code that adds the letter <em>l</em> to a <code>String</code> using
 the <code>push</code> method.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let mut s = String::from(&quot;lo&quot;);
-s.push('l');
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let mut s = String::from(&quot;lo&quot;);
+    s.push('l');
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-17: Adding one character to a <code>String</code> value
@@ -303,12 +289,10 @@ using <code>push</code></span></p>
 <h4><a class="header" href="#concatenation-with-the--operator-or-the-format-macro" id="concatenation-with-the--operator-or-the-format-macro">Concatenation with the <code>+</code> Operator or the <code>format!</code> Macro</a></h4>
 <p>Often, you’ll want to combine two existing strings. One way is to use the <code>+</code>
 operator, as shown in Listing 8-18.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s1 = String::from(&quot;Hello, &quot;);
-let s2 = String::from(&quot;world!&quot;);
-let s3 = s1 + &amp;s2; // note s1 has been moved here and can no longer be used
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;Hello, &quot;);
+    let s2 = String::from(&quot;world!&quot;);
+    let s3 = s1 + &amp;s2; // note s1 has been moved here and can no longer be used
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-18: Using the <code>+</code> operator to combine two
@@ -346,27 +330,23 @@ it’s making a lot of copies but isn’t; the implementation is more efficient
 than copying.</p>
 <p>If we need to concatenate multiple strings, the behavior of the <code>+</code> operator
 gets unwieldy:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s1 = String::from(&quot;tic&quot;);
-let s2 = String::from(&quot;tac&quot;);
-let s3 = String::from(&quot;toe&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;tic&quot;);
+    let s2 = String::from(&quot;tac&quot;);
+    let s3 = String::from(&quot;toe&quot;);
 
-let s = s1 + &quot;-&quot; + &amp;s2 + &quot;-&quot; + &amp;s3;
+    let s = s1 + &quot;-&quot; + &amp;s2 + &quot;-&quot; + &amp;s3;
 <span class="boring">}
 </span></code></pre></pre>
 <p>At this point, <code>s</code> will be <code>tic-tac-toe</code>. With all of the <code>+</code> and <code>&quot;</code>
 characters, it’s difficult to see what’s going on. For more complicated string
 combining, we can use the <code>format!</code> macro:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let s1 = String::from(&quot;tic&quot;);
-let s2 = String::from(&quot;tac&quot;);
-let s3 = String::from(&quot;toe&quot;);
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;tic&quot;);
+    let s2 = String::from(&quot;tac&quot;);
+    let s3 = String::from(&quot;toe&quot;);
 
-let s = format!(&quot;{}-{}-{}&quot;, s1, s2, s3);
+    let s = format!(&quot;{}-{}-{}&quot;, s1, s2, s3);
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code also sets <code>s</code> to <code>tic-tac-toe</code>. The <code>format!</code> macro works in the same
@@ -378,19 +358,30 @@ easier to read and doesn’t take ownership of any of its parameters.</p>
 string by referencing them by index is a valid and common operation. However,
 if you try to access parts of a <code>String</code> using indexing syntax in Rust, you’ll
 get an error. Consider the invalid code in Listing 8-19.</p>
-<pre><code class="language-rust ignore does_not_compile">let s1 = String::from(&quot;hello&quot;);
-let h = s1[0];
-</code></pre>
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
+</span>    let s1 = String::from(&quot;hello&quot;);
+    let h = s1[0];
+<span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 8-19: Attempting to use indexing syntax with a
 String</span></p>
 <p>This code will result in the following error:</p>
-<pre><code class="language-text">error[E0277]: the trait bound `std::string::String: std::ops::Index&lt;{integer}&gt;` is not satisfied
- --&gt;
+<pre><code class="language-text">$ cargo run
+   Compiling collections v0.1.0 (file:///projects/collections)
+error[E0277]: the type `std::string::String` cannot be indexed by `{integer}`
+ --&gt; src/main.rs:3:13
   |
 3 |     let h = s1[0];
-  |             ^^^^^ the type `std::string::String` cannot be indexed by `{integer}`
+  |             ^^^^^ `std::string::String` cannot be indexed by `{integer}`
   |
   = help: the trait `std::ops::Index&lt;{integer}&gt;` is not implemented for `std::string::String`
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `collections`.
+
+To learn more, run the command again with --verbose.
 </code></pre>
 <p>The error and the note tell the story: Rust strings don’t support indexing. But
 why not? To answer that question, we need to discuss how Rust stores strings in
@@ -398,21 +389,37 @@ memory.</p>
 <h4><a class="header" href="#internal-representation" id="internal-representation">Internal Representation</a></h4>
 <p>A <code>String</code> is a wrapper over a <code>Vec&lt;u8&gt;</code>. Let’s look at some of our properly
 encoded UTF-8 example strings from Listing 8-14. First, this one:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let len = String::from(&quot;Hola&quot;).len();
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let hello = String::from(&quot;السلام عليكم&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Dobrý den&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Hello&quot;);
+</span><span class="boring">    let hello = String::from(&quot;שָׁלוֹם&quot;);
+</span><span class="boring">    let hello = String::from(&quot;नमस्ते&quot;);
+</span><span class="boring">    let hello = String::from(&quot;こんにちは&quot;);
+</span><span class="boring">    let hello = String::from(&quot;안녕하세요&quot;);
+</span><span class="boring">    let hello = String::from(&quot;你好&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Olá&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Здравствуйте&quot;);
+</span>    let hello = String::from(&quot;Hola&quot;);
 <span class="boring">}
 </span></code></pre></pre>
 <p>In this case, <code>len</code> will be 4, which means the vector storing the string “Hola”
 is 4 bytes long. Each of these letters takes 1 byte when encoded in UTF-8. But
 what about the following line? (Note that this string begins with the capital
 Cyrillic letter Ze, not the Arabic number 3.)</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let len = String::from(&quot;Здравствуйте&quot;).len();
-<span class="boring">}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let hello = String::from(&quot;السلام عليكم&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Dobrý den&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Hello&quot;);
+</span><span class="boring">    let hello = String::from(&quot;שָׁלוֹם&quot;);
+</span><span class="boring">    let hello = String::from(&quot;नमस्ते&quot;);
+</span><span class="boring">    let hello = String::from(&quot;こんにちは&quot;);
+</span><span class="boring">    let hello = String::from(&quot;안녕하세요&quot;);
+</span><span class="boring">    let hello = String::from(&quot;你好&quot;);
+</span><span class="boring">    let hello = String::from(&quot;Olá&quot;);
+</span>    let hello = String::from(&quot;Здравствуйте&quot;);
+<span class="boring">    let hello = String::from(&quot;Hola&quot;);
+</span><span class="boring">}
 </span></code></pre></pre>
 <p>Asked how long the string is, you might say 12. However, Rust’s answer is 24:
 that’s the number of bytes it takes to encode “Здравствуйте” in UTF-8, because
@@ -482,7 +489,12 @@ Earlier, we mentioned that each of these characters was 2 bytes, which means
 <code>s</code> will be <code>Зд</code>.</p>
 <p>What would happen if we used <code>&amp;hello[0..1]</code>? The answer: Rust would panic at
 runtime in the same way as if an invalid index were accessed in a vector:</p>
-<pre><code class="language-text">thread 'main' panicked at 'byte index 1 is not a char boundary; it is inside 'З' (bytes 0..2) of `Здравствуйте`', src/libcore/str/mod.rs:2188:4
+<pre><code class="language-text">$ cargo run
+   Compiling collections v0.1.0 (file:///projects/collections)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.43s
+     Running `target/debug/collections`
+thread 'main' panicked at 'byte index 1 is not a char boundary; it is inside 'З' (bytes 0..2) of `Здравствуйте`', src/libcore/str/mod.rs:2069:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
 </code></pre>
 <p>You should use ranges to create string slices with caution, because doing so
 can crash your program.</p>

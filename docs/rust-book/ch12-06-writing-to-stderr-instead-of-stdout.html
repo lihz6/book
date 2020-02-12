@@ -154,12 +154,12 @@
                     <main>
                         <h2><a class="header" href="#writing-error-messages-to-standard-error-instead-of-standard-output" id="writing-error-messages-to-standard-error-instead-of-standard-output">Writing Error Messages to Standard Error Instead of Standard Output</a></h2>
 <p>At the moment, we’re writing all of our output to the terminal using the
-<code>println!</code> function. Most terminals provide two kinds of output: <em>standard
+<code>println!</code> macro. Most terminals provide two kinds of output: <em>standard
 output</em> (<code>stdout</code>) for general information and <em>standard error</em> (<code>stderr</code>)
 for error messages. This distinction enables users to choose to direct the
 successful output of a program to a file but still print error messages to the
 screen.</p>
-<p>The <code>println!</code> function is only capable of printing to standard output, so we
+<p>The <code>println!</code> macro is only capable of printing to standard output, so we
 have to use something else to print to standard error.</p>
 <h3><a class="header" href="#checking-where-errors-are-written" id="checking-where-errors-are-written">Checking Where Errors Are Written</a></h3>
 <p>First, let’s observe how the content printed by <code>minigrep</code> is currently being
@@ -194,7 +194,12 @@ the <code>eprintln!</code> macro that prints to the standard error stream, so le
 the two places we were calling <code>println!</code> to print errors to use <code>eprintln!</code>
 instead.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::process;
+</span><span class="boring">
+</span><span class="boring">use minigrep::Config;
+</span><span class="boring">
+</span>fn main() {
     let args: Vec&lt;String&gt; = env::args().collect();
 
     let config = Config::new(&amp;args).unwrap_or_else(|err| {

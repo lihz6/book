@@ -177,14 +177,10 @@ body will be in <em>src/front_of_house.rs</em></span></p>
 <p>And <em>src/front_of_house.rs</em> gets the definitions from the body of the
 <code>front_of_house</code> module, as shown in Listing 7-22.</p>
 <p><span class="filename">Filename: src/front_of_house.rs</span></p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>pub mod hosting {
+<pre><code class="language-rust ignore">pub mod hosting {
     pub fn add_to_waitlist() {}
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <p><span class="caption">Listing 7-22: Definitions inside the <code>front_of_house</code>
 module in <em>src/front_of_house.rs</em></span></p>
 <p>Using a semicolon after <code>mod front_of_house</code> rather than using a block tells

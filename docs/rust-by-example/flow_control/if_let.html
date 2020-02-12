@@ -243,7 +243,7 @@ fn main() {
     }
 }
 </code></pre></pre>
-<p>Another benefit: <code>if let</code> allows to match enum non-parameterized variants, even if the enum doesn't <code>#[derive(PartialEq)]</code>, neither we implement <code>PartialEq</code> for it. In such case, classic <code>if Foo::Bar==a</code> fails, because instances of such enum are not comparable for equality. However, <code>if let</code> works.</p>
+<p>Another benefit is that <code>if let</code> allows us to match non-parameterized enum variants. This is true even in cases where the enum doesn't implement or derive <code>PartialEq</code>. In such cases <code>if Foo::Bar == a</code> would fail to compile, because instances of the enum cannot be equated, however <code>if let</code> will continue to work.</p>
 <p>Would you like a challenge? Fix the following example to use <code>if let</code>:</p>
 <pre><pre class="playpen"><code class="language-rust editable ignore mdbook-runnable">// This enum purposely doesn't #[derive(PartialEq)],
 // neither we implement PartialEq for it. That's why comparing Foo::Bar==a fails below.

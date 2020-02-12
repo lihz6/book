@@ -157,14 +157,12 @@
 handle values that match one pattern while ignoring the rest. Consider the
 program in Listing 6-6 that matches on an <code>Option&lt;u8&gt;</code> value but only wants to
 execute code if the value is 3.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>let some_u8_value = Some(0u8);
-match some_u8_value {
-    Some(3) =&gt; println!(&quot;three&quot;),
-    _ =&gt; (),
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    let some_u8_value = Some(0u8);
+    match some_u8_value {
+        Some(3) =&gt; println!(&quot;three&quot;),
+        _ =&gt; (),
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 6-6: A <code>match</code> that only cares about executing
@@ -175,13 +173,11 @@ have to add <code>_ =&gt; ()</code> after processing just one variant, which is 
 boilerplate code to add.</p>
 <p>Instead, we could write this in a shorter way using <code>if let</code>. The following
 code behaves the same as the <code>match</code> in Listing 6-6:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">let some_u8_value = Some(0u8);
-</span>if let Some(3) = some_u8_value {
-    println!(&quot;three&quot;);
-}
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">    let some_u8_value = Some(0u8);
+</span>    if let Some(3) = some_u8_value {
+        println!(&quot;three&quot;);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>The syntax <code>if let</code> takes a pattern and an expression separated by an equal
@@ -201,52 +197,52 @@ runs code when the value matches one pattern and then ignores all other values.<
 <code>UsState</code> value. If we wanted to count all non-quarter coins we see while also
 announcing the state of the quarters, we could do that with a <code>match</code>
 expression like this:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">#[derive(Debug)]
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[derive(Debug)]
 </span><span class="boring">enum UsState {
-</span><span class="boring">   Alabama,
-</span><span class="boring">   Alaska,
+</span><span class="boring">    Alabama,
+</span><span class="boring">    Alaska,
+</span><span class="boring">    // --snip--
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">enum Coin {
-</span><span class="boring">   Penny,
-</span><span class="boring">   Nickel,
-</span><span class="boring">   Dime,
-</span><span class="boring">   Quarter(UsState),
+</span><span class="boring">    Penny,
+</span><span class="boring">    Nickel,
+</span><span class="boring">    Dime,
+</span><span class="boring">    Quarter(UsState),
 </span><span class="boring">}
-</span><span class="boring">let coin = Coin::Penny;
-</span>let mut count = 0;
-match coin {
-    Coin::Quarter(state) =&gt; println!(&quot;State quarter from {:?}!&quot;, state),
-    _ =&gt; count += 1,
-}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let coin = Coin::Penny;
+</span>    let mut count = 0;
+    match coin {
+        Coin::Quarter(state) =&gt; println!(&quot;State quarter from {:?}!&quot;, state),
+        _ =&gt; count += 1,
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>Or we could use an <code>if let</code> and <code>else</code> expression like this:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span><span class="boring">#[derive(Debug)]
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">#[derive(Debug)]
 </span><span class="boring">enum UsState {
-</span><span class="boring">   Alabama,
-</span><span class="boring">   Alaska,
+</span><span class="boring">    Alabama,
+</span><span class="boring">    Alaska,
+</span><span class="boring">    // --snip--
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">enum Coin {
-</span><span class="boring">   Penny,
-</span><span class="boring">   Nickel,
-</span><span class="boring">   Dime,
-</span><span class="boring">   Quarter(UsState),
+</span><span class="boring">    Penny,
+</span><span class="boring">    Nickel,
+</span><span class="boring">    Dime,
+</span><span class="boring">    Quarter(UsState),
 </span><span class="boring">}
-</span><span class="boring">let coin = Coin::Penny;
-</span>let mut count = 0;
-if let Coin::Quarter(state) = coin {
-    println!(&quot;State quarter from {:?}!&quot;, state);
-} else {
-    count += 1;
-}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let coin = Coin::Penny;
+</span>    let mut count = 0;
+    if let Coin::Quarter(state) = coin {
+        println!(&quot;State quarter from {:?}!&quot;, state);
+    } else {
+        count += 1;
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>If you have a situation in which your program has logic that is too verbose to

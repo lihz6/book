@@ -1957,61 +1957,59 @@ fn main() -&gt; Result&lt;()&gt; {
 <p><a href="https://crates.io/crates/rusqlite/"><img src="https://badge-cache.kominick.com/crates/v/rusqlite.svg?label=rusqlite" alt="rusqlite-badge" /></a> <a href="https://crates.io/categories/database"><img src="https://badge-cache.kominick.com/badge/database--x.svg?style=social" alt="cat-database-badge" /></a></p>
 <p><a href="https://docs.rs/rusqlite/*/rusqlite/struct.Connection.html#method.open"><code>Connection::open</code></a> will open the database <code>cats</code> created in the earlier recipe.
 This recipe inserts data into <code>cat_colors</code> and <code>cats</code> tables using the <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Connection.html#method.execute"><code>execute</code></a> method of <code>Connection</code>. First, the data is inserted into the <code>cat_colors</code> table. After a record for a color is inserted, <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Connection.html#method.last_insert_rowid"><code>last_insert_rowid</code></a> method of <code>Connection</code> is used to get <code>id</code> of the last color inserted. This <code>id</code> is used while inserting data into the <code>cats</code> table. Then, the select query is prepared using the <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Connection.html#method.prepare"><code>prepare</code></a> method which gives a <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Statement.html"><code>statement</code></a> struct. Then, query is executed using <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Statement.html#method.query_map"><code>query_map</code></a> method of <a href="https://docs.rs/rusqlite/*/rusqlite/struct.Statement.html"><code>statement</code></a>.</p>
-<pre><code>extern crate rusqlite;
+<pre><pre class="playpen"><code class="language-rust no_run">extern crate rusqlite;
 
-use rusqlite::{Connection, Result};
 use rusqlite::NO_PARAMS;
+use rusqlite::{Connection, Result};
 use std::collections::HashMap;
-
 
 #[derive(Debug)]
 struct Cat {
     name: String,
-    color: String
+    color: String,
 }
 
-fn main() -&gt; Result&lt;()&gt; {	
+fn main() -&gt; Result&lt;()&gt; {
     let conn = Connection::open(&quot;cats.db&quot;)?;
-    
+
     let mut cat_colors = HashMap::new();
     cat_colors.insert(String::from(&quot;Blue&quot;), vec![&quot;Tigger&quot;, &quot;Sammy&quot;]);
     cat_colors.insert(String::from(&quot;Black&quot;), vec![&quot;Oreo&quot;, &quot;Biscuit&quot;]);
 
-    for (color, catnames) in &amp;cat_colors{
+    for (color, catnames) in &amp;cat_colors {
         conn.execute(
             &quot;INSERT INTO cat_colors (name) values (?1)&quot;,
             &amp;[&amp;color.to_string()],
         )?;
-    let last_id : String = conn.last_insert_rowid().to_string();
+        let last_id: String = conn.last_insert_rowid().to_string();
 
-    for cat in catnames{
-        conn.execute(
-            &quot;INSERT INTO cats (name, color_id) values (?1, ?2)&quot;,
-            &amp;[&amp;cat.to_string(), &amp;last_id],
-        )?;
+        for cat in catnames {
+            conn.execute(
+                &quot;INSERT INTO cats (name, color_id) values (?1, ?2)&quot;,
+                &amp;[&amp;cat.to_string(), &amp;last_id],
+            )?;
         }
     }
-    let mut stmt = conn.prepare(&quot;SELECT c.name, cc.name from cats c 
-                                 INNER JOIN cat_colors cc ON cc.id = c.color_id;&quot;)?;
-    
-	let cats = stmt
-        .query_map(NO_PARAMS, |row| 
-			Ok( 
-                Cat {
-					name: row.get(0)?,
-					color: row.get(1)?,
-				}
-			)
-		)?;	
-    
+    let mut stmt = conn.prepare(
+        &quot;SELECT c.name, cc.name from cats c
+         INNER JOIN cat_colors cc
+         ON cc.id = c.color_id;&quot;,
+    )?;
+
+    let cats = stmt.query_map(NO_PARAMS, |row| {
+        Ok(Cat {
+            name: row.get(0)?,
+            color: row.get(1)?,
+        })
+    })?;
+
     for cat in cats {
         println!(&quot;Found cat {:?}&quot;, cat);
     }
 
     Ok(())
 }
-
-</code></pre>
+</code></pre></pre>
 <h2><a class="header" href="#using-transactions" id="using-transactions">Using transactions</a></h2>
 <p><a href="https://crates.io/crates/rusqlite/"><img src="https://badge-cache.kominick.com/crates/v/rusqlite.svg?label=rusqlite" alt="rusqlite-badge" /></a> <a href="https://crates.io/categories/database"><img src="https://badge-cache.kominick.com/badge/database--x.svg?style=social" alt="cat-database-badge" /></a></p>
 <p><a href="https://docs.rs/rusqlite/*/rusqlite/struct.Connection.html#method.open"><code>Connection::open</code></a> will open the <code>cats.db</code> database from the top recipe.</p>

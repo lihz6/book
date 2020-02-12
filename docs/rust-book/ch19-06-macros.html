@@ -259,7 +259,7 @@ one arm.</p>
 <p>Valid pattern syntax in macro definitions is different than the pattern syntax
 covered in Chapter 18 because macro patterns are matched against Rust code
 structure rather than values. Let’s walk through what the pattern pieces in
-Listing 19-28 mean; for the full macro pattern syntax, see <a href="../reference/macros.html">the reference</a>.</p>
+Listing 19-28 mean; for the full macro pattern syntax, see <a href="../reference/macros-by-example.html">the reference</a>.</p>
 <p>First, a set of parentheses encompasses the whole pattern. A dollar sign (<code>$</code>)
 is next, followed by a set of parentheses that captures values that match the
 pattern within the parentheses for use in the replacement code. Within <code>$()</code> is
@@ -276,11 +276,13 @@ in the pattern zero or more times depending on how many times the pattern
 matches. The <code>$x</code> is replaced with each expression matched. When we call this
 macro with <code>vec![1, 2, 3];</code>, the code generated that replaces this macro call
 will be the following:</p>
-<pre><code class="language-rust ignore">let mut temp_vec = Vec::new();
-temp_vec.push(1);
-temp_vec.push(2);
-temp_vec.push(3);
-temp_vec
+<pre><code class="language-rust ignore">{
+    let mut temp_vec = Vec::new();
+    temp_vec.push(1);
+    temp_vec.push(2);
+    temp_vec.push(3);
+    temp_vec
+}
 </code></pre>
 <p>We’ve defined a macro that can take any number of arguments of any type and can
 generate code to create a vector containing the specified elements.</p>
@@ -335,7 +337,7 @@ function. The default implementation will print <code>Hello, Macro! My name is T
 been defined. In other words, we’ll write a crate that enables another
 programmer to write code like Listing 19-30 using our crate.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">use hello_macro::HelloMacro;
+<pre><code class="language-rust ignore does_not_compile">use hello_macro::HelloMacro;
 use hello_macro_derive::HelloMacro;
 
 #[derive(HelloMacro)]
@@ -411,22 +413,16 @@ in a moment, so we need to add them as dependencies. Add the following to the
 proc-macro = true
 
 [dependencies]
-syn = &quot;0.14.4&quot;
-quote = &quot;0.6.3&quot;
+syn = &quot;1.0&quot;
+quote = &quot;1.0&quot;
 </code></pre>
 <p>To start defining the procedural macro, place the code in Listing 19-31 into
 your <em>src/lib.rs</em> file for the <code>hello_macro_derive</code> crate. Note that this code
 won’t compile until we add a definition for the <code>impl_hello_macro</code> function.</p>
 <p><span class="filename">Filename: hello_macro_derive/src/lib.rs</span></p>
-<!--
-This usage of `extern crate` is required for the moment with 1.31.0, see:
-https://github.com/rust-lang/rust/issues/54418
-https://github.com/rust-lang/rust/pull/54658
-https://github.com/rust-lang/rust/issues/55599
--->
-<pre><code class="language-rust ignore">extern crate proc_macro;
+<pre><code class="language-rust ignore does_not_compile">extern crate proc_macro;
 
-use crate::proc_macro::TokenStream;
+use proc_macro::TokenStream;
 use quote::quote;
 use syn;
 
@@ -492,7 +488,7 @@ struct we get from parsing the <code>struct Pancakes;</code> string:</p>
 parsing the code that has the macro’s attribute in Listing 19-30</span></p>
 <p>The fields of this struct show that the Rust code we’ve parsed is a unit struct
 with the <code>ident</code> (identifier, meaning the name) of <code>Pancakes</code>. There are more
-fields on this struct for describing all sorts of Rust code; check the <a href="https://docs.rs/syn/0.14.4/syn/struct.DeriveInput.html"><code>syn</code>
+fields on this struct for describing all sorts of Rust code; check the <a href="https://docs.rs/syn/1.0/syn/struct.DeriveInput.html"><code>syn</code>
 documentation for <code>DeriveInput</code></a> for more information.</p>
 <p>Soon we’ll define the <code>impl_hello_macro</code> function, which is where we’ll build
 the new Rust code we want to include. But before we do, note that the output
@@ -511,12 +507,28 @@ about what went wrong by using <code>panic!</code> or <code>expect</code>.</p>
 into a <code>DeriveInput</code> instance, let’s generate the code that implements the
 <code>HelloMacro</code> trait on the annotated type, as shown in Listing 19-33.</p>
 <p><span class="filename">Filename: hello_macro_derive/src/lib.rs</span></p>
-<pre><code class="language-rust ignore">fn impl_hello_macro(ast: &amp;syn::DeriveInput) -&gt; TokenStream {
+<pre><code class="language-rust ignore"><span class="boring">extern crate proc_macro;
+</span><span class="boring">
+</span><span class="boring">use proc_macro::TokenStream;
+</span><span class="boring">use quote::quote;
+</span><span class="boring">use syn;
+</span><span class="boring">
+</span><span class="boring">#[proc_macro_derive(HelloMacro)]
+</span><span class="boring">pub fn hello_macro_derive(input: TokenStream) -&gt; TokenStream {
+</span><span class="boring">    // Construct a representation of Rust code as a syntax tree
+</span><span class="boring">    // that we can manipulate
+</span><span class="boring">    let ast = syn::parse(input).unwrap();
+</span><span class="boring">
+</span><span class="boring">    // Build the trait implementation
+</span><span class="boring">    impl_hello_macro(&amp;ast)
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn impl_hello_macro(ast: &amp;syn::DeriveInput) -&gt; TokenStream {
     let name = &amp;ast.ident;
     let gen = quote! {
         impl HelloMacro for #name {
             fn hello_macro() {
-                println!(&quot;Hello, Macro! My name is {}&quot;, stringify!(#name));
+                println!(&quot;Hello, Macro! My name is {}!&quot;, stringify!(#name));
             }
         }
     };

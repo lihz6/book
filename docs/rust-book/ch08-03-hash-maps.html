@@ -172,15 +172,13 @@ As always, check the standard library documentation for more information.</p>
 Listing 8-20, we’re keeping track of the scores of two teams whose names are
 Blue and Yellow. The Blue team starts with 10 points, and the Yellow team
 starts with 50.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let mut scores = HashMap::new();
+    let mut scores = HashMap::new();
 
-scores.insert(String::from(&quot;Blue&quot;), 10);
-scores.insert(String::from(&quot;Yellow&quot;), 50);
+    scores.insert(String::from(&quot;Blue&quot;), 10);
+    scores.insert(String::from(&quot;Yellow&quot;), 50);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-20: Creating a new hash map and inserting some
@@ -194,22 +192,24 @@ standard library; there’s no built-in macro to construct them, for example.</p
 keys of type <code>String</code> and values of type <code>i32</code>. Like vectors, hash maps are
 homogeneous: all of the keys must have the same type, and all of the values
 must have the same type.</p>
-<p>Another way of constructing a hash map is by using the <code>collect</code> method on a
-vector of tuples, where each tuple consists of a key and its value. The
-<code>collect</code> method gathers data into a number of collection types, including
-<code>HashMap</code>. For example, if we had the team names and initial scores in two
-separate vectors, we could use the <code>zip</code> method to create a vector of tuples
-where “Blue” is paired with 10, and so forth. Then we could use the <code>collect</code>
-method to turn that vector of tuples into a hash map, as shown in Listing 8-21.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<p>Another way of constructing a hash map is by using iterators and the <code>collect</code>
+method on a vector of tuples, where each tuple consists of a key and its value.
+We’ll be going into more detail about iterators and their associated methods in
+the <a href="ch13-02-iterators.html">”Processing a Series of Items with Iterators” section of Chapter
+13</a><!-- ignore -->. The <code>collect</code> method gathers data into a number
+of collection types, including <code>HashMap</code>. For example, if we had the team names
+and initial scores in two separate vectors, we could use the <code>zip</code> method to
+create a vector of tuples where “Blue” is paired with 10, and so forth. Then we
+could use the <code>collect</code> method to turn that vector of tuples into a hash map,
+as shown in Listing 8-21.</p>
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let teams  = vec![String::from(&quot;Blue&quot;), String::from(&quot;Yellow&quot;)];
-let initial_scores = vec![10, 50];
+    let teams = vec![String::from(&quot;Blue&quot;), String::from(&quot;Yellow&quot;)];
+    let initial_scores = vec![10, 50];
 
-let scores: HashMap&lt;_, _&gt; = teams.iter().zip(initial_scores.iter()).collect();
+    let mut scores: HashMap&lt;_, _&gt; =
+        teams.into_iter().zip(initial_scores.into_iter()).collect();
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-21: Creating a hash map from a list of teams
@@ -218,23 +218,23 @@ and a list of scores</span></p>
 <code>collect</code> into many different data structures and Rust doesn’t know which you
 want unless you specify. For the parameters for the key and value types,
 however, we use underscores, and Rust can infer the types that the hash map
-contains based on the types of the data in the vectors.</p>
+contains based on the types of the data in the vectors. In Listing 8-21, the
+key type will be <code>String</code> and the value type will be <code>i32</code>, just as the types
+were in Listing 8-20.</p>
 <h3><a class="header" href="#hash-maps-and-ownership" id="hash-maps-and-ownership">Hash Maps and Ownership</a></h3>
 <p>For types that implement the <code>Copy</code> trait, like <code>i32</code>, the values are copied
 into the hash map. For owned values like <code>String</code>, the values will be moved and
 the hash map will be the owner of those values, as demonstrated in Listing 8-22.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let field_name = String::from(&quot;Favorite color&quot;);
-let field_value = String::from(&quot;Blue&quot;);
+    let field_name = String::from(&quot;Favorite color&quot;);
+    let field_value = String::from(&quot;Blue&quot;);
 
-let mut map = HashMap::new();
-map.insert(field_name, field_value);
-// field_name and field_value are invalid at this point, try using them and
-// see what compiler error you get!
+    let mut map = HashMap::new();
+    map.insert(field_name, field_value);
+    // field_name and field_value are invalid at this point, try using them and
+    // see what compiler error you get!
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-22: Showing that keys and values are owned by
@@ -250,18 +250,16 @@ Chapter 10.</p>
 <h3><a class="header" href="#accessing-values-in-a-hash-map" id="accessing-values-in-a-hash-map">Accessing Values in a Hash Map</a></h3>
 <p>We can get a value out of the hash map by providing its key to the <code>get</code>
 method, as shown in Listing 8-23.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let mut scores = HashMap::new();
+    let mut scores = HashMap::new();
 
-scores.insert(String::from(&quot;Blue&quot;), 10);
-scores.insert(String::from(&quot;Yellow&quot;), 50);
+    scores.insert(String::from(&quot;Blue&quot;), 10);
+    scores.insert(String::from(&quot;Yellow&quot;), 50);
 
-let team_name = String::from(&quot;Blue&quot;);
-let score = scores.get(&amp;team_name);
+    let team_name = String::from(&quot;Blue&quot;);
+    let score = scores.get(&amp;team_name);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-23: Accessing the score for the Blue team
@@ -273,19 +271,17 @@ returns an <code>Option&lt;&amp;V&gt;</code>; if there’s no value for that key
 of the ways that we covered in Chapter 6.</p>
 <p>We can iterate over each key/value pair in a hash map in a similar manner as we
 do with vectors, using a <code>for</code> loop:</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let mut scores = HashMap::new();
+    let mut scores = HashMap::new();
 
-scores.insert(String::from(&quot;Blue&quot;), 10);
-scores.insert(String::from(&quot;Yellow&quot;), 50);
+    scores.insert(String::from(&quot;Blue&quot;), 10);
+    scores.insert(String::from(&quot;Yellow&quot;), 50);
 
-for (key, value) in &amp;scores {
-    println!(&quot;{}: {}&quot;, key, value);
-}
+    for (key, value) in &amp;scores {
+        println!(&quot;{}: {}&quot;, key, value);
+    }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This code will print each pair in an arbitrary order:</p>
@@ -307,17 +303,15 @@ with a different value, the value associated with that key will be replaced.
 Even though the code in Listing 8-24 calls <code>insert</code> twice, the hash map will
 only contain one key/value pair because we’re inserting the value for the Blue
 team’s key both times.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let mut scores = HashMap::new();
+    let mut scores = HashMap::new();
 
-scores.insert(String::from(&quot;Blue&quot;), 10);
-scores.insert(String::from(&quot;Blue&quot;), 25);
+    scores.insert(String::from(&quot;Blue&quot;), 10);
+    scores.insert(String::from(&quot;Blue&quot;), 25);
 
-println!(&quot;{:?}&quot;, scores);
+    println!(&quot;{:?}&quot;, scores);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-24: Replacing a value stored with a particular
@@ -333,18 +327,16 @@ might not exist. Let’s say we want to check whether the key for the Yellow tea
 has a value associated with it. If it doesn’t, we want to insert the value 50,
 and the same for the Blue team. Using the <code>entry</code> API, the code looks like
 Listing 8-25.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let mut scores = HashMap::new();
-scores.insert(String::from(&quot;Blue&quot;), 10);
+    let mut scores = HashMap::new();
+    scores.insert(String::from(&quot;Blue&quot;), 10);
 
-scores.entry(String::from(&quot;Yellow&quot;)).or_insert(50);
-scores.entry(String::from(&quot;Blue&quot;)).or_insert(50);
+    scores.entry(String::from(&quot;Yellow&quot;)).or_insert(50);
+    scores.entry(String::from(&quot;Blue&quot;)).or_insert(50);
 
-println!(&quot;{:?}&quot;, scores);
+    println!(&quot;{:?}&quot;, scores);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-25: Using the <code>entry</code> method to only insert if
@@ -366,21 +358,19 @@ counts how many times each word appears in some text. We use a hash map with
 the words as keys and increment the value to keep track of how many times we’ve
 seen that word. If it’s the first time we’ve seen a word, we’ll first insert
 the value 0.</p>
-<pre><pre class="playpen"><code class="language-rust">
-<span class="boring">#![allow(unused_variables)]
-</span><span class="boring">fn main() {
-</span>use std::collections::HashMap;
+<pre><pre class="playpen"><code class="language-rust"><span class="boring">fn main() {
+</span>    use std::collections::HashMap;
 
-let text = &quot;hello world wonderful world&quot;;
+    let text = &quot;hello world wonderful world&quot;;
 
-let mut map = HashMap::new();
+    let mut map = HashMap::new();
 
-for word in text.split_whitespace() {
-    let count = map.entry(word).or_insert(0);
-    *count += 1;
-}
+    for word in text.split_whitespace() {
+        let count = map.entry(word).or_insert(0);
+        *count += 1;
+    }
 
-println!(&quot;{:?}&quot;, map);
+    println!(&quot;{:?}&quot;, map);
 <span class="boring">}
 </span></code></pre></pre>
 <p><span class="caption">Listing 8-26: Counting occurrences of words using a hash

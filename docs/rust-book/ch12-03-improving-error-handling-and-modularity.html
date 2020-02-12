@@ -213,13 +213,24 @@ reading it. Let’s rework our program by following this process.</p>
 <em>src/lib.rs</em>. Listing 12-5 shows the new start of <code>main</code> that calls a new
 function <code>parse_config</code>, which we’ll define in <em>src/main.rs</em> for the moment.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span>fn main() {
     let args: Vec&lt;String&gt; = env::args().collect();
 
     let (query, filename) = parse_config(&amp;args);
 
     // --snip--
-}
+<span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, filename);
+</span><span class="boring">
+</span><span class="boring">    let contents = fs::read_to_string(filename)
+</span><span class="boring">        .expect(&quot;Something went wrong reading the file&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span>}
 
 fn parse_config(args: &amp;[String]) -&gt; (&amp;str, &amp;str) {
     let query = &amp;args[1];
@@ -277,7 +288,9 @@ an anti-pattern known as <em>primitive obsession</em>.</p>
         .expect(&quot;Something went wrong reading the file&quot;);
 
     // --snip--
-}
+<span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span>}
 
 struct Config {
     query: String,
@@ -347,23 +360,32 @@ be able to create instances of <code>Config</code> by calling <code>Config::new<
 shows the changes we need to make.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playpen"><code class="language-rust should_panic"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
 </span><span class="boring">
 </span>fn main() {
     let args: Vec&lt;String&gt; = env::args().collect();
 
     let config = Config::new(&amp;args);
-
+<span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)
+</span><span class="boring">        .expect(&quot;Something went wrong reading the file&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span>
     // --snip--
 }
+
+// --snip--
 
 <span class="boring">struct Config {
 </span><span class="boring">    query: String,
 </span><span class="boring">    filename: String,
 </span><span class="boring">}
 </span><span class="boring">
-</span>// --snip--
-
-impl Config {
+</span>impl Config {
     fn new(args: &amp;[String]) -&gt; Config {
         let query = args[1].clone();
         let filename = args[2].clone();
@@ -385,11 +407,10 @@ panic if the vector contains fewer than three items. Try running the program
 without any arguments; it will look like this:</p>
 <pre><code class="language-text">$ cargo run
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0s
      Running `target/debug/minigrep`
-thread 'main' panicked at 'index out of bounds: the len is 1
-but the index is 1', src/main.rs:25:21
-note: Run with `RUST_BACKTRACE=1` for a backtrace.
+thread 'main' panicked at 'index out of bounds: the len is 1 but the index is 1', src/main.rs:27:21
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
 </code></pre>
 <p>The line <code>index out of bounds: the len is 1 but the index is 1</code> is an error
 message intended for programmers. It won’t help our end users understand what
@@ -399,13 +420,43 @@ happened and what they should do instead. Let’s fix that now.</p>
 slice is long enough before accessing index 1 and 2. If the slice isn’t long
 enough, the program panics and displays a better error message than the <code>index out of bounds</code> message.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">// --snip--
-fn new(args: &amp;[String]) -&gt; Config {
-    if args.len() &lt; 3 {
-        panic!(&quot;not enough arguments&quot;);
-    }
-    // --snip--
-</code></pre>
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)
+</span><span class="boring">        .expect(&quot;Something went wrong reading the file&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span>    // --snip--
+    fn new(args: &amp;[String]) -&gt; Config {
+        if args.len() &lt; 3 {
+            panic!(&quot;not enough arguments&quot;);
+        }
+        // --snip--
+<span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Config { query, filename }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 12-8: Adding a check for the number of
 arguments</span></p>
 <p>This code is similar to <a href="ch09-03-to-panic-or-not-to-panic.html#creating-custom-types-for-validation">the <code>Guess::new</code> function we wrote in Listing
@@ -419,10 +470,10 @@ will be true, and we call the <code>panic!</code> macro to end the program immed
 arguments again to see what the error looks like now:</p>
 <pre><code class="language-text">$ cargo run
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0s
      Running `target/debug/minigrep`
 thread 'main' panicked at 'not enough arguments', src/main.rs:26:13
-note: Run with `RUST_BACKTRACE=1` for a backtrace.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace.
 </code></pre>
 <p>This output is better: we now have a reasonable error message. However, we also
 have extraneous information we don’t want to give to our users. Perhaps using
@@ -443,7 +494,29 @@ about <code>thread 'main'</code> and <code>RUST_BACKTRACE</code> that a call to 
 that this won’t compile until we update <code>main</code> as well, which we’ll do in the
 next listing.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">impl Config {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)
+</span><span class="boring">        .expect(&quot;Something went wrong reading the file&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Config {
     fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
         if args.len() &lt; 3 {
             return Err(&quot;not enough arguments&quot;);
@@ -478,7 +551,9 @@ tool with a nonzero error code from <code>panic!</code> and implement it by hand
 nonzero exit status is a convention to signal to the process that called our
 program that the program exited with an error state.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">use std::process;
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span>use std::process;
 
 fn main() {
     let args: Vec&lt;String&gt; = env::args().collect();
@@ -489,7 +564,34 @@ fn main() {
     });
 
     // --snip--
-</code></pre>
+<span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)
+</span><span class="boring">        .expect(&quot;Something went wrong reading the file&quot;);
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 12-10: Exiting with an error code if creating a
 new <code>Config</code> fails</span></p>
 <p>In this listing, we’ve used a method we haven’t covered before:
@@ -514,7 +616,7 @@ number that was passed as the exit status code. This is similar to the
 extra output. Let’s try it:</p>
 <pre><code class="language-text">$ cargo run
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.48 secs
+    Finished dev [unoptimized + debuginfo] target(s) in 0.48s
      Running `target/debug/minigrep`
 Problem parsing arguments: not enough arguments
 </code></pre>
@@ -531,10 +633,21 @@ inspection, and we’ll be able to write tests for all the other logic.</p>
 the small, incremental improvement of extracting the function. We’re still
 defining the function in <em>src/main.rs</em>.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span><span class="boring">use std::process;
+</span><span class="boring">
+</span>fn main() {
     // --snip--
 
-    println!(&quot;Searching for {}&quot;, config.query);
+<span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args).unwrap_or_else(|err| {
+</span><span class="boring">        println!(&quot;Problem parsing arguments: {}&quot;, err);
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    });
+</span><span class="boring">
+</span>    println!(&quot;Searching for {}&quot;, config.query);
     println!(&quot;In file {}&quot;, config.filename);
 
     run(config);
@@ -548,7 +661,25 @@ fn run(config: Config) {
 }
 
 // --snip--
-</code></pre>
+<span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 12-11: Extracting a <code>run</code> function containing the
 rest of the program logic</span></p>
 <p>The <code>run</code> function now contains all the remaining logic from <code>main</code>, starting
@@ -563,18 +694,54 @@ us further consolidate into <code>main</code> the logic around handling errors i
 user-friendly way. Listing 12-12 shows the changes we need to make to the
 signature and body of <code>run</code>.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">use std::error::Error;
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::fs;
+</span><span class="boring">use std::process;
+</span>use std::error::Error;
 
 // --snip--
 
-fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+<span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args).unwrap_or_else(|err| {
+</span><span class="boring">        println!(&quot;Problem parsing arguments: {}&quot;, err);
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    });
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span><span class="boring">    run(config);
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
     let contents = fs::read_to_string(config.filename)?;
 
     println!(&quot;With text:\n{}&quot;, contents);
 
     Ok(())
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p><span class="caption">Listing 12-12: Changing the <code>run</code> function to return
 <code>Result</code></span></p>
 <p>We’ve made three significant changes here. First, we changed the return type of
@@ -600,14 +767,32 @@ syntax might look a bit strange at first, but using <code>()</code> like this is
 idiomatic way to indicate that we’re calling <code>run</code> for its side effects only;
 it doesn’t return a value we need.</p>
 <p>When you run this code, it will compile but will display a warning:</p>
-<pre><code class="language-text">warning: unused `std::result::Result` that must be used
-  --&gt; src/main.rs:17:5
+<pre><code class="language-text">$ cargo run the poem.txt
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+warning: unused `std::result::Result` that must be used
+  --&gt; src/main.rs:19:5
    |
-17 |     run(config);
+19 |     run(config);
    |     ^^^^^^^^^^^^
    |
-   = note: #[warn(unused_must_use)] on by default
+   = note: `#[warn(unused_must_use)]` on by default
    = note: this `Result` may be an `Err` variant, which should be handled
+
+    Finished dev [unoptimized + debuginfo] target(s) in 0.71s
+     Running `target/debug/minigrep the poem.txt`
+Searching for the
+In file poem.txt
+With text:
+I’m nobody! Who are you?
+Are you nobody, too?
+Then there’s a pair of us - don’t tell!
+They’d banish us, you know.
+
+How dreary to be somebody!
+How public, like a frog
+To tell your name the livelong day
+To an admiring bog!
+
 </code></pre>
 <p>Rust tells us that our code ignored the <code>Result</code> value and the <code>Result</code> value
 might indicate that an error occurred. But we’re not checking to see whether or
@@ -617,10 +802,22 @@ have some error-handling code here! Let’s rectify that problem now.</p>
 <p>We’ll check for errors and handle them using a technique similar to one we used
 with <code>Config::new</code> in Listing 12-10, but with a slight difference:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
-<pre><code class="language-rust ignore">fn main() {
+<pre><code class="language-rust ignore"><span class="boring">use std::env;
+</span><span class="boring">use std::error::Error;
+</span><span class="boring">use std::fs;
+</span><span class="boring">use std::process;
+</span><span class="boring">
+</span>fn main() {
     // --snip--
 
-    println!(&quot;Searching for {}&quot;, config.query);
+<span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args).unwrap_or_else(|err| {
+</span><span class="boring">        println!(&quot;Problem parsing arguments: {}&quot;, err);
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    });
+</span><span class="boring">
+</span>    println!(&quot;Searching for {}&quot;, config.query);
     println!(&quot;In file {}&quot;, config.filename);
 
     if let Err(e) = run(config) {
@@ -629,7 +826,33 @@ with <code>Config::new</code> in Listing 12-10, but with a slight difference:</p
         process::exit(1);
     }
 }
-</code></pre>
+<span class="boring">
+</span><span class="boring">fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span><span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">struct Config {
+</span><span class="boring">    query: String,
+</span><span class="boring">    filename: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Config {
+</span><span class="boring">    fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+</span><span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span><span class="boring">    }
+</span><span class="boring">}
+</span></code></pre>
 <p>We use <code>if let</code> rather than <code>unwrap_or_else</code> to check whether <code>run</code> returns an
 <code>Err</code> value and call <code>process::exit(1)</code> if it does. The <code>run</code> function doesn’t
 return a value that we want to <code>unwrap</code> in the same way that <code>Config::new</code>
@@ -665,12 +888,25 @@ pub struct Config {
 impl Config {
     pub fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
         // --snip--
-    }
+<span class="boring">        if args.len() &lt; 3 {
+</span><span class="boring">            return Err(&quot;not enough arguments&quot;);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        let query = args[1].clone();
+</span><span class="boring">        let filename = args[2].clone();
+</span><span class="boring">
+</span><span class="boring">        Ok(Config { query, filename })
+</span>    }
 }
 
 pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
     // --snip--
-}
+<span class="boring">    let contents = fs::read_to_string(config.filename)?;
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;With text:\n{}&quot;, contents);
+</span><span class="boring">
+</span><span class="boring">    Ok(())
+</span>}
 </code></pre>
 <p><span class="caption">Listing 12-13: Moving <code>Config</code> and <code>run</code> into
 <em>src/lib.rs</em></span></p>
@@ -687,9 +923,22 @@ use minigrep::Config;
 
 fn main() {
     // --snip--
-    if let Err(e) = minigrep::run(config) {
+<span class="boring">    let args: Vec&lt;String&gt; = env::args().collect();
+</span><span class="boring">
+</span><span class="boring">    let config = Config::new(&amp;args).unwrap_or_else(|err| {
+</span><span class="boring">        println!(&quot;Problem parsing arguments: {}&quot;, err);
+</span><span class="boring">        process::exit(1);
+</span><span class="boring">    });
+</span><span class="boring">
+</span><span class="boring">    println!(&quot;Searching for {}&quot;, config.query);
+</span><span class="boring">    println!(&quot;In file {}&quot;, config.filename);
+</span><span class="boring">
+</span>    if let Err(e) = minigrep::run(config) {
         // --snip--
-    }
+<span class="boring">        println!(&quot;Application error: {}&quot;, e);
+</span><span class="boring">
+</span><span class="boring">        process::exit(1);
+</span>    }
 }
 </code></pre>
 <p><span class="caption">Listing 12-14: Using the <code>minigrep</code> library crate in
