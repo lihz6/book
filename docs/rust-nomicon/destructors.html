@@ -3,11 +3,11 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Destructors - </title>
+        <title>Destructors - The Rustonomicon</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="">
+        <meta name="description" content="The Dark Arts of Advanced and Unsafe Rust Programming">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
@@ -113,11 +113,15 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1>
+                        <h1 class="menu-title">The Rustonomicon</h1>
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                            <a href="https://github.com/rust-lang/nomicon" title="Git repository" aria-label="Git repository">
+                                <i id="git-repository-button" class="fa fa-github"></i>
                             </a>
                             
                         </div>
@@ -167,7 +171,7 @@ this is totally fine.</p>
 <p>For instance, a custom implementation of <code>Box</code> might write <code>Drop</code> like this:</p>
 <pre><pre class="playpen"><code class="language-rust">#![feature(ptr_internals, allocator_api)]
 
-use std::alloc::{Alloc, Global, GlobalAlloc, Layout};
+use std::alloc::{AllocRef, Global, GlobalAlloc, Layout};
 use std::mem;
 use std::ptr::{drop_in_place, NonNull, Unique};
 
@@ -190,7 +194,7 @@ use-after-free the <code>ptr</code> because when drop exits, it becomes inaccess
 <p>However this wouldn't work:</p>
 <pre><pre class="playpen"><code class="language-rust">#![feature(allocator_api, ptr_internals)]
 
-use std::alloc::{Alloc, Global, GlobalAlloc, Layout};
+use std::alloc::{AllocRef, Global, GlobalAlloc, Layout};
 use std::ptr::{drop_in_place, Unique, NonNull};
 use std::mem;
 
@@ -258,7 +262,7 @@ destructors.</p>
 of Self during <code>drop</code> is to use an Option:</p>
 <pre><pre class="playpen"><code class="language-rust">#![feature(allocator_api, ptr_internals)]
 
-use std::alloc::{Alloc, GlobalAlloc, Global, Layout};
+use std::alloc::{AllocRef, GlobalAlloc, Global, Layout};
 use std::ptr::{drop_in_place, Unique, NonNull};
 use std::mem;
 
