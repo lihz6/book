@@ -94,41 +94,40 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
 
-                        <h1 class="menu-title">The Rust Reference</h1>
+                    <h1 class="menu-title">The Rust Reference</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
-                                <i id="git-repository-button" class="fa fa-github"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
                     </div>
                 </div>
 
@@ -2924,7 +2923,7 @@ mod foo {
     }
 
     use crate::foo::example::iter; // good: foo is at crate root
-//  use example::iter;      // bad: relative paths are not allowed without `self`
+//  use example::iter;      // bad in 2015 edition: relative paths are not allowed without `self`; good in 2018 edition
     use self::baz::foobaz;  // good: self refers to module 'foo'
     use crate::foo::bar::foobar;   // good: foo is at crate root
 
@@ -3554,7 +3553,7 @@ called an enum variant. Each enum instance has a <em>discriminant</em> which is 
 integer associated to it that is used to determine which variant it holds. An
 opaque reference to this discriminant can be obtained with the
 <a href="items/../../std/mem/fn.discriminant.html"><code>mem::discriminant</code></a> function.</p>
-<h2><a class="header" href="#custom-discriminant-values-for-field-less-enumerations" id="custom-discriminant-values-for-field-less-enumerations">Custom Discriminant Values for Field-Less Enumerations</a></h2>
+<h2><a class="header" href="#custom-discriminant-values-for-fieldless-enumerations" id="custom-discriminant-values-for-fieldless-enumerations">Custom Discriminant Values for Fieldless Enumerations</a></h2>
 <p>If there is no data attached to <em>any</em> of the variants of an enumeration,
 then the discriminant can be directly chosen and accessed.</p>
 <p>These enumerations can be cast to integer types with the <code>as</code> operator by a
@@ -4816,15 +4815,15 @@ let _: f64 = f64::from_i32(42);
 <p>Associated functions whose first parameter is named <code>self</code> are called <em>methods</em>
 and may be invoked using the <a href="items/../expressions/method-call-expr.html">method call operator</a>, for example, <code>x.foo()</code>, as
 well as the usual function call notation.</p>
-<p>If the type of the <code>self</code> parameter is specified, it is limited to semantic
-types generated by the following grammar (where <code>'lt</code> denotes some arbitrary
+<p>If the type of the <code>self</code> parameter is specified, it is limited to types resolving
+to one generated by the following grammar (where <code>'lt</code> denotes some arbitrary
 lifetime):</p>
 <pre><code class="language-text">P = &amp;'lt S | &amp;'lt mut S | Box&lt;S&gt; | Rc&lt;S&gt; | Arc&lt;S&gt; | Pin&lt;P&gt;
 S = Self | P
 </code></pre>
-<p>The <code>Self</code> terminal in this grammar is the semantic <code>Self</code> type and can be
-replaced with the type being implemented, including type aliases or associated
-type projections for the type.</p>
+<p>The <code>Self</code> terminal in this grammar denotes a type resolving to the implementing type.
+This can also include the contextual type alias <code>Self</code>, other type aliases,
+or associated type projections resolving to the implementing type.</p>
 <pre><pre class="playpen"><code class="language-rust">
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
@@ -5334,7 +5333,7 @@ another block expression.</li>
 <li><a href="items/generics.html">Generic lifetime or type parameter</a> accept outer attributes.</li>
 <li>Expressions accept outer attributes in limited situations, see <a href="expressions.html#expression-attributes">Expression
 Attributes</a> for details.</li>
-<li><a href="items/functions.html">Function</a>, <a href="expressions/closure-expr.html">closure</a>] and <a href="types/function-pointer.html">function pointer</a>
+<li><a href="items/functions.html">Function</a>, <a href="expressions/closure-expr.html">closure</a> and <a href="types/function-pointer.html">function pointer</a>
 parameters accept outer attributes. This includes attributes on variadic parameters
 denoted with <code>...</code> in function pointers and <a href="items/external-blocks.html#variadic-functions">external blocks</a>.</li>
 </ul>
@@ -6268,7 +6267,7 @@ from the point of declaration until the end of the enclosing block scope.</p>
 <p><strong><sup>Syntax</sup></strong><br />
 <em>ExpressionStatement</em> :<br />
       <a href="expressions.html"><em>ExpressionWithoutBlock</em></a> <code>;</code><br />
-   | <a href="expressions.html"><em>ExpressionWithBlock</em></a></p>
+   | <a href="expressions.html"><em>ExpressionWithBlock</em></a> <code>;</code><sup>?</sup></p>
 </blockquote>
 <p>An <em>expression statement</em> is one that evaluates an <a href="expressions.html">expression</a> and ignores its
 result. As a rule, an expression statement's purpose is to trigger the effects
@@ -6658,10 +6657,6 @@ not need to be followed by a semicolon. Expression statements usually require
 a following semicolon except if its outer expression is a flow control
 expression. Furthermore, extra semicolons between statements are allowed, but
 these semicolons do not affect semantics.</p>
-<blockquote>
-<p>Note: The semicolon following a statement is not a part of the statement
-itself. They are invalid when using the <code>stmt</code> macro matcher.</p>
-</blockquote>
 <p>When evaluating a block expression, each statement, except for item declaration
 statements, is executed sequentially. Then the final expression is executed,
 if given.</p>
@@ -7379,7 +7374,7 @@ in a <em>panicked state</em> if it fails.</p>
 <span class="boring">#![allow(unused_variables)]
 </span><span class="boring">fn main() {
 </span>// lint is deny by default.
-#![warn(const_err)]
+#![warn(unconditional_panic)]
 
 ([1, 2, 3, 4])[2];        // Evaluates to 3
 
@@ -8395,10 +8390,10 @@ if let PAT = ( EXPR || EXPR ) { .. }
    <code>}</code></p>
 <p><em>MatchArms</em> :<br />
    ( <em>MatchArm</em> <code>=&gt;</code>
-( <a href="expressions/block-expr.html#block-expressions"><em>BlockExpression</em></a> <code>,</code><sup>?</sup>
-| <a href="expressions/../expressions.html"><em>Expression</em></a> <code>,</code> )
+( <a href="expressions/../expressions.html"><em>ExpressionWithoutBlock</em></a> <code>,</code>
+| <a href="expressions/../expressions.html"><em>ExpressionWithBlock</em></a> <code>,</code><sup>?</sup> )
 )<sup>*</sup><br />
-   <em>MatchArm</em> <code>=&gt;</code> ( <a href="expressions/block-expr.html#block-expressions"><em>BlockExpression</em></a> | <a href="expressions/../expressions.html"><em>Expression</em></a> ) <code>,</code><sup>?</sup></p>
+   <em>MatchArm</em> <code>=&gt;</code> <a href="expressions/../expressions.html"><em>Expression</em></a> <code>,</code><sup>?</sup></p>
 <p><em>MatchArm</em> :<br />
    <a href="expressions/../attributes.html"><em>OuterAttribute</em></a><sup>*</sup> <em>MatchArmPatterns</em> <em>MatchArmGuard</em><sup>?</sup></p>
 <p><em>MatchArmPatterns</em> :<br />
@@ -9127,7 +9122,7 @@ a variable with the same name as the given field.</p>
 <blockquote>
 <p><strong><sup>Syntax</sup></strong><br />
 <em>TupleStructPattern</em> :<br />
-   <a href="paths.html#paths-in-expressions"><em>PathInExpression</em></a> <code>(</code> <em>TupleStructItems</em> <code>)</code></p>
+   <a href="paths.html#paths-in-expressions"><em>PathInExpression</em></a> <code>(</code> <em>TupleStructItems</em><sup>?</sup> <code>)</code></p>
 <p><em>TupleStructItems</em> :<br />
       <a href="patterns.html#patterns"><em>Pattern</em></a> ( <code>,</code> <a href="patterns.html#patterns"><em>Pattern</em></a> )<sup>*</sup> <code>,</code><sup>?</sup><br />
    | (<a href="patterns.html#patterns"><em>Pattern</em></a> <code>,</code>)<sup>*</sup> <code>..</code> ( (<code>,</code> <a href="patterns.html#patterns"><em>Pattern</em></a>)<sup>+</sup> <code>,</code><sup>?</sup> )<sup>?</sup></p>
@@ -10056,7 +10051,7 @@ often used in generic arguments:</p>
 </span></code></pre></pre>
 <!--
   What else should be said here?
-  The only documentation I am aware of is https://rust-lang.github.io/rustc-guide/type-inference.html
+  The only documentation I am aware of is https://rustc-dev-guide.rust-lang.org/type-inference.html
   There should be a broader discussion of type inference somewhere.
 -->
 <h1><a class="header" href="#dynamically-sized-types" id="dynamically-sized-types">Dynamically Sized Types</a></h1>
@@ -10246,7 +10241,20 @@ is now. Then increase the current offset by the size of the field.</p>
 multiple of the struct's alignment.</p>
 <p>Here is this algorithm described in pseudocode.</p>
 <!-- ignore: pseudocode -->
-<pre><code class="language-rust ignore">struct.alignment = struct.fields().map(|field| field.alignment).max();
+<pre><code class="language-rust ignore">/// Returns the amount of padding needed after `offset` to ensure that the
+/// following address will be aligned to `alignment`.
+fn padding_needed_for(offset: usize, alignment: usize) -&gt; usize {
+    let misalignment = offset % alignment;
+    if misalignment &gt; 0 {
+        // round up to next multiple of `alignment`
+        alignment - misalignment
+    } else {
+        // already a multiple of `alignment`
+        0
+    }
+}
+
+struct.alignment = struct.fields().map(|field| field.alignment).max();
 
 let current_offset = 0;
 
@@ -10254,15 +10262,20 @@ for field in struct.fields_in_declaration_order() {
     // Increase the current offset so that it's a multiple of the alignment
     // of this field. For the first field, this will always be zero.
     // The skipped bytes are called padding bytes.
-    current_offset += field.alignment % current_offset;
+    current_offset += padding_needed_for(current_offset, field.alignment);
 
     struct[field].offset = current_offset;
 
     current_offset += field.size;
 }
 
-struct.size = current_offset + current_offset % struct.alignment;
+struct.size = current_offset + padding_needed_for(current_offset, struct.alignment);
 </code></pre>
+<div class="warning">
+<p>Warning: This pseudocode uses a naive algorithm that ignores overflow issues for
+the sake of clarity. To perform memory layout computations in actual code, use
+<a href="../std/alloc/struct.Layout.html"><code>Layout</code></a>.</p>
+</div>
 <blockquote>
 <p>Note: This algorithm can produce zero-sized structs. This differs from
 C where structs without data still have a size of one byte.</p>
@@ -10298,7 +10311,7 @@ assert_eq!(std::mem::align_of::&lt;SizeRoundedUp&gt;(), 4); // From a
 <span class="boring">}
 </span></code></pre></pre>
 <h4><a class="header" href="#reprc-enums" id="reprc-enums">#[repr(C)] Enums</a></h4>
-<p>For <a href="items/enumerations.html#custom-discriminant-values-for-field-less-enumerations">C-like enumerations</a>, the <code>C</code> representation has the size and alignment of
+<p>For <a href="items/enumerations.html#custom-discriminant-values-for-fieldless-enumerations">C-like enumerations</a>, the <code>C</code> representation has the size and alignment of
 the default <code>enum</code> size and alignment for the target platform's C ABI.</p>
 <blockquote>
 <p>Note: The enum representation in C is implementation defined, so this is
@@ -10323,7 +10336,7 @@ layout is unspecified.</p>
 the primitive integer types. That is: <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>,
 <code>usize</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, and <code>isize</code>.</p>
 <p>Primitive representations can only be applied to enumerations.</p>
-<p>For <a href="items/enumerations.html#custom-discriminant-values-for-field-less-enumerations">C-like enumerations</a>, they set the size and alignment to be the same as the
+<p>For <a href="items/enumerations.html#custom-discriminant-values-for-fieldless-enumerations">C-like enumerations</a>, they set the size and alignment to be the same as the
 primitive type of the same name. For example, a C-like enumeration with a <code>u8</code>
 representation can only have discriminants between 0 and 255 inclusive.</p>
 <p>It is an error for <a href="items/enumerations.html#zero-variant-enums">zero-variant enumerations</a> to have a primitive
@@ -10370,7 +10383,7 @@ primitive field will have the ABI of the primitive field.</p>
 <p>Because this representation delegates type layout to another type, it cannot be
 used with any other representation.</p>
 <h1><a class="header" href="#interior-mutability" id="interior-mutability">Interior Mutability</a></h1>
-<p>Sometimes a type needs be mutated while having multiple aliases. In Rust this
+<p>Sometimes a type needs to be mutated while having multiple aliases. In Rust this
 is achieved using a pattern called <em>interior mutability</em>. A type has interior
 mutability if its internal state can be changed through a <a href="types/pointer.html#shared-references-">shared reference</a> to
 it. This goes against the usual <a href="behavior-considered-undefined.html">requirement</a> that the value pointed to by a
@@ -11544,7 +11557,7 @@ from <a href="http://llvm.org/docs/LangRef.html#undefined-values">uninitialized 
 <ul>
 <li><code>dyn Trait</code> metadata is invalid if it is not a pointer to a vtable for
 <code>Trait</code> that matches the actual dynamic trait the pointer or reference points to.</li>
-<li>Slice metadata is invalid if if the length is not a valid <code>usize</code>
+<li>Slice metadata is invalid if the length is not a valid <code>usize</code>
 (i.e., it must not be read from uninitialized memory).</li>
 </ul>
 </li>
@@ -11636,7 +11649,7 @@ Recursively defining constants is not allowed.</li>
 are implemented, one cannot use both short circuiting operators (<code>&amp;&amp;</code> and <code>||</code>) and let
 statements within the same constant.</li>
 <li><a href="expressions/operator-expr.html#assignment-expressions">assignment expressions</a></li>
-<li><a href="expressions/operator-expr.html#compound-assignment-expressions">assignment operator expressions</a></li>
+<li><a href="expressions/operator-expr.html#compound-assignment-expressions">compound assignment expressions</a></li>
 <li><a href="statements.html#expression-statements">expression statements</a></li>
 </ul>
 </li>
@@ -11662,7 +11675,7 @@ function pointer to address casts.</li>
 <ul>
 <li><a href="items/constant-items.html">constants</a></li>
 <li><a href="items/static-items.html">statics</a></li>
-<li><a href="items/enumerations.html#custom-discriminant-values-for-field-less-enumerations">enum discriminants</a></li>
+<li><a href="items/enumerations.html#custom-discriminant-values-for-fieldless-enumerations">enum discriminants</a></li>
 </ul>
 </li>
 </ul>

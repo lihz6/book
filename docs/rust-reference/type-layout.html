@@ -92,41 +92,40 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
 
-                        <h1 class="menu-title">The Rust Reference</h1>
+                    <h1 class="menu-title">The Rust Reference</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                            <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
-                                <i id="git-repository-button" class="fa fa-github"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        <a href="https://github.com/rust-lang/reference/" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
                     </div>
                 </div>
 
@@ -313,7 +312,20 @@ is now. Then increase the current offset by the size of the field.</p>
 multiple of the struct's alignment.</p>
 <p>Here is this algorithm described in pseudocode.</p>
 <!-- ignore: pseudocode -->
-<pre><code class="language-rust ignore">struct.alignment = struct.fields().map(|field| field.alignment).max();
+<pre><code class="language-rust ignore">/// Returns the amount of padding needed after `offset` to ensure that the
+/// following address will be aligned to `alignment`.
+fn padding_needed_for(offset: usize, alignment: usize) -&gt; usize {
+    let misalignment = offset % alignment;
+    if misalignment &gt; 0 {
+        // round up to next multiple of `alignment`
+        alignment - misalignment
+    } else {
+        // already a multiple of `alignment`
+        0
+    }
+}
+
+struct.alignment = struct.fields().map(|field| field.alignment).max();
 
 let current_offset = 0;
 
@@ -321,15 +333,20 @@ for field in struct.fields_in_declaration_order() {
     // Increase the current offset so that it's a multiple of the alignment
     // of this field. For the first field, this will always be zero.
     // The skipped bytes are called padding bytes.
-    current_offset += field.alignment % current_offset;
+    current_offset += padding_needed_for(current_offset, field.alignment);
 
     struct[field].offset = current_offset;
 
     current_offset += field.size;
 }
 
-struct.size = current_offset + current_offset % struct.alignment;
+struct.size = current_offset + padding_needed_for(current_offset, struct.alignment);
 </code></pre>
+<div class="warning">
+<p>Warning: This pseudocode uses a naive algorithm that ignores overflow issues for
+the sake of clarity. To perform memory layout computations in actual code, use
+<a href="../std/alloc/struct.Layout.html"><code>Layout</code></a>.</p>
+</div>
 <blockquote>
 <p>Note: This algorithm can produce zero-sized structs. This differs from
 C where structs without data still have a size of one byte.</p>
@@ -365,7 +382,7 @@ assert_eq!(std::mem::align_of::&lt;SizeRoundedUp&gt;(), 4); // From a
 <span class="boring">}
 </span></code></pre></pre>
 <h4><a class="header" href="#reprc-enums" id="reprc-enums">#[repr(C)] Enums</a></h4>
-<p>For <a href="items/enumerations.html#custom-discriminant-values-for-field-less-enumerations">C-like enumerations</a>, the <code>C</code> representation has the size and alignment of
+<p>For <a href="items/enumerations.html#custom-discriminant-values-for-fieldless-enumerations">C-like enumerations</a>, the <code>C</code> representation has the size and alignment of
 the default <code>enum</code> size and alignment for the target platform's C ABI.</p>
 <blockquote>
 <p>Note: The enum representation in C is implementation defined, so this is
@@ -390,7 +407,7 @@ layout is unspecified.</p>
 the primitive integer types. That is: <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>,
 <code>usize</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, and <code>isize</code>.</p>
 <p>Primitive representations can only be applied to enumerations.</p>
-<p>For <a href="items/enumerations.html#custom-discriminant-values-for-field-less-enumerations">C-like enumerations</a>, they set the size and alignment to be the same as the
+<p>For <a href="items/enumerations.html#custom-discriminant-values-for-fieldless-enumerations">C-like enumerations</a>, they set the size and alignment to be the same as the
 primitive type of the same name. For example, a C-like enumeration with a <code>u8</code>
 representation can only have discriminants between 0 and 255 inclusive.</p>
 <p>It is an error for <a href="items/enumerations.html#zero-variant-enums">zero-variant enumerations</a> to have a primitive
@@ -460,13 +477,13 @@ used with any other representation.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a href="dynamically-sized-types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="dynamically-sized-types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a href="interior-mutability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="interior-mutability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

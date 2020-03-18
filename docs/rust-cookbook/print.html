@@ -94,37 +94,36 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
 
-                        <h1 class="menu-title">Rust Cookbook</h1>
+                    <h1 class="menu-title">Rust Cookbook</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
                     </div>
                 </div>
 
@@ -410,7 +409,7 @@ Keep lines sorted.
 <tr><td><a href="science/mathematics/linear_algebra.html#adding-matrices">Adding matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiplying-matrices">Multiplying matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiply-a-scalar-with-a-vector-with-a-matrix">Multiply a scalar with a vector with a matrix</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
-<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert marix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
+<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert matrix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#calculating-the-side-length-of-a-triangle">Calculating the side length of a triangle</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#verifying-tan-is-equal-to-sin-divided-by-cos">Verifying tan is equal to sin divided by cos</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#distance-between-two-points-on-the-earth">Distance between two points on the Earth</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
@@ -1287,13 +1286,13 @@ fn main() -&gt; Result&lt;()&gt; {
     Ok(())
 }
 </code></pre></pre>
-<h2><a class="header" href="#calculate-sha1-sum-of-iso-files-concurrently" id="calculate-sha1-sum-of-iso-files-concurrently">Calculate SHA1 sum of iso files concurrently</a></h2>
+<h2><a class="header" href="#calculate-sha256-sum-of-iso-files-concurrently" id="calculate-sha256-sum-of-iso-files-concurrently">Calculate SHA256 sum of iso files concurrently</a></h2>
 <p><a href="https://docs.rs/threadpool/"><img src="https://badge-cache.kominick.com/crates/v/threadpool.svg?label=threadpool" alt="threadpool-badge" /></a> <a href="https://docs.rs/num_cpus/"><img src="https://badge-cache.kominick.com/crates/v/num_cpus.svg?label=num_cpus" alt="num_cpus-badge" /></a> <a href="https://docs.rs/walkdir/"><img src="https://badge-cache.kominick.com/crates/v/walkdir.svg?label=walkdir" alt="walkdir-badge" /></a> <a href="https://briansmith.org/rustdoc/ring/"><img src="https://badge-cache.kominick.com/crates/v/ring.svg?label=ring" alt="ring-badge" /></a> <a href="https://crates.io/categories/concurrency"><img src="https://badge-cache.kominick.com/badge/concurrency--x.svg?style=social" alt="cat-concurrency-badge" /></a><a href="https://crates.io/categories/filesystem"><img src="https://badge-cache.kominick.com/badge/filesystem--x.svg?style=social" alt="cat-filesystem-badge" /></a></p>
-<p>This example calculates the SHA1 for every file with iso extension in the
+<p>This example calculates the SHA256 for every file with iso extension in the
 current directory. A threadpool generates threads equal to the number of cores
 present in the system found with <a href="https://docs.rs/num_cpus/*/num_cpus/fn.get.html"><code>num_cpus::get</code></a>.  <a href="https://docs.rs/walkdir/*/walkdir/struct.WalkDir.html#method.new"><code>Walkdir::new</code></a> iterates
 the current directory and calls <a href="https://docs.rs/threadpool/*/threadpool/struct.ThreadPool.html#method.execute"><code>execute</code></a> to perform the operations of reading
-and computing SHA1 hash.</p>
+and computing SHA256 hash.</p>
 <pre><pre class="playpen"><code class="language-rust no_run">extern crate walkdir;
 extern crate ring;
 extern crate num_cpus;
@@ -1305,7 +1304,7 @@ use std::io::{BufReader, Read, Error};
 use std::path::Path;
 use threadpool::ThreadPool;
 use std::sync::mpsc::channel;
-use ring::digest::{Context, Digest, SHA1};
+use ring::digest::{Context, Digest, SHA256};
 
 <span class="boring">// Verify the iso extension
 </span><span class="boring">fn is_iso(entry: &amp;Path) -&gt; bool {
@@ -1317,7 +1316,7 @@ use ring::digest::{Context, Digest, SHA1};
 </span>
 fn compute_digest&lt;P: AsRef&lt;Path&gt;&gt;(filepath: P) -&gt; Result&lt;(Digest, P), Error&gt; {
     let mut buf_reader = BufReader::new(File::open(&amp;filepath)?);
-    let mut context = Context::new(&amp;SHA1);
+    let mut context = Context::new(&amp;SHA256);
     let mut buffer = [0; 1024];
 
     loop {
@@ -1751,7 +1750,7 @@ fn main() -&gt; Result&lt;()&gt; {
 <p>Uses <a href="https://briansmith.org/rustdoc/ring/hmac/"><code>ring::hmac</code></a> to creates a <a href="https://briansmith.org/rustdoc/ring/hmac/struct.Signature.html"><code>hmac::Signature</code></a> of a string then verifies the signature is correct.</p>
 <pre><pre class="playpen"><code class="language-rust">extern crate ring;
 
-use ring::{digest, hmac, rand};
+use ring::{hmac, rand};
 use ring::rand::SecureRandom;
 use ring::error::Unspecified;
 
@@ -1759,11 +1758,11 @@ fn main() -&gt; Result&lt;(), Unspecified&gt; {
     let mut key_value = [0u8; 48];
     let rng = rand::SystemRandom::new();
     rng.fill(&amp;mut key_value)?;
-    let key = hmac::SigningKey::new(&amp;digest::SHA256, &amp;key_value);
+    let key = hmac::Key::new(hmac::HMAC_SHA256, &amp;key_value);
 
     let message = &quot;Legitimate and important message.&quot;;
     let signature = hmac::sign(&amp;key, message.as_bytes());
-    hmac::verify_with_own_key(&amp;key, message.as_bytes(), signature.as_ref())?;
+    hmac::verify(&amp;key, message.as_bytes(), signature.as_ref())?;
 
     Ok(())
 }
@@ -4716,7 +4715,7 @@ Keep lines sorted.
 <tr><td><a href="science/mathematics/linear_algebra.html#adding-matrices">Adding matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiplying-matrices">Multiplying matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiply-a-scalar-with-a-vector-with-a-matrix">Multiply a scalar with a vector with a matrix</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
-<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert marix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
+<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert matrix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#calculating-the-side-length-of-a-triangle">Calculating the side length of a triangle</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#verifying-tan-is-equal-to-sin-divided-by-cos">Verifying tan is equal to sin divided by cos</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#distance-between-two-points-on-the-earth">Distance between two points on the Earth</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
@@ -4746,7 +4745,7 @@ Keep lines sorted.
 <tr><td><a href="science/science/mathematics/linear_algebra.html#adding-matrices">Adding matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/science/mathematics/linear_algebra.html#multiplying-matrices">Multiplying matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/science/mathematics/linear_algebra.html#multiply-a-scalar-with-a-vector-with-a-matrix">Multiply a scalar with a vector with a matrix</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
-<tr><td><a href="science/science/mathematics/linear_algebra.html#invert-matrix">Invert marix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
+<tr><td><a href="science/science/mathematics/linear_algebra.html#invert-matrix">Invert matrix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/science/mathematics/trigonometry.html#calculating-the-side-length-of-a-triangle">Calculating the side length of a triangle</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/science/mathematics/trigonometry.html#verifying-tan-is-equal-to-sin-divided-by-cos">Verifying tan is equal to sin divided by cos</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/science/mathematics/trigonometry.html#distance-between-two-points-on-the-earth">Distance between two points on the Earth</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>

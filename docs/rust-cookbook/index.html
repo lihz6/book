@@ -92,37 +92,36 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
 
-                        <h1 class="menu-title">Rust Cookbook</h1>
+                    <h1 class="menu-title">Rust Cookbook</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
                     </div>
                 </div>
 
@@ -408,7 +407,7 @@ Keep lines sorted.
 <tr><td><a href="science/mathematics/linear_algebra.html#adding-matrices">Adding matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiplying-matrices">Multiplying matrices</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/linear_algebra.html#multiply-a-scalar-with-a-vector-with-a-matrix">Multiply a scalar with a vector with a matrix</a></td><td><a href="https://docs.rs/ndarray"><img src="https://badge-cache.kominick.com/crate/ndarray.svg?label=ndarray" alt="ndarray-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
-<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert marix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
+<tr><td><a href="science/mathematics/linear_algebra.html#invert-matrix">Invert matrix</a></td><td><a href="https://docs.rs/nalgebra"><img src="https://badge-cache.kominick.com/crate/nalgebra.svg?label=nalgebra" alt="nalgebra-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#calculating-the-side-length-of-a-triangle">Calculating the side length of a triangle</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#verifying-tan-is-equal-to-sin-divided-by-cos">Verifying tan is equal to sin divided by cos</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
 <tr><td><a href="science/mathematics/trigonometry.html#distance-between-two-points-on-the-earth">Distance between two points on the Earth</a></td><td><a href="https://doc.rust-lang.org/std"><img src="https://badge-cache.kominick.com/badge/std-1.29.1-blue.svg" alt="std-badge" /></a></td><td><a href="https://crates.io/categories/science"><img src="https://badge-cache.kominick.com/badge/science--x.svg?style=social" alt="cat-science-badge" /></a></td></tr>
@@ -513,7 +512,7 @@ Keep lines sorted.
                 
 
                 
-                    <a href="about.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="about.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
